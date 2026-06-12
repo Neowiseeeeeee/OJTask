@@ -236,7 +236,7 @@ export default function LandingPage() {
       {/* ── MARQUEE CAROUSEL ─────────────────────────────────── */}
       <section
         className="py-2 overflow-hidden"
-        style={{ background: "linear-gradient(90deg, #7c3aed, #6366f1, #4f46e5)" }}
+        style={{ background: "linear-gradient(90deg, #7c3aed, #6d28d9, #5b21b6)" }}
       >
         <MarqueeStrip />
         <MarqueeStrip reverse />
@@ -401,7 +401,7 @@ export default function LandingPage() {
 
       {/* ── FOOTER (Discord-style) ────────────────────────────── */}
       <footer
-        style={{ background: "linear-gradient(175deg, #5865F2 0%, #4f46e5 30%, #3730a3 70%, #312e81 100%)" }}
+        style={{ background: "linear-gradient(175deg, #7c3aed 0%, #6d28d9 30%, #5b21b6 70%, #4c1d95 100%)" }}
       >
         {/* Footer links area */}
         <div className="max-w-7xl mx-auto px-8 pt-16 pb-10">
