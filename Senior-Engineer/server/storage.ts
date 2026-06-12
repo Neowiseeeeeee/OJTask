@@ -54,7 +54,8 @@ export interface IStorage {
 
   // Documents
   getDocuments(spaceId: number): Promise<Document[]>;
-  createDocument(doc: InsertDocument): Promise<Document>;
+  getAllDocuments(): Promise<Document[]>;
+  createDocument(doc: any): Promise<Document>;
   approveDocument(id: number): Promise<Document | undefined>;
   rejectDocument(id: number): Promise<Document | undefined>;
 
@@ -351,7 +352,10 @@ export class MemStorage implements IStorage {
   async getDocuments(spaceId: number): Promise<Document[]> {
     return Array.from(this.documents.values()).filter(d => d.spaceId === spaceId);
   }
-  async createDocument(insertDoc: InsertDocument): Promise<Document> {
+  async getAllDocuments(): Promise<Document[]> {
+    return Array.from(this.documents.values());
+  }
+  async createDocument(insertDoc: any): Promise<Document> {
     const id = this.currentIds.document++;
     const doc: Document = { ...insertDoc, id, status: 'submitted', uploadDate: new Date().toISOString().split('T')[0] };
     this.documents.set(id, doc);

@@ -390,6 +390,11 @@ export class MongoStorage implements IStorage {
     return docs.map(d => this.toDocument(d));
   }
 
+  async getAllDocuments(): Promise<Document[]> {
+    const docs = await this.db.collection('documents').find({}).toArray();
+    return docs.map(d => this.toDocument(d));
+  }
+
   async createDocument(insertDoc: any): Promise<Document> {
     const id = await this.getNextId('document');
     const today = new Date().toISOString().split("T")[0];
@@ -766,6 +771,7 @@ export class MongoStorage implements IStorage {
       filePath: doc.filePath ?? doc.url ?? null,
       fileSize: doc.fileSize ?? null,
       mimeType: doc.mimeType ?? null,
+      originalFileName: doc.originalFileName ?? null,
       notes: doc.notes ?? null,
       isRequired: doc.isRequired ?? false,
       deadline: doc.deadline ?? null,

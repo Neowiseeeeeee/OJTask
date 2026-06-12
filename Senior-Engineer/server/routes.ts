@@ -9,6 +9,22 @@ import { z } from "zod";
 import session from "express-session";
 import { MongoClient } from "mongodb";
 import memorystore from "memorystore";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+
+// Set up multer disk storage for file uploads
+const uploadsDir = path.resolve(process.cwd(), "uploads");
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+
+const storage_disk = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, uploadsDir),
+  filename: (_req, file, cb) => {
+    const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    cb(null, `${unique}${path.extname(file.originalname)}`);
+  },
+});
+const upload = multer({ storage: storage_disk, limits: { fileSize: 20 * 1024 * 1024 } });
 
 export async function registerRoutes(
   httpServer: Server,
@@ -458,39 +474,16 @@ export async function registerRoutes(
     }
   });
 
-  // File upload endpoint for documents
-  app.post('/api/upload', requireAuth, async (req, res) => {
+  // Generic file upload endpoint
+  app.post('/api/upload', requireAuth, upload.single('file'), async (req, res) => {
     try {
-      const userId = (req as any).session.userId;
-      
-      // Handle multipart form data
-      const multer = require('multer');
-      const upload = multer({ 
-        dest: 'uploads/',
-        limits: {
-          fileSize: 5 * 1024 * 1024 // 5MB limit
-        }
-      });
-      
-      upload.single('file')(req, res, async (err: any) => {
-        if (err) {
-          return res.status(400).json({ message: "File upload failed: " + err.message });
-        }
-        
-        const file = req.file;
-        if (!file) {
-          return res.status(400).json({ message: "No file uploaded" });
-        }
-        
-        // Store file info (in production, you'd use cloud storage)
-        const filePath = `/uploads/${file.filename}`;
-        
-        res.json({
-          filePath,
-          fileName: file.originalname,
-          fileSize: file.size,
-          mimeType: file.mimetype
-        });
+      const file = req.file;
+      if (!file) return res.status(400).json({ message: "No file uploaded" });
+      res.json({
+        filePath: `/uploads/${file.filename}`,
+        fileName: file.originalname,
+        fileSize: file.size,
+        mimeType: file.mimetype,
       });
     } catch (error) {
       console.error('[UPLOAD ERROR]', error);
@@ -772,27 +765,73 @@ export async function registerRoutes(
     }
   });
 
+  // Serve uploaded files for download
+  app.get('/api/documents/:id/file', requireAuth, async (req, res) => {
+    try {
+      const docId = Number(req.params.id);
+      const allDocs = await getStorage().getAllDocuments();
+      const doc = allDocs.find((d: any) => d.id === docId);
+      if (!doc || !doc.filePath) return res.status(404).json({ message: "File not found" });
+      const absPath = path.resolve(process.cwd(), doc.filePath.replace(/^\//, ''));
+      if (!fs.existsSync(absPath)) return res.status(404).json({ message: "File not found on disk" });
+      const filename = doc.originalFileName || path.basename(absPath);
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      if (doc.mimeType) res.setHeader('Content-Type', doc.mimeType);
+      res.sendFile(absPath);
+    } catch (err) {
+      res.status(500).json({ message: "Internal error" });
+    }
+  });
+
   // Documents
   app.get(api.documents.list.path, requireAuth, requireSpaceMembership, async (req, res) => {
     const docs = await getStorage().getDocuments(Number(req.params.spaceId));
     res.json(docs);
   });
 
-  app.post(api.documents.create.path, requireAuth, requireSpaceMembership, async (req, res) => {
+  app.post(api.documents.create.path, requireAuth, requireSpaceMembership, upload.single('file'), async (req, res) => {
     try {
       const today = new Date().toISOString().split("T")[0];
+      const userId = (req as any).session.userId;
+      const user = await getStorage().getUser(userId);
+      const isSupervisor = user?.role === 'supervisor' || user?.role === 'school' || user?.role === 'admin';
+
+      let filePath: string | null = null;
+      let fileSize: number | null = null;
+      let mimeType: string | null = null;
+      let originalFileName: string | null = null;
+
+      if (req.file) {
+        filePath = `uploads/${req.file.filename}`;
+        fileSize = req.file.size;
+        mimeType = req.file.mimetype;
+        originalFileName = req.file.originalname;
+      }
+
+      const body = req.body;
       const input = {
-        ...req.body,
         spaceId: Number(req.params.spaceId),
-        uploaderId: (req as any).session.userId,
-        uploadDate: req.body.uploadDate ?? today,
-        status: 'submitted',
+        uploaderId: userId,
+        name: body.name,
+        type: body.type ?? 'other',
+        documentType: body.documentType ?? body.type ?? 'other',
+        uploadDate: today,
+        status: isSupervisor ? 'approved' : 'submitted',
+        filePath,
+        fileSize,
+        mimeType,
+        originalFileName,
       };
-      if (!input.name || !input.documentType) return res.status(400).json({ message: "name and documentType are required" });
+      if (!input.name) return res.status(400).json({ message: "Document name is required" });
       const doc = await getStorage().createDocument(input);
-      await notifyByRole(getStorage(), Number(req.params.spaceId), ['supervisor', 'school'], 'documents', doc.id, 'document_uploaded');
+      if (!isSupervisor) {
+        await notifyByRole(getStorage(), Number(req.params.spaceId), ['supervisor', 'school'], 'documents', doc.id, 'document_uploaded');
+      } else {
+        await notifyByRole(getStorage(), Number(req.params.spaceId), ['student'], 'documents', doc.id, 'document_uploaded');
+      }
       res.status(201).json(doc);
     } catch (err) {
+      console.error('[DOC CREATE ERROR]', err);
       res.status(500).json({ message: "Internal error" });
     }
   });

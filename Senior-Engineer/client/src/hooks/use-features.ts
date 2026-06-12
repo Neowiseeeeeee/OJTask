@@ -202,13 +202,20 @@ export function useCreateDocument(spaceId?: number | null) {
   return useMutation({
     mutationFn: async (data: any) => {
       const sid = spaceId ?? data.spaceId;
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("type", data.type ?? "other");
+      formData.append("documentType", data.documentType ?? data.type ?? "other");
+      if (data.file) formData.append("file", data.file);
       const res = await fetch(`/api/spaces/${sid}/documents`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: formData,
         credentials: "include",
       });
-      if (!res.ok) throw new Error("Failed to upload document");
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ message: "Failed to upload document" }));
+        throw new Error(err.message ?? "Failed to upload document");
+      }
       return res.json();
     },
     onSuccess: (_, variables) => {

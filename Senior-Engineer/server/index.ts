@@ -8,8 +8,16 @@ import { config } from "dotenv";
 // Load environment variables (override any Replit-injected vars so .env takes precedence)
 config({ override: true });
 
+import path from "path";
+import { fileURLToPath } from "url";
+
 const app = express();
 const httpServer = createServer(app);
+
+// Serve uploaded files statically so they can be previewed/downloaded
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const uploadsDir = path.resolve(process.cwd(), "uploads");
+app.use("/uploads", express.static(uploadsDir));
 
 declare module "http" {
   interface IncomingMessage {
