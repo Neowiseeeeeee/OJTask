@@ -1,5 +1,4 @@
 uploads = []
-outputs = []
 
 [[generated]]
 id = "tzNfYTjJWUEvX6lf5zYf2"
@@ -18,3 +17,39 @@ id = "otsAoL9QlWWud6GxLvdb8"
 uri = "file://artifacts/mockup-sandbox/public/images/hero-bold.png"
 type = "image"
 title = "energetic students collaborating"
+
+[[generated]]
+id = "h-746lvxmov2bOssnoNXC"
+uri = "file://Senior-Engineer/client/public/logo-option-1.png"
+type = "image"
+title = "ojtask logo option 1"
+
+[[generated]]
+id = "qLGvEQjvWpWVctnhVtY6W"
+uri = "file://Senior-Engineer/client/public/logo-option-2.png"
+type = "image"
+title = "ojtask logo option 2"
+
+[[generated]]
+id = "3cjJCbupbxwsqvPopc_Nh"
+uri = "file://Senior-Engineer/client/public/logo-option-3.png"
+type = "image"
+title = "ojtask logo option 3"
+
+[[outputs]]
+id = "28aM-5_IyVufl5pyJpfJq"
+uri = "file://Senior-Engineer/client/public/logo-option-1.png"
+type = "image"
+title = "Option 1 — O into checkmark"
+
+[[outputs]]
+id = "Bezw0dwxPMv3v-s2iWOFF"
+uri = "file://Senior-Engineer/client/public/logo-option-2.png"
+type = "image"
+title = "Option 2 — Task list mark"
+
+[[outputs]]
+id = "beaJHj6hPHBqohXLHIpGn"
+uri = "file://Senior-Engineer/client/public/logo-option-3.png"
+type = "image"
+title = "Option 3 — OJ monogram"
