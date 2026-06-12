@@ -407,6 +407,10 @@ export default function UserSettingsPage() {
               <p className="font-medium text-sm mt-1">{user.username}</p>
             </div>
             <div>
+              <p className="text-xs text-muted-foreground">Email Address</p>
+              <p className="font-medium text-sm mt-1">{user.email || <span className="text-muted-foreground italic">Not set — update in Profile</span>}</p>
+            </div>
+            <div>
               <p className="text-xs text-muted-foreground">Role</p>
               <p className="font-medium text-sm mt-1">{user.role?.charAt(0).toUpperCase() + user.role?.slice(1)}</p>
             </div>
