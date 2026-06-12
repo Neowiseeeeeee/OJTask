@@ -34,6 +34,10 @@ import UserSettings from "@/pages/user-settings";
 import SpaceAdminPage from "@/pages/space-admin";
 import MemberManagementPage from "@/pages/member-management";
 import { UserProfileModalProvider } from "@/hooks/use-user-profile-modal";
+import HelpCenter from "@/pages/help-center";
+import ContactPage from "@/pages/contact-page";
+import PrivacyPolicy from "@/pages/privacy-policy";
+import TermsOfUse from "@/pages/terms-of-use";
 
 function ProtectedRoute({ component: Component, adminOnly, systemAdminOnly }: { component: React.ComponentType; adminOnly?: boolean; systemAdminOnly?: boolean }) {
   const { user, isLoading } = useAuth();
@@ -85,6 +89,10 @@ function Router() {
       <Route path="/" component={() => <PublicRoute component={LandingPage} />} />
       <Route path="/auth" component={() => <PublicRoute component={AuthPage} />} />
       <Route path="/forgot-password" component={ForgotPasswordPage} />
+      <Route path="/help-center" component={HelpCenter} />
+      <Route path="/contact" component={ContactPage} />
+      <Route path="/privacy-policy" component={PrivacyPolicy} />
+      <Route path="/terms-of-use" component={TermsOfUse} />
 
       {/* Protected routes */}
       <Route path="/dashboard">

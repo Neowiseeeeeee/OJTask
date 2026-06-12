@@ -1715,6 +1715,29 @@ export async function registerRoutes(
     }
   });
 
+  // Public contact form endpoint
+  app.post("/api/contact", async (req, res) => {
+    try {
+      const { name, email, subject, message } = req.body;
+      if (!name?.trim() || !email?.trim() || !message?.trim()) {
+        return res.status(400).json({ message: "Name, email, and message are required." });
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: "Please provide a valid email address." });
+      }
+      const { sendContactEmail } = await import("./email");
+      await sendContactEmail(name.trim(), email.trim(), subject?.trim() || "General Inquiry", message.trim());
+      res.status(200).json({ message: "Message sent successfully." });
+    } catch (err: any) {
+      console.error("Contact form error:", err?.message);
+      if (err?.message?.includes("GMAIL_USER") || err?.message?.includes("GMAIL_APP_PASSWORD")) {
+        return res.status(503).json({ message: "Email delivery is not configured on this server. Please email us directly at ojtask.connect@gmail.com." });
+      }
+      res.status(500).json({ message: "Failed to send message. Please try again or email us directly at ojtask.connect@gmail.com." });
+    }
+  });
+
   // Seed Data
   await seedDatabase();
 

@@ -180,12 +180,12 @@ export default function LandingPage() {
             Built for OJT in the Philippines 🇵🇭
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-[1.04] mb-7 text-slate-900 dark:text-white">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tight leading-[1.04] mb-7 text-slate-900 dark:text-white">
             Your Internship,{" "}
             <span className="text-violet-600 dark:text-violet-400">Finally Organized</span>
           </h1>
 
-          <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-base sm:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed px-2">
             OJTask brings students, supervisors, and school coordinators into one shared workspace — daily reports, time logs, and documents handled without the back-and-forth.
           </p>
 
@@ -385,7 +385,7 @@ export default function LandingPage() {
               { title: "Product", links: [{ label: "Time Tracking", href: "/auth" }, { label: "Daily Scrum", href: "/auth" }, { label: "Task Board", href: "/auth" }, { label: "Documents", href: "/auth" }] },
               { title: "For",     links: [{ label: "Students", href: "/auth" }, { label: "Supervisors", href: "/auth" }, { label: "Coordinators", href: "/auth" }, { label: "Schools", href: "/auth" }] },
               { title: "Account", links: [{ label: "Sign In", href: "/auth" }, { label: "Get Started", href: "/auth" }, { label: "Forgot Password", href: "/forgot-password" }] },
-              { title: "Support", links: [{ label: "Help Center", href: "/auth" }, { label: "Contact Us", href: "/auth" }, { label: "Privacy Policy", href: "/auth" }, { label: "Terms of Use", href: "/auth" }] },
+              { title: "Support", links: [{ label: "Help Center", href: "/help-center" }, { label: "Contact Us", href: "/contact" }, { label: "Privacy Policy", href: "/privacy-policy" }, { label: "Terms of Use", href: "/terms-of-use" }] },
             ].map((col) => (
               <div key={col.title}>
                 <div className="text-xs font-black uppercase tracking-widest text-white/50 mb-4">{col.title}</div>
