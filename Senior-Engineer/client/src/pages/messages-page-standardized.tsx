@@ -33,7 +33,6 @@ import {
   CheckCheck,
 } from "lucide-react";
 import { format } from "date-fns";
-import { UserCardWithPicture } from "@/components/user-card-with-picture";
 import { cn } from "@/lib/utils";
 
 const PUBLIC_CHANNELS = [
@@ -269,20 +268,36 @@ export default function MessagesPageStandardized() {
     return map;
   }, [sortedMessages]);
 
+  const resolvePartnerName = (otherId: number): string => {
+    // Try DM conversations first
+    const fromDm = dmConversations.find((p: any) => p.id === otherId);
+    if (fromDm?.name) return fromDm.name;
+    // Fall back to space members list
+    const fromMembers = members.find((m: any) => m.userId === otherId);
+    const u = fromMembers?.user;
+    if (u) {
+      if (u.firstName && u.lastName) return `${u.firstName} ${u.lastName}`;
+      if (u.name) return u.name;
+      if (u.username) return u.username;
+    }
+    return `User #${otherId}`;
+  };
+
   const getChannelLabel = (ch: string) => {
     if (!ch.startsWith("dm-")) return ch;
     const parts = ch.split("-");
     const otherId =
       Number(parts[1]) === user?.id ? Number(parts[2]) : Number(parts[1]);
-    const partner = dmConversations.find((p: any) => p.id === otherId);
-    return partner?.name ?? "Unknown User";
+    return resolvePartnerName(otherId);
   };
 
   const openDm = (otherId: number) => {
     if (!user || otherId === user.id) return;
-    setChannelId(dmChannelId(user.id, otherId));
+    const ch = dmChannelId(user.id, otherId);
     setDmOpen(false);
     setDmSearch("");
+    // Set channel after dialog closes to avoid layout conflicts
+    setTimeout(() => setChannelId(ch), 0);
   };
 
   const handleSend = async (e: React.FormEvent) => {
@@ -369,7 +384,12 @@ export default function MessagesPageStandardized() {
 
           {allDmThreads.map((otherId) => {
             const ch = dmChannelId(user.id, otherId);
-            const partner = dmConversations.find((p: any) => p.id === otherId);
+            const partnerName = resolvePartnerName(otherId);
+            const partnerMember = members.find((m: any) => m.userId === otherId);
+            const partnerPic =
+              dmConversations.find((p: any) => p.id === otherId)?.profilePicture
+              ?? partnerMember?.user?.profilePicture
+              ?? null;
             const lastMsg = lastMessagePerDm[ch];
             const unread = unreadPerChannel[ch] ?? 0;
             const isActive = channelId === ch;
@@ -389,14 +409,11 @@ export default function MessagesPageStandardized() {
               >
                 <div className="relative shrink-0">
                   <Avatar className="w-7 h-7">
-                    {partner?.profilePicture ? (
-                      <AvatarImage
-                        src={partner.profilePicture}
-                        alt={partner?.name ?? "User"}
-                      />
+                    {partnerPic ? (
+                      <AvatarImage src={partnerPic} alt={partnerName} />
                     ) : null}
                     <AvatarFallback className="text-[10px] font-bold">
-                      {(partner?.name ?? "User").charAt(0).toUpperCase()}
+                      {partnerName.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   {unread > 0 && !isActive && (
@@ -410,7 +427,7 @@ export default function MessagesPageStandardized() {
                       unread > 0 && !isActive && "font-semibold text-foreground",
                     )}
                   >
-                    {partner?.name ?? "Unknown User"}
+                    {partnerName}
                   </div>
                   {lastMsg && (
                     <div className="text-xs text-muted-foreground truncate">
@@ -560,16 +577,42 @@ export default function MessagesPageStandardized() {
               onChange={(e) => setDmSearch(e.target.value)}
               className="w-full"
             />
-            <div className="max-h-60 overflow-y-auto space-y-2">
-              {searchFiltered.map((m: any) => (
-                <button
-                  key={m.userId}
-                  onClick={() => openDm(m.userId)}
-                  className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors text-left"
-                >
-                  <UserCardWithPicture user={m.user} size="sm" showRole />
-                </button>
-              ))}
+            <div className="max-h-60 overflow-y-auto space-y-1">
+              {searchFiltered.map((m: any) => {
+                const memberUser = m.user;
+                const displayName =
+                  memberUser?.firstName && memberUser?.lastName
+                    ? `${memberUser.firstName} ${memberUser.lastName}`
+                    : memberUser?.name || memberUser?.username || `User #${m.userId}`;
+                const initial = displayName.charAt(0).toUpperCase();
+                const role = memberUser?.role || m.role;
+                return (
+                  <button
+                    key={m.userId}
+                    onClick={() => openDm(m.userId)}
+                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors text-left"
+                  >
+                    <Avatar className="w-9 h-9 shrink-0">
+                      {memberUser?.profilePicture ? (
+                        <AvatarImage src={memberUser.profilePicture} alt={displayName} />
+                      ) : null}
+                      <AvatarFallback className="font-semibold bg-gradient-to-br from-primary to-primary/70 text-white text-sm">
+                        {initial}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col min-w-0">
+                      <span className="font-semibold text-sm leading-tight truncate">
+                        {displayName}
+                      </span>
+                      {role && (
+                        <span className="text-xs text-muted-foreground capitalize">
+                          {role}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
               {searchFiltered.length === 0 && (
                 <div className="text-center text-muted-foreground py-4">
                   No members found
