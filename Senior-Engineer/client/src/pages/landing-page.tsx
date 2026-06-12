@@ -3,90 +3,201 @@ import { Link } from "wouter";
 import {
   Briefcase, Clock, ListTodo, Users, CalendarDays, FileText, MessageSquare,
   CheckCircle, ArrowRight, Zap, GraduationCap, Building2, BookOpen,
-  Sun, Moon, Menu, X, BarChart3, ShieldCheck, Layers
+  Menu, X, BarChart3, ShieldCheck, Layers, Star, TrendingUp, Award
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { useTheme } from "@/components/theme-provider";
+import { motion } from "framer-motion";
 
 const features = [
   {
     icon: Clock,
     title: "Time Tracking",
-    desc: "Accurately log your daily OJT hours and get instant supervisor sign-off. No emails, no spreadsheets, no delays.",
-    gradient: "from-violet-500 to-purple-600",
-    light: "bg-violet-50 dark:bg-violet-950/40",
-    text: "text-violet-600 dark:text-violet-400",
+    desc: "Log daily OJT hours and get instant supervisor sign-off. No emails, no spreadsheets.",
+    color: "from-violet-500 to-purple-600",
+    glow: "shadow-violet-500/20",
+    size: "large",
   },
   {
     icon: Users,
     title: "Daily Scrum",
-    desc: "A two-minute structured check-in replaces long status meetings. Share yesterday's progress, today's goals, and blockers in seconds.",
-    gradient: "from-indigo-500 to-blue-600",
-    light: "bg-indigo-50 dark:bg-indigo-950/40",
-    text: "text-indigo-600 dark:text-indigo-400",
+    desc: "Structured two-minute check-ins replace long status meetings.",
+    color: "from-indigo-500 to-blue-600",
+    glow: "shadow-indigo-500/20",
+    size: "small",
   },
   {
     icon: ListTodo,
     title: "Task Board",
-    desc: "Kanban-style OJT task management built around how interns actually work. Simple, visual, and fast to use from day one.",
-    gradient: "from-emerald-500 to-teal-600",
-    light: "bg-emerald-50 dark:bg-emerald-950/40",
-    text: "text-emerald-600 dark:text-emerald-400",
+    desc: "Kanban-style OJT task management built around how interns actually work.",
+    color: "from-emerald-500 to-teal-600",
+    glow: "shadow-emerald-500/20",
+    size: "small",
   },
   {
     icon: CalendarDays,
     title: "Attendance",
-    desc: "Log your internship attendance in seconds with a single tap. Supervisors and school coordinators get real-time visibility, always.",
-    gradient: "from-amber-500 to-orange-500",
-    light: "bg-amber-50 dark:bg-amber-950/40",
-    text: "text-amber-600 dark:text-amber-400",
+    desc: "Real-time visibility for supervisors and coordinators.",
+    color: "from-amber-500 to-orange-500",
+    glow: "shadow-amber-500/20",
+    size: "small",
   },
   {
     icon: FileText,
     title: "Document Hub",
-    desc: "Upload endorsement letters, MOAs, and OJT progress reports in one secure hub. Organized and ready for review anytime.",
-    gradient: "from-rose-500 to-pink-600",
-    light: "bg-rose-50 dark:bg-rose-950/40",
-    text: "text-rose-600 dark:text-rose-400",
+    desc: "Secure central hub for MOAs, endorsement letters, and OJT reports.",
+    color: "from-rose-500 to-pink-600",
+    glow: "shadow-rose-500/20",
+    size: "small",
   },
   {
     icon: MessageSquare,
     title: "Team Chat",
-    desc: "Communicate in dedicated channels for work updates and team discussions, without flooding anyone's personal inbox.",
-    gradient: "from-cyan-500 to-sky-600",
-    light: "bg-cyan-50 dark:bg-cyan-950/40",
-    text: "text-cyan-600 dark:text-cyan-400",
+    desc: "Dedicated channels for work updates without flooding personal inboxes.",
+    color: "from-cyan-500 to-sky-600",
+    glow: "shadow-cyan-500/20",
+    size: "large",
   },
 ];
 
-const stats = [
-  { value: "...", label: "Students Onboarded" },
-  { value: "...", label: "Companies Using It" },
-  { value: "...", label: "Schools Enrolled" },
-  { value: "...", label: "Supervisor Satisfaction" },
-];
-
-
-
-
 const howItWorks = [
-  { step: "01", title: "Create Your Space", desc: "Supervisors set up a dedicated OJT workspace and share a unique join code with their interns. Ready in under two minutes.", icon: Layers },
-  { step: "02", title: "Students Join and Set Up", desc: "Interns join using the code, choose their role, and get instant access to all six modules. No training or setup required.", icon: GraduationCap },
-  { step: "03", title: "Track and Report Daily", desc: "Students log hours, submit daily scrum reports, and update their task boards. Supervisors approve everything with a single click.", icon: BarChart3 },
-  { step: "04", title: "Review and Close Out", desc: "Coordinators access complete records, verify documents, and finalize OJT evaluations without chasing anyone for updates.", icon: ShieldCheck },
+  { step: "01", title: "Create Your Space", desc: "Supervisors set up a workspace and share a unique join code. Ready in under two minutes.", icon: Layers },
+  { step: "02", title: "Students Join", desc: "Interns join with the code and get instant access to all six modules. No training needed.", icon: GraduationCap },
+  { step: "03", title: "Track Daily", desc: "Log hours, submit scrum reports, update task boards. Supervisors approve with one click.", icon: BarChart3 },
+  { step: "04", title: "Close Out OJT", desc: "Coordinators access complete records, verify documents, finalize evaluations.", icon: ShieldCheck },
 ];
+
+const roles = [
+  {
+    icon: GraduationCap,
+    title: "Students",
+    subtitle: "Interns managing daily internship tasks",
+    accent: "from-violet-500 to-purple-600",
+    border: "border-violet-500/20",
+    bg: "bg-violet-500/5",
+    items: ["Log daily OJT hours and tasks", "Submit structured daily scrum reports", "Record attendance instantly", "Upload required documents"],
+  },
+  {
+    icon: Building2,
+    title: "Company Supervisors",
+    subtitle: "Overseeing intern performance",
+    accent: "from-indigo-500 to-blue-600",
+    border: "border-indigo-500/20",
+    bg: "bg-indigo-500/5",
+    items: ["Approve time logs and scrums", "Assign tasks and track progress", "Monitor attendance in real time", "Communicate via dedicated channels"],
+  },
+  {
+    icon: BookOpen,
+    title: "School Coordinators",
+    subtitle: "Monitoring the full OJT program",
+    accent: "from-emerald-500 to-teal-600",
+    border: "border-emerald-500/20",
+    bg: "bg-emerald-500/5",
+    items: ["View all student progress at a glance", "Monitor across multiple companies", "Review and approve documents", "Track attendance program-wide"],
+  },
+];
+
+function HeroMockup() {
+  return (
+    <div className="relative w-full max-w-lg mx-auto lg:mx-0">
+      {/* Glow behind mockup */}
+      <div className="absolute inset-0 bg-violet-600/20 blur-[80px] rounded-full scale-75" />
+
+      {/* Main card */}
+      <div className="relative rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl overflow-hidden shadow-2xl shadow-black/60">
+        {/* Card header bar */}
+        <div className="flex items-center gap-1.5 px-4 py-3 border-b border-white/8 bg-white/3">
+          <div className="w-2.5 h-2.5 rounded-full bg-rose-500/70" />
+          <div className="w-2.5 h-2.5 rounded-full bg-amber-500/70" />
+          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/70" />
+          <span className="ml-3 text-xs text-white/30 font-mono">ojtask.app/dashboard</span>
+        </div>
+
+        <div className="p-5 space-y-4">
+          {/* Top stats row */}
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { label: "Hours Logged", value: "142h", color: "text-violet-400", bar: "bg-violet-500" },
+              { label: "Tasks Done", value: "38", color: "text-emerald-400", bar: "bg-emerald-500" },
+              { label: "Days Left", value: "21", color: "text-amber-400", bar: "bg-amber-500" },
+            ].map((stat) => (
+              <div key={stat.label} className="rounded-xl bg-white/5 border border-white/8 p-3">
+                <div className={`text-xl font-bold ${stat.color}`}>{stat.value}</div>
+                <div className="text-[10px] text-white/40 mt-0.5">{stat.label}</div>
+                <div className="mt-2 h-1 rounded-full bg-white/10 overflow-hidden">
+                  <div className={`h-full rounded-full ${stat.bar} opacity-70`} style={{ width: "65%" }} />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Task list */}
+          <div className="rounded-xl bg-white/5 border border-white/8 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-semibold text-white/60">Today's Tasks</span>
+              <span className="text-[10px] text-violet-400 font-medium">3 pending</span>
+            </div>
+            <div className="space-y-2">
+              {[
+                { task: "Finish API integration", done: true, tag: "Dev" },
+                { task: "Daily scrum report", done: true, tag: "Report" },
+                { task: "Submit timesheet", done: false, tag: "Admin" },
+              ].map((t, i) => (
+                <div key={i} className="flex items-center gap-2.5">
+                  <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${t.done ? "bg-emerald-500/20 border border-emerald-500/40" : "bg-white/5 border border-white/15"}`}>
+                    {t.done && <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />}
+                  </div>
+                  <span className={`text-xs flex-1 ${t.done ? "text-white/30 line-through" : "text-white/70"}`}>{t.task}</span>
+                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/8 text-white/40">{t.tag}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Attendance row */}
+          <div className="flex gap-3">
+            <div className="flex-1 rounded-xl bg-white/5 border border-white/8 p-3">
+              <div className="text-[10px] text-white/40 mb-1">Attendance</div>
+              <div className="flex gap-1">
+                {Array.from({ length: 10 }).map((_, i) => (
+                  <div key={i} className={`flex-1 h-3 rounded-sm ${i < 8 ? "bg-violet-500/60" : "bg-white/10"}`} />
+                ))}
+              </div>
+              <div className="text-[10px] text-white/40 mt-1">8 / 10 days</div>
+            </div>
+            <div className="flex-1 rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-3 flex items-center gap-2">
+              <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0" />
+              <div>
+                <div className="text-[10px] text-emerald-400 font-semibold">Approved</div>
+                <div className="text-[10px] text-white/40">by Supervisor</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Floating badge top-right */}
+      <div className="absolute -top-4 -right-4 flex items-center gap-2 px-3 py-2 rounded-xl bg-[#0D1117] border border-white/15 shadow-xl shadow-black/40 backdrop-blur-xl">
+        <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+        <span className="text-[11px] font-semibold text-white">+40% faster reporting</span>
+      </div>
+
+      {/* Floating badge bottom-left */}
+      <div className="absolute -bottom-4 -left-4 flex items-center gap-2 px-3 py-2 rounded-xl bg-[#0D1117] border border-white/15 shadow-xl shadow-black/40 backdrop-blur-xl">
+        <Award className="w-3.5 h-3.5 text-violet-400" />
+        <span className="text-[11px] font-semibold text-white">3-click approvals</span>
+      </div>
+    </div>
+  );
+}
 
 export default function LandingPage() {
-  const { theme, setTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-
-  const [statsValues, setStatsValues] = useState<Record<string, string>>({
-    "Students Onboarded": "...",
-    "Companies Using It": "...",
-    "Schools Enrolled": "...",
-    "Supervisor Satisfaction": "...",
+  const [statsValues, setStatsValues] = useState({
+    students: "...",
+    companies: "...",
+    schools: "...",
+    satisfaction: "...",
   });
 
   useEffect(() => {
@@ -96,20 +207,15 @@ export default function LandingPage() {
       .then((data) => {
         if (!mounted || !data) return;
         setStatsValues({
-          "Students Onboarded": String(data.studentsOnboarded ?? "..."),
-          "Companies Using It": String(data.companiesUsingIt ?? "..."),
-          "Schools Enrolled": String(data.schoolsEnrolled ?? "..."),
-          "Supervisor Satisfaction": String(data.supervisorSatisfaction ?? "..."),
+          students: String(data.studentsOnboarded ?? "..."),
+          companies: String(data.companiesUsingIt ?? "..."),
+          schools: String(data.schoolsEnrolled ?? "..."),
+          satisfaction: String(data.supervisorSatisfaction ?? "..."),
         });
       })
-      .catch(() => {
-        // keep placeholders
-      });
-    return () => {
-      mounted = false;
-    };
+      .catch(() => {});
+    return () => { mounted = false; };
   }, []);
-
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -119,217 +225,193 @@ export default function LandingPage() {
 
   useEffect(() => {
     document.title = "OJTask | OJT Management System for Students, Supervisors and Coordinators";
-    const setMeta = (name: string, content: string) => {
-      let el = document.querySelector(`meta[name="${name}"]`);
-      if (!el) { el = document.createElement("meta"); (el as HTMLMetaElement).name = name; document.head.appendChild(el); }
-      el.setAttribute("content", content);
-    };
-    const setOg = (prop: string, content: string) => {
-      let el = document.querySelector(`meta[property="${prop}"]`);
-      if (!el) { el = document.createElement("meta"); el.setAttribute("property", prop); document.head.appendChild(el); }
-      el.setAttribute("content", content);
-    };
-    setMeta("description", "OJTask is an OJT management system built for Philippine schools and companies. Track internship hours, attendance, daily scrums, tasks, and documents in one shared workspace for students, supervisors, and school coordinators.");
-    setMeta("keywords", "OJT management system, internship management software, on-the-job training tracker, OJT platform Philippines, student internship tracker, daily scrum for interns, OJT attendance monitoring, internship document hub");
-    setOg("og:title", "OJTask | OJT Management System for Students, Supervisors and Coordinators");
-    setOg("og:description", "Manage your entire OJT program in one place. Track hours, attendance, tasks, and daily reports without the back-and-forth. Built for Philippine schools and companies.");
-    setOg("og:type", "website");
     return () => { document.title = "OJTask"; };
   }, []);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0d0f1a] text-foreground">
+    <div className="min-h-screen text-white" style={{ background: "#080C16" }}>
+
+      {/* Dot grid background */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)",
+          backgroundSize: "32px 32px",
+        }}
+      />
 
       {/* ── NAVBAR ─────────────────────────────────────────── */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-white/80 dark:bg-[#0d0f1a]/80 backdrop-blur-xl border-b border-black/8 dark:border-white/8 shadow-sm"
-          : "bg-transparent"
+        scrolled ? "bg-[#080C16]/80 backdrop-blur-xl border-b border-white/8" : "bg-transparent"
       }`}>
-        <div className="flex justify-center px-5 h-16">
-          <div className="w-full max-w-7xl flex items-center gap-6">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 font-display font-bold text-lg text-foreground shrink-0">
-            <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-purple-700 rounded-lg flex items-center justify-center shadow-sm shadow-violet-500/30">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center gap-6">
+          <Link href="/" className="flex items-center gap-2.5 font-bold text-lg text-white shrink-0">
+            <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-700 rounded-lg flex items-center justify-center shadow-lg shadow-violet-500/40">
               <Zap className="w-4 h-4 text-white" />
             </div>
-            <span>OJTask</span>
+            <span className="tracking-tight">OJTask</span>
           </Link>
 
           <div className="flex-1" />
 
-          {/* Desktop nav links removed (landing page is minimal) */}
-          <div className="flex-0" />
-
-
-          <div className="flex-1" />
-
-          {/* Controls */}
-          <div className="flex items-center gap-2">
-            <Link href="/auth" className="hidden md:block">
-              <Button variant="ghost" size="sm" className="font-medium text-muted-foreground hover:text-foreground" data-testid="link-nav-signin">
+          <div className="hidden md:flex items-center gap-2">
+            <Link href="/auth">
+              <Button variant="ghost" size="sm" className="text-white/60 hover:text-white hover:bg-white/8 font-medium">
                 Sign In
               </Button>
             </Link>
-            <Link href="/auth" className="hidden md:block">
-              <Button
-                size="sm"
-                className="font-semibold bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white shadow-sm shadow-violet-500/30 border-0"
-                data-testid="link-nav-getstarted"
-              >
+            <Link href="/auth">
+              <Button size="sm" className="font-semibold bg-violet-600 hover:bg-violet-500 text-white border-0 shadow-lg shadow-violet-500/30 px-5" data-testid="link-nav-getstarted">
                 Get Started
-                <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
               </Button>
             </Link>
-            {/* Mobile hamburger */}
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="md:hidden p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
-            >
-              {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
           </div>
-        </div>
+
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="md:hidden p-2 rounded-lg text-white/50 hover:text-white hover:bg-white/8 transition-colors"
+          >
+            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
 
-          {/* Mobile menu (minimal) */}
         {menuOpen && (
-          <div className="md:hidden bg-white dark:bg-[#0d0f1a] border-t border-border/50 px-5 py-4 flex flex-col gap-3">
-            <div className="flex gap-2 pt-2 border-t border-border/50">
-
-              <Link href="/auth" className="flex-1">
-                <Button variant="outline" className="w-full text-sm">Sign In</Button>
-              </Link>
-              <Link href="/auth" className="flex-1">
-                <Button className="w-full text-sm bg-gradient-to-r from-violet-600 to-purple-600 text-white border-0">Get Started</Button>
-              </Link>
-            </div>
+          <div className="md:hidden bg-[#080C16]/95 backdrop-blur-xl border-t border-white/8 px-6 py-4 flex gap-3">
+            <Link href="/auth" className="flex-1">
+              <Button variant="outline" className="w-full border-white/15 text-white/80 bg-transparent hover:bg-white/8">Sign In</Button>
+            </Link>
+            <Link href="/auth" className="flex-1">
+              <Button className="w-full bg-violet-600 hover:bg-violet-500 text-white border-0">Get Started</Button>
+            </Link>
           </div>
         )}
       </nav>
 
       {/* ── HERO ───────────────────────────────────────────── */}
-      <section className="relative overflow-hidden pt-36 pb-28 px-5">
-        {/* Background blobs */}
-        <div className="absolute -top-32 -right-40 w-[600px] h-[600px] rounded-full bg-violet-500/10 dark:bg-violet-500/5 blur-[100px] pointer-events-none" />
-        <div className="absolute top-40 -left-32 w-[400px] h-[400px] rounded-full bg-amber-400/10 dark:bg-amber-400/5 blur-[80px] pointer-events-none" />
+      <section className="relative pt-32 pb-24 px-6 overflow-hidden">
+        {/* Radial glow top-left */}
+        <div className="absolute top-0 left-1/4 w-[800px] h-[600px] rounded-full bg-violet-600/8 blur-[120px] pointer-events-none -translate-x-1/2" />
+        <div className="absolute top-1/3 right-0 w-[400px] h-[400px] rounded-full bg-indigo-600/6 blur-[100px] pointer-events-none" />
 
-        <div className="max-w-4xl mx-auto text-center relative">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-violet-200 dark:border-violet-800/50 bg-violet-50 dark:bg-violet-950/50 text-violet-700 dark:text-violet-300 text-sm font-medium mb-8">
-            <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
-            The OJT Management System Built for the Philippines
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            {/* Left copy */}
+            <div>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-300 text-sm font-medium mb-8">
+                <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
+                Built for OJT in the Philippines
+              </div>
+
+              <h1 className="text-5xl md:text-6xl lg:text-[4rem] font-extrabold tracking-tight leading-[1.06] mb-6">
+                Your Internship,{" "}
+                <span className="bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
+                  Finally Organized
+                </span>
+              </h1>
+
+              <p className="text-lg text-white/50 leading-relaxed mb-10 max-w-xl">
+                OJTask brings students, supervisors, and school coordinators into one shared OJT workspace — so daily reports, time logs, and document submissions happen without the constant back-and-forth.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-3.5 mb-10">
+                <Link href="/auth">
+                  <Button
+                    size="lg"
+                    className="font-bold px-8 h-12 bg-violet-600 hover:bg-violet-500 text-white border-0 shadow-xl shadow-violet-500/30 hover:shadow-violet-500/50 transition-all hover:-translate-y-0.5"
+                    data-testid="button-hero-getstarted"
+                  >
+                    Try It Free
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </Link>
+                <Link href="/auth">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="font-semibold px-8 h-12 border-white/15 text-white/70 bg-transparent hover:bg-white/8 hover:text-white hover:border-white/25"
+                    data-testid="button-hero-signin"
+                  >
+                    Sign In to Your Space
+                  </Button>
+                </Link>
+              </div>
+
+              {/* Trust indicators */}
+              <div className="flex items-center gap-5 text-sm text-white/35">
+                <div className="flex items-center gap-1.5">
+                  <div className="flex">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                    ))}
+                  </div>
+                  <span>Loved by students</span>
+                </div>
+                <div className="w-px h-4 bg-white/15" />
+                <span>No credit card needed</span>
+                <div className="w-px h-4 bg-white/15" />
+                <span>Free to start</span>
+              </div>
+            </div>
+
+            {/* Right — product mockup */}
+            <div className="relative flex justify-center lg:justify-end">
+              <HeroMockup />
+            </div>
           </div>
-
-          <h1 className="text-5xl md:text-6xl lg:text-[4.5rem] font-display font-extrabold tracking-tight leading-[1.08] mb-6 text-slate-900 dark:text-white">
-            Your Internship,{" "}
-            <span className="bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-500 bg-clip-text text-transparent dark:from-violet-400 dark:via-purple-400 dark:to-indigo-300">
-              Finally Organized
-            </span>
-          </h1>
-
-          <p className="text-lg md:text-xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-            OJTask brings students, supervisors, and school coordinators into one shared OJT workspace, so daily reports, time logs, and document submissions happen without the constant back-and-forth.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-3.5 justify-center">
-            <Link href="/auth">
-              <Button
-                size="lg"
-                className="font-bold text-base px-8 h-12 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white shadow-lg shadow-violet-500/30 border-0 transition-all hover:shadow-xl hover:shadow-violet-500/40"
-                data-testid="button-hero-getstarted"
-              >
-                Try It Free
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </Link>
-            <Link href="/auth">
-              <Button
-                size="lg"
-                variant="outline"
-                className="font-semibold text-base px-8 h-12 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
-                data-testid="button-hero-signin"
-              >
-                Sign In to Your Space
-              </Button>
-            </Link>
-          </div>
-
-          <p className="mt-5 text-xs text-muted-foreground">
-            Designed for OJT supervisors and students. Log in and create your space today.
-          </p>
-
         </div>
       </section>
 
       {/* ── STATS STRIP ────────────────────────────────────── */}
-      <section className="border-y border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40 py-10">
-        <div className="max-w-5xl mx-auto px-5 grid grid-cols-2 md:grid-cols-4 gap-6">
-{stats.map((s) => (
+      <section className="border-y border-white/6 bg-white/2 backdrop-blur-sm py-12 px-6">
+        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
+          {[
+            { value: statsValues.students, label: "Students Onboarded" },
+            { value: statsValues.companies, label: "Companies Using It" },
+            { value: statsValues.schools, label: "Schools Enrolled" },
+            { value: statsValues.satisfaction, label: "Supervisor Satisfaction" },
+          ].map((s) => (
             <div key={s.label} className="text-center" data-testid={`stat-${s.label.toLowerCase().replace(/\s+/g, '-')}`}>
-              <div className="text-3xl md:text-4xl font-display font-extrabold bg-gradient-to-r from-violet-600 to-purple-500 bg-clip-text text-transparent dark:from-violet-400 dark:to-purple-300 mb-1">
-                {statsValues[s.label] ?? s.value}
+              <div className="text-4xl font-extrabold bg-gradient-to-r from-violet-400 to-purple-300 bg-clip-text text-transparent mb-1.5">
+                {s.value}
               </div>
-              <div className="text-sm text-muted-foreground font-medium">{s.label}</div>
+              <div className="text-sm text-white/40 font-medium">{s.label}</div>
             </div>
           ))}
         </div>
       </section>
 
       {/* ── WHO IS IT FOR ──────────────────────────────────── */}
-      <section className="py-24 px-5">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-14">
-            <Badge variant="outline" className="mb-4 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-800 bg-violet-50 dark:bg-violet-950/40">Who Uses OJTask</Badge>
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4 text-slate-900 dark:text-white">One OJT Platform Built for Everyone Involved</h2>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">Students, supervisors, and school coordinators each get a tailored view with exactly the tools they need.</p>
+      <section className="py-28 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-violet-900/3 to-transparent pointer-events-none" />
+        <div className="max-w-7xl mx-auto relative">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/5 text-white/50 text-xs font-semibold uppercase tracking-widest mb-5">
+              Who Uses OJTask
+            </div>
+            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-5">
+              One Platform.{" "}
+              <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">Everyone Covered.</span>
+            </h2>
+            <p className="text-white/40 text-lg max-w-xl mx-auto">Students, supervisors, and coordinators each get a tailored view with exactly the tools they need.</p>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                icon: GraduationCap,
-                title: "Students",
-                subtitle: "OJT students managing their daily internship tasks",
-                bg: "bg-violet-50 dark:bg-violet-950/30",
-                border: "border-violet-100 dark:border-violet-900/50",
-                iconBg: "bg-violet-100 dark:bg-violet-900/50",
-                iconColor: "text-violet-600 dark:text-violet-400",
-                items: ["Log daily OJT hours and tasks", "Submit structured daily scrum reports", "Record attendance status instantly", "Upload required internship documents"]
-              },
-              {
-                icon: Building2,
-                title: "Company Supervisors",
-                subtitle: "Company supervisors overseeing intern performance",
-                bg: "bg-indigo-50 dark:bg-indigo-950/30",
-                border: "border-indigo-100 dark:border-indigo-900/50",
-                iconBg: "bg-indigo-100 dark:bg-indigo-900/50",
-                iconColor: "text-indigo-600 dark:text-indigo-400",
-                items: ["Approve intern time logs and scrums", "Assign tasks and track progress", "Monitor intern attendance in real time", "Communicate via dedicated team channels"]
-              },
-              {
-                icon: BookOpen,
-                title: "School Coordinators",
-                subtitle: "School coordinators monitoring the full OJT program",
-                bg: "bg-emerald-50 dark:bg-emerald-950/30",
-                border: "border-emerald-100 dark:border-emerald-900/50",
-                iconBg: "bg-emerald-100 dark:bg-emerald-900/50",
-                iconColor: "text-emerald-600 dark:text-emerald-400",
-                items: ["View all student progress at a glance", "Monitor interns across multiple companies", "Review and approve submitted documents", "Track attendance across the entire program"]
-              },
-            ].map((role) => (
+
+          <div className="grid md:grid-cols-3 gap-5">
+            {roles.map((role) => (
               <div
                 key={role.title}
-                className={`rounded-2xl border ${role.border} ${role.bg} p-7 hover:shadow-md transition-shadow`}
+                className={`rounded-2xl border ${role.border} ${role.bg} p-7 backdrop-blur-sm hover:bg-white/5 transition-all duration-300 group`}
                 data-testid={`card-role-${role.title.split(' ')[0].toLowerCase()}`}
               >
-                <div className={`w-12 h-12 ${role.iconBg} rounded-xl flex items-center justify-center mb-4`}>
-                  <role.icon className={`w-6 h-6 ${role.iconColor}`} />
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${role.accent} flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform`}>
+                  <role.icon className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-lg font-display font-bold mb-0.5 text-slate-900 dark:text-white">{role.title}</h3>
-                <p className="text-sm text-muted-foreground mb-5">{role.subtitle}</p>
-                <ul className="space-y-2.5">
+                <h3 className="text-lg font-bold mb-1 text-white">{role.title}</h3>
+                <p className="text-sm text-white/40 mb-6">{role.subtitle}</p>
+                <ul className="space-y-3">
                   {role.items.map((item) => (
-                    <li key={item} className="flex items-center gap-2.5 text-sm text-slate-600 dark:text-slate-300">
-                      <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0" />
+                    <li key={item} className="flex items-start gap-2.5 text-sm text-white/60">
+                      <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                       {item}
                     </li>
                   ))}
@@ -340,58 +422,127 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── FEATURES ───────────────────────────────────────── */}
-      <section id="features" className="py-24 px-5 bg-slate-50/60 dark:bg-slate-900/30">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-14">
-            <Badge variant="outline" className="mb-4 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-800 bg-violet-50 dark:bg-violet-950/40">Six Core Modules</Badge>
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4 text-slate-900 dark:text-white">Everything Your OJT Program Needs in One Place</h2>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">Six focused modules that cover the complete internship workflow. No bloat, no steep learning curve, just tools that work.</p>
+      {/* ── FEATURES (BENTO GRID) ───────────────────────────── */}
+      <section id="features" className="py-28 px-6 border-t border-white/6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/5 text-white/50 text-xs font-semibold uppercase tracking-widest mb-5">
+              Six Core Modules
+            </div>
+            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-5">
+              Everything Your OJT{" "}
+              <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">Program Needs</span>
+            </h2>
+            <p className="text-white/40 text-lg max-w-xl mx-auto">Six focused modules that cover the complete internship workflow. No bloat, just tools that work.</p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {features.map((f) => (
+
+          {/* Bento grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Large feature — Time Tracking */}
+            <div
+              className="lg:col-span-2 group rounded-2xl border border-white/8 bg-white/3 hover:bg-white/5 hover:border-violet-500/30 p-7 transition-all duration-300 backdrop-blur-sm"
+              data-testid="card-feature-time-tracking"
+            >
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/30 shrink-0 group-hover:scale-110 transition-transform">
+                  <Clock className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white mb-1">Time Tracking</h3>
+                  <p className="text-sm text-white/45 leading-relaxed">Accurately log your daily OJT hours and get instant supervisor sign-off. No emails, no spreadsheets, no delays. Every hour is verifiable and audit-ready.</p>
+                </div>
+              </div>
+              {/* Mini bar chart decoration */}
+              <div className="mt-4 flex items-end gap-1.5 h-10 px-1">
+                {[6,8,5,9,7,10,8,6,9,7,8,10].map((h, i) => (
+                  <div
+                    key={i}
+                    className="flex-1 rounded-t bg-gradient-to-t from-violet-600/60 to-violet-400/30"
+                    style={{ height: `${h * 10}%` }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Small features */}
+            {features.slice(1, 5).map((f) => (
               <div
                 key={f.title}
-                className="group p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/50 bg-white dark:bg-slate-900/60 hover:shadow-lg hover:border-violet-200 dark:hover:border-violet-800/50 transition-all duration-200"
+                className="group rounded-2xl border border-white/8 bg-white/3 hover:bg-white/5 p-6 transition-all duration-300 backdrop-blur-sm hover:border-white/15"
                 data-testid={`card-feature-${f.title.toLowerCase().replace(/\s+/g, '-')}`}
               >
-                <div className={`w-11 h-11 ${f.light} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                  <f.icon className={`w-5 h-5 ${f.text}`} />
+                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${f.color} flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform`}>
+                  <f.icon className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="text-base font-semibold mb-2 text-slate-900 dark:text-white">{f.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
+                <h3 className="text-base font-bold text-white mb-1.5">{f.title}</h3>
+                <p className="text-sm text-white/40 leading-relaxed">{f.desc}</p>
               </div>
             ))}
+
+            {/* Large feature — Team Chat */}
+            <div
+              className="lg:col-span-2 group rounded-2xl border border-white/8 bg-white/3 hover:bg-white/5 hover:border-cyan-500/30 p-7 transition-all duration-300 backdrop-blur-sm"
+              data-testid="card-feature-team-chat"
+            >
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-sky-600 flex items-center justify-center shadow-lg shadow-cyan-500/30 shrink-0 group-hover:scale-110 transition-transform">
+                  <MessageSquare className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white mb-1">Team Chat</h3>
+                  <p className="text-sm text-white/45 leading-relaxed">Communicate in dedicated channels for work updates and team discussions, without flooding anyone's personal inbox. Real-time messaging with file sharing built in.</p>
+                </div>
+              </div>
+              {/* Simulated chat bubbles */}
+              <div className="mt-5 space-y-2">
+                {[
+                  { name: "Supervisor", msg: "Great progress on the API module!", align: "left", color: "bg-white/8" },
+                  { name: "You", msg: "Thanks! Submitting time log now 👍", align: "right", color: "bg-cyan-500/20" },
+                ].map((m, i) => (
+                  <div key={i} className={`flex ${m.align === "right" ? "justify-end" : "justify-start"}`}>
+                    <div className={`${m.color} border border-white/8 rounded-2xl px-3.5 py-2 max-w-xs`}>
+                      <div className="text-[10px] text-white/30 mb-0.5">{m.name}</div>
+                      <div className="text-xs text-white/70">{m.msg}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ── HOW IT WORKS ───────────────────────────────────── */}
-      <section id="how-it-works" className="py-24 px-5">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-14">
-            <Badge variant="outline" className="mb-4 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-800 bg-violet-50 dark:bg-violet-950/40">Getting Started</Badge>
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4 text-slate-900 dark:text-white">Up and Running in Under Five Minutes</h2>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">No IT setup required. No lengthy onboarding sessions. Just create your space and start tracking.</p>
+      <section id="how-it-works" className="py-28 px-6 border-t border-white/6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/5 text-white/50 text-xs font-semibold uppercase tracking-widest mb-5">
+              Getting Started
+            </div>
+            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-5">
+              Up and Running in{" "}
+              <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">Five Minutes</span>
+            </h2>
+            <p className="text-white/40 text-lg max-w-xl mx-auto">No IT setup. No lengthy onboarding. Just create your space and start tracking.</p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             {howItWorks.map((step, i) => (
               <div
                 key={step.step}
-                className="relative bg-white dark:bg-slate-900/60 rounded-2xl border border-slate-200/80 dark:border-slate-700/50 p-6 shadow-sm hover:shadow-md transition-shadow"
+                className="relative group rounded-2xl border border-white/8 bg-white/3 hover:bg-white/5 p-6 transition-all duration-300 backdrop-blur-sm"
                 data-testid={`card-step-${step.step}`}
               >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-sm shadow-violet-500/30">
-                    <step.icon className="w-4 h-4 text-white" />
-                  </div>
-                  <span className="text-4xl font-display font-extrabold text-slate-100 dark:text-slate-800 select-none">{step.step}</span>
+                {/* Step number as watermark */}
+                <div className="absolute top-4 right-5 text-6xl font-black text-white/4 select-none leading-none">{step.step}</div>
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mb-5 shadow-lg shadow-violet-500/30 group-hover:scale-110 transition-transform">
+                  <step.icon className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="font-display font-semibold text-slate-900 dark:text-white mb-2">{step.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
+                <h3 className="font-bold text-white mb-2">{step.title}</h3>
+                <p className="text-sm text-white/40 leading-relaxed">{step.desc}</p>
                 {i < howItWorks.length - 1 && (
-                  <div className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
-                    <ArrowRight className="w-5 h-5 text-slate-300 dark:text-slate-600" />
+                  <div className="hidden lg:block absolute -right-2.5 top-1/2 -translate-y-1/2 z-10">
+                    <ArrowRight className="w-5 h-5 text-white/20" />
                   </div>
                 )}
               </div>
@@ -400,100 +551,87 @@ export default function LandingPage() {
         </div>
       </section>
 
-
-
       {/* ── CTA ────────────────────────────────────────────── */}
-      <section className="py-28 px-5">
+      <section className="py-28 px-6">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 p-14 shadow-2xl shadow-violet-500/30">
-            {/* Decorative blobs inside CTA */}
-            <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-white/10 blur-2xl pointer-events-none" />
-            <div className="absolute -bottom-10 -left-10 w-48 h-48 rounded-full bg-indigo-400/20 blur-2xl pointer-events-none" />
-            <div className="relative">
-              <h2 className="text-3xl md:text-4xl font-display font-extrabold text-white mb-5 leading-tight">
-                Your OJT Program Deserves Better Than Group Chats
-              </h2>
-              <p className="text-violet-200 text-lg mb-10 max-w-xl mx-auto">
-                Give interns a dedicated space to log their work and give supervisors real-time visibility that needs zero follow-up.
-              </p>
-              <Link href="/auth">
-                <Button
-                  size="lg"
-                  className="font-bold text-base px-10 h-12 bg-white text-violet-700 hover:bg-violet-50 shadow-xl transition-all hover:-translate-y-0.5 hover:shadow-2xl border-0"
-                  data-testid="button-cta-getstarted"
-                >
-                  Get Started Free
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </Link>
-              <p className="mt-5 text-sm text-violet-300">No credit card needed · Set up in under 5 minutes</p>
+          <div className="relative rounded-3xl overflow-hidden p-[1px]" style={{
+            background: "linear-gradient(135deg, rgba(124,58,237,0.6), rgba(99,102,241,0.2), rgba(124,58,237,0.05))"
+          }}>
+            <div className="relative rounded-3xl bg-gradient-to-br from-[#0F0A1E] to-[#0A0C1A] p-14">
+              <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-64 h-64 bg-violet-600/15 rounded-full blur-[60px] pointer-events-none" />
+              <div className="relative">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-300 text-xs font-semibold uppercase tracking-widest mb-6">
+                  Start for Free
+                </div>
+                <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-5 tracking-tight leading-tight">
+                  Your OJT Program Deserves Better Than Group Chats
+                </h2>
+                <p className="text-white/45 text-lg mb-10 max-w-xl mx-auto leading-relaxed">
+                  Give interns a dedicated space to log their work and give supervisors real-time visibility — zero follow-up required.
+                </p>
+                <Link href="/auth">
+                  <Button
+                    size="lg"
+                    className="font-bold px-10 h-12 bg-violet-600 hover:bg-violet-500 text-white border-0 shadow-2xl shadow-violet-500/40 hover:shadow-violet-500/60 transition-all hover:-translate-y-0.5"
+                    data-testid="button-cta-getstarted"
+                  >
+                    Get Started Free
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                </Link>
+                <p className="mt-5 text-sm text-white/25">No credit card needed · Set up in under 5 minutes</p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ── FOOTER ─────────────────────────────────────────── */}
-      <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0a0b14]">
-        <div className="max-w-7xl mx-auto px-5 py-14 grid grid-cols-2 md:grid-cols-4 gap-10">
-          {/* Brand col */}
-          <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 font-display font-bold text-lg text-foreground mb-4">
-              <div className="w-7 h-7 bg-gradient-to-br from-violet-600 to-purple-700 rounded-md flex items-center justify-center">
-                <Zap className="w-3.5 h-3.5 text-white" />
-              </div>
-              OJTask
-            </Link>
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-              The OJT management platform built for Philippine schools and companies. Reduce paperwork, boost visibility, and keep every internship on track.
-            </p>
-          </div>
-
-          {/* Product */}
-          <div>
-            <h4 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">Product</h4>
-            <ul className="space-y-3 text-sm text-slate-500 dark:text-slate-400">
-              <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-foreground transition-colors">Features</a></li>
-              <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-foreground transition-colors">How It Works</a></li>
-              <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-foreground transition-colors">Testimonials</a></li>
-
-            </ul>
-          </div>
-
-          {/* Modules */}
-          <div>
-            <h4 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">Modules</h4>
-            <ul className="space-y-3 text-sm text-slate-500 dark:text-slate-400">
-              <li><span>Time Tracking</span></li>
-              <li><span>Daily Scrum</span></li>
-              <li><span>Task Board</span></li>
-              <li><span>Attendance</span></li>
-              <li><span>Documents</span></li>
-            </ul>
-          </div>
-
-          {/* Account */}
-          <div>
-            <h4 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">Account</h4>
-            <ul className="space-y-3 text-sm text-slate-500 dark:text-slate-400">
-              <li><Link href="/auth" className="hover:text-foreground transition-colors" data-testid="link-footer-signin">Sign In</Link></li>
-              <li><Link href="/auth" className="hover:text-foreground transition-colors" data-testid="link-footer-register">Create Account</Link></li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="border-t border-slate-100 dark:border-slate-800">
-          <div className="max-w-7xl mx-auto px-5 py-5 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
-            <div>
-              <span>© {new Date().getFullYear()} OJTask. All rights reserved.</span>
+      <footer className="border-t border-white/6 bg-[#05080F]">
+        <div className="max-w-7xl mx-auto px-6 py-14">
+          <div className="grid md:grid-cols-4 gap-10 mb-12">
+            {/* Brand */}
+            <div className="md:col-span-1">
+              <Link href="/" className="flex items-center gap-2 font-bold text-lg text-white mb-4">
+                <div className="w-7 h-7 bg-gradient-to-br from-violet-500 to-purple-700 rounded-md flex items-center justify-center">
+                  <Zap className="w-3.5 h-3.5 text-white" />
+                </div>
+                OJTask
+              </Link>
+              <p className="text-sm text-white/30 leading-relaxed">The OJT management system built for Philippine schools and companies.</p>
             </div>
-            <button
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors flex items-center gap-2"
-              aria-label="Toggle dark mode"
-            >
-              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-              <span className="text-xs hidden sm:inline">{theme === "dark" ? "Light" : "Dark"}</span>
-            </button>
+
+            {/* Links */}
+            {[
+              {
+                title: "Product",
+                links: ["Time Tracking", "Daily Scrum", "Task Board", "Documents"],
+              },
+              {
+                title: "For",
+                links: ["Students", "Supervisors", "Coordinators", "Schools"],
+              },
+              {
+                title: "Account",
+                links: ["Sign In", "Get Started", "Forgot Password"],
+              },
+            ].map((col) => (
+              <div key={col.title}>
+                <div className="text-xs font-semibold uppercase tracking-widest text-white/30 mb-4">{col.title}</div>
+                <ul className="space-y-2.5">
+                  {col.links.map((link) => (
+                    <li key={link}>
+                      <Link href="/auth" className="text-sm text-white/45 hover:text-white transition-colors">{link}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          <div className="border-t border-white/6 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-white/25">© {new Date().getFullYear()} OJTask. All rights reserved.</p>
+            <p className="text-sm text-white/25">Built for OJT students and supervisors in the Philippines.</p>
           </div>
         </div>
       </footer>
