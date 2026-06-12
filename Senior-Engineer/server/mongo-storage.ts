@@ -201,6 +201,15 @@ export class MongoStorage implements IStorage {
     return spaces.map(s => this.toSpace(s));
   }
 
+  async updateSpaceMemberRole(spaceId: number, userId: number, role: string): Promise<SpaceMember | undefined> {
+    const result = await this.db.collection('spaceMembers').findOneAndUpdate(
+      { spaceId, userId },
+      { $set: { role } },
+      { returnDocument: 'after' }
+    );
+    return result ? this.toSpaceMember(result) : undefined;
+  }
+
   async leaveSpace(spaceId: number, userId: number): Promise<void> {
     // Remove space member
     await this.db.collection('spaceMembers').deleteMany({ spaceId: spaceId, userId: userId });

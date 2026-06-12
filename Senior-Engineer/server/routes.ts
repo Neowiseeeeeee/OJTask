@@ -1114,6 +1114,65 @@ export async function registerRoutes(
     res.json(membersWithUsers);
   });
 
+  // Remove a member from a space (supervisor/owner only)
+  app.delete('/api/spaces/:spaceId/members/:userId', requireAuth, requireSpaceMembership, async (req, res) => {
+    try {
+      const spaceId = Number(req.params.spaceId);
+      const targetUserId = Number(req.params.userId);
+      const requesterId = (req as any).session.userId;
+      const requesterRole = (req as any).userRole;
+
+      const space = await getStorage().getSpace(spaceId);
+      if (!space) return res.status(404).json({ message: "Space not found" });
+
+      if (requesterRole !== 'supervisor' && requesterRole !== 'owner' && space.ownerId !== requesterId) {
+        return res.status(403).json({ message: "Only supervisors can remove members" });
+      }
+      if (targetUserId === requesterId) {
+        return res.status(400).json({ message: "You cannot remove yourself" });
+      }
+      if (targetUserId === space.ownerId) {
+        return res.status(400).json({ message: "Cannot remove the space owner" });
+      }
+
+      await getStorage().leaveSpace(spaceId, targetUserId);
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ message: "Internal error" });
+    }
+  });
+
+  // Update a member's role (supervisor/owner only)
+  app.patch('/api/spaces/:spaceId/members/:userId/role', requireAuth, requireSpaceMembership, async (req, res) => {
+    try {
+      const spaceId = Number(req.params.spaceId);
+      const targetUserId = Number(req.params.userId);
+      const requesterId = (req as any).session.userId;
+      const requesterRole = (req as any).userRole;
+      const { role } = req.body;
+
+      if (!['student', 'supervisor', 'school'].includes(role)) {
+        return res.status(400).json({ message: "Invalid role" });
+      }
+
+      const space = await getStorage().getSpace(spaceId);
+      if (!space) return res.status(404).json({ message: "Space not found" });
+
+      if (requesterRole !== 'supervisor' && requesterRole !== 'owner' && space.ownerId !== requesterId) {
+        return res.status(403).json({ message: "Only supervisors can change roles" });
+      }
+      if (targetUserId === space.ownerId) {
+        return res.status(400).json({ message: "Cannot change the space owner's role" });
+      }
+
+      const updated = await getStorage().updateSpaceMemberRole(spaceId, targetUserId, role);
+      if (!updated) return res.status(404).json({ message: "Member not found" });
+      res.json(updated);
+    } catch (err) {
+      res.status(500).json({ message: "Internal error" });
+    }
+  });
+
   // Groups
   app.get(api.groups.list.path, async (req, res) => {
     const groups = await getStorage().getGroups(Number(req.params.spaceId));

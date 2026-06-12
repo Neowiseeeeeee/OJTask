@@ -108,7 +108,11 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const navItems = user?.role === "admin"
     ? systemAdminNavItems
     : ["supervisor", "school"].includes(user?.role || "")
-      ? [...regularNavItems, { title: "Space Admin", href: "/space-admin", icon: Settings, badge: 0 }]
+      ? [
+          ...regularNavItems,
+          { title: "Members", href: "/members", icon: Users, badge: 0 },
+          { title: "Space Admin", href: "/space-admin", icon: Settings, badge: 0 },
+        ]
       : regularNavItems;
 
   return (
@@ -146,8 +150,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
                         <Link href={item.href} className="flex items-center gap-3 px-3 py-2 rounded-lg font-medium">
                           <item.icon className="w-5 h-5 shrink-0" />
                           <span className="flex-1">{item.title}</span>
-                          {'badge' in item && item.badge > 0 && (
-                            <NotificationBadge count={item.badge} />
+                          {'badge' in item && (item.badge as number) > 0 && (
+                            <NotificationBadge count={item.badge as number} />
                           )}
                         </Link>
                       </SidebarMenuButton>

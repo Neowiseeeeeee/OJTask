@@ -31,6 +31,7 @@ import AdminSettings from "@/pages/admin/settings";
 import UserProfile from "@/pages/user-profile";
 import UserSettings from "@/pages/user-settings";
 import SpaceAdminPage from "@/pages/space-admin";
+import MemberManagementPage from "@/pages/member-management";
 import { UserProfileModalProvider } from "@/hooks/use-user-profile-modal";
 
 function ProtectedRoute({ component: Component, adminOnly, systemAdminOnly }: { component: React.ComponentType; adminOnly?: boolean; systemAdminOnly?: boolean }) {
@@ -115,6 +116,9 @@ function Router() {
       </Route>
       <Route path="/space-admin">
         <AppLayout><ProtectedRoute component={SpaceAdminPage} adminOnly /></AppLayout>
+      </Route>
+      <Route path="/members">
+        <AppLayout><ProtectedRoute component={MemberManagementPage} adminOnly /></AppLayout>
       </Route>
       <Route path="/system-admin">
         <AppLayout><ProtectedRoute component={AdminOverview} systemAdminOnly /></AppLayout>

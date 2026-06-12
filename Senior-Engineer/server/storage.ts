@@ -23,6 +23,7 @@ export interface IStorage {
   getSpaceMembers(spaceId: number): Promise<SpaceMember[]>;
   getUserSpaces(userId: number): Promise<Space[]>;
   leaveSpace(spaceId: number, userId: number): Promise<void>;
+  updateSpaceMemberRole(spaceId: number, userId: number, role: string): Promise<SpaceMember | undefined>;
 
   // Groups
   getGroups(spaceId: number): Promise<Group[]>;
@@ -192,6 +193,15 @@ export class MemStorage implements IStorage {
   async getUserSpaces(userId: number): Promise<Space[]> {
     const members = Array.from(this.spaceMembers.values()).filter(m => m.userId === userId);
     return Array.from(this.spaces.values()).filter(s => members.some(m => m.spaceId === s.id) || s.ownerId === userId);
+  }
+
+  async updateSpaceMemberRole(spaceId: number, userId: number, role: string): Promise<SpaceMember | undefined> {
+    const members = Array.from(this.spaceMembers.values());
+    const member = members.find(m => m.spaceId === spaceId && m.userId === userId);
+    if (!member) return undefined;
+    const updated = { ...member, role };
+    this.spaceMembers.set(member.id, updated);
+    return updated;
   }
 
   async leaveSpace(spaceId: number, userId: number): Promise<void> {
