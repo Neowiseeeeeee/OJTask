@@ -1,6 +1,4 @@
-import { config } from 'dotenv';
 import { MongoClient, Db } from 'mongodb';
-config({ override: true });
 
 let db: Db | null = null;
 let client: MongoClient | null = null;
@@ -22,9 +20,10 @@ export const connectDB = async (): Promise<Db> => {
     }
   }
 
-  const mongoUri = process.env.DATABASE_URL;
+  // Use MONGODB_URI — DATABASE_URL is reserved by Replit for its built-in PostgreSQL
+  const mongoUri = process.env.MONGODB_URI;
   if (!mongoUri) {
-    throw new Error('DATABASE_URL environment variable is not set');
+    throw new Error('MONGODB_URI environment variable is not set. Add it as a Replit Secret.');
   }
 
   console.log('🔗 Connecting to MongoDB Atlas...');
@@ -101,9 +100,9 @@ export const connectDB = async (): Promise<Db> => {
         // Provide helpful troubleshooting information
         console.error('\n🔧 TROUBLESHOOTING:');
         console.error('1. Check your internet connection');
-        console.error('2. Verify DATABASE_URL in .env file');
+        console.error('2. Verify MONGODB_URI is set as a Replit Secret');
         console.error('3. Ensure MongoDB Atlas cluster is running');
-        console.error('4. Check if your IP is whitelisted in Atlas');
+        console.error('4. Check if your IP is whitelisted in Atlas (or set to allow all: 0.0.0.0/0)');
         console.error('5. Verify Atlas user credentials');
         
         throw new Error(`Failed to connect to MongoDB Atlas after ${MAX_RETRIES} attempts. Please check your configuration and network connectivity.`);

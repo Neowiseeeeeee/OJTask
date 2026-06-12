@@ -5,8 +5,8 @@ import { createServer } from "http";
 import { connectDB } from "./db";
 import { config } from "dotenv";
 
-// Load environment variables (override any Replit-injected vars so .env takes precedence)
-config({ override: true });
+// Load environment variables — Replit secrets take precedence; .env is only a local fallback
+config();
 
 import path from "path";
 import { fileURLToPath } from "url";
