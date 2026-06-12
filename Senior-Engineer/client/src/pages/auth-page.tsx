@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Zap, Loader2, Eye, EyeOff, Check, X, AlertCircle } from "lucide-react";
+import { Zap, Loader2, Eye, EyeOff, Check, X, AlertCircle, ArrowLeft } from "lucide-react";
 import { useLocation } from "wouter";
 
 function PasswordStrengthIndicator({ password }: { password: string }) {
@@ -132,6 +132,17 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-background p-4">
       <div className="w-full max-w-md">
+        {/* Back to Home */}
+        <div className="mb-6">
+          <button
+            onClick={() => setLocation("/")}
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group"
+          >
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+            Back to Home
+          </button>
+        </div>
+
         {/* Header */}
         <div className="flex flex-col items-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-primary/30">
