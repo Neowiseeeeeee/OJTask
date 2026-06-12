@@ -12,6 +12,7 @@ import NotFound from "@/pages/not-found";
 // Pages
 import LandingPage from "@/pages/landing-page";
 import AuthPage from "@/pages/auth-page";
+import ForgotPasswordPage from "@/pages/forgot-password-page";
 import Dashboard from "@/pages/dashboard";
 import TasksPage from "@/pages/tasks-page";
 import TimeLogsPage from "@/pages/time-logs-page";
@@ -83,6 +84,7 @@ function Router() {
       {/* Public routes */}
       <Route path="/" component={() => <PublicRoute component={LandingPage} />} />
       <Route path="/auth" component={() => <PublicRoute component={AuthPage} />} />
+      <Route path="/forgot-password" component={ForgotPasswordPage} />
 
       {/* Protected routes */}
       <Route path="/dashboard">

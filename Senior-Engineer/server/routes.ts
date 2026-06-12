@@ -12,6 +12,14 @@ import memorystore from "memorystore";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { sendOtpEmail } from "./email";
+
+// In-memory OTP store: email -> { otp, expiresAt, verified }
+const otpStore = new Map<string, { otp: string; expiresAt: number; verified: boolean }>();
+
+function generateOtp(): string {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
 
 // Set up multer disk storage for file uploads
 const uploadsDir = path.resolve(process.cwd(), "uploads");
@@ -250,6 +258,189 @@ export async function registerRoutes(
     } catch (err) {
       console.error("Password change error:", err);
       res.status(500).json({ message: "Internal error" });
+    }
+  });
+
+  // ── Forgot Password (OTP via Gmail) ──────────────────────────────────────
+  app.post("/api/auth/forgot-password", async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email || typeof email !== "string") {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const user = await (getStorage() as any).getUserByEmail(email.toLowerCase().trim());
+      // Always respond OK to prevent email enumeration
+      if (!user) {
+        return res.status(200).json({ message: "If that email exists, a code was sent." });
+      }
+
+      const otp = generateOtp();
+      otpStore.set(email.toLowerCase().trim(), {
+        otp,
+        expiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
+        verified: false,
+      });
+
+      await sendOtpEmail(email, otp, user.name || user.username);
+
+      res.status(200).json({ message: "Reset code sent to your email." });
+    } catch (err: any) {
+      console.error("Forgot password error:", err);
+      res.status(500).json({ message: err.message || "Failed to send reset code. Check your email configuration." });
+    }
+  });
+
+  app.post("/api/auth/verify-otp", async (req, res) => {
+    try {
+      const { email, otp } = req.body;
+      if (!email || !otp) {
+        return res.status(400).json({ message: "Email and code are required" });
+      }
+
+      const record = otpStore.get(email.toLowerCase().trim());
+      if (!record) {
+        return res.status(400).json({ message: "No reset code found. Please request a new one." });
+      }
+      if (Date.now() > record.expiresAt) {
+        otpStore.delete(email.toLowerCase().trim());
+        return res.status(400).json({ message: "Code has expired. Please request a new one." });
+      }
+      if (record.otp !== otp.trim()) {
+        return res.status(400).json({ message: "Invalid code. Please try again." });
+      }
+
+      // Mark as verified so reset-password can proceed
+      record.verified = true;
+      otpStore.set(email.toLowerCase().trim(), record);
+
+      res.status(200).json({ message: "Code verified successfully." });
+    } catch (err: any) {
+      console.error("Verify OTP error:", err);
+      res.status(500).json({ message: "Failed to verify code" });
+    }
+  });
+
+  app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+      const { email, otp, newPassword } = req.body;
+      if (!email || !otp || !newPassword) {
+        return res.status(400).json({ message: "Email, code and new password are required" });
+      }
+      if (newPassword.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters" });
+      }
+
+      const record = otpStore.get(email.toLowerCase().trim());
+      if (!record || !record.verified || record.otp !== otp.trim()) {
+        return res.status(400).json({ message: "Invalid or expired code. Please start over." });
+      }
+      if (Date.now() > record.expiresAt) {
+        otpStore.delete(email.toLowerCase().trim());
+        return res.status(400).json({ message: "Code expired. Please request a new one." });
+      }
+
+      const user = await (getStorage() as any).getUserByEmail(email.toLowerCase().trim());
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      await getStorage().updateUser(user.id, { password: newPassword });
+      otpStore.delete(email.toLowerCase().trim());
+
+      res.status(200).json({ message: "Password reset successfully." });
+    } catch (err: any) {
+      console.error("Reset password error:", err);
+      res.status(500).json({ message: "Failed to reset password" });
+    }
+  });
+
+  // ── Google OAuth ───────────────────────────────────────────────────────────
+  app.get("/api/auth/google", (req, res) => {
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      return res.status(500).json({ message: "Google OAuth is not configured." });
+    }
+    const redirectUri = encodeURIComponent(`${process.env.APP_URL || `https://${req.headers.host}`}/api/auth/google/callback`);
+    const scope = encodeURIComponent("openid email profile");
+    const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&access_type=offline&prompt=select_account`;
+    res.redirect(url);
+  });
+
+  app.get("/api/auth/google/callback", async (req, res) => {
+    try {
+      const { code, error } = req.query as { code?: string; error?: string };
+      if (error || !code) {
+        return res.redirect("/auth?error=google_cancelled");
+      }
+
+      const clientId = process.env.GOOGLE_CLIENT_ID;
+      const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+      const redirectUri = `${process.env.APP_URL || `https://${req.headers.host}`}/api/auth/google/callback`;
+
+      if (!clientId || !clientSecret) {
+        return res.redirect("/auth?error=google_not_configured");
+      }
+
+      // Exchange code for tokens
+      const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          code,
+          client_id: clientId,
+          client_secret: clientSecret,
+          redirect_uri: redirectUri,
+          grant_type: "authorization_code",
+        }),
+      });
+      const tokenData = await tokenRes.json() as any;
+      if (!tokenData.access_token) {
+        console.error("Google token exchange failed:", tokenData);
+        return res.redirect("/auth?error=google_token_failed");
+      }
+
+      // Fetch user info
+      const userInfoRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+        headers: { Authorization: `Bearer ${tokenData.access_token}` },
+      });
+      const profile = await userInfoRes.json() as any;
+
+      if (!profile.email) {
+        return res.redirect("/auth?error=google_no_email");
+      }
+
+      // Find or create user
+      let user = await (getStorage() as any).getUserByEmail(profile.email.toLowerCase());
+      if (!user) {
+        // Create new user from Google profile
+        const firstName = profile.given_name || "";
+        const lastName = profile.family_name || "";
+        const baseUsername = (profile.email.split("@")[0] || "user").replace(/[^a-z0-9]/gi, "").toLowerCase();
+        let username = baseUsername;
+        let suffix = 1;
+        while (await getStorage().getUserByUsername(username)) {
+          username = `${baseUsername}${suffix++}`;
+        }
+        user = await getStorage().createUser({
+          username,
+          password: `google_oauth_${Date.now()}`,
+          name: profile.name || `${firstName} ${lastName}`.trim() || username,
+          firstName,
+          lastName,
+          email: profile.email.toLowerCase(),
+          role: "student",
+          organization: "",
+          profilePicture: profile.picture || null,
+          emailVerified: true,
+        });
+      }
+
+      (req as any).session.userId = user.id;
+      res.redirect("/dashboard");
+    } catch (err: any) {
+      console.error("Google OAuth callback error:", err);
+      res.redirect("/auth?error=google_failed");
     }
   });
 
