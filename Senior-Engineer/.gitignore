@@ -9,3 +9,7 @@ vite.config.ts.*
 .env
 .env.*
 !.env.example
+
+# Logs and temp files
+seed.log
+*.log
