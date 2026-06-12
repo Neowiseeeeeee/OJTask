@@ -46,7 +46,6 @@ import {
   Users,
   LogOut,
   FolderOpen,
-  Zap,
   Award,
   Activity,
   Database,
@@ -120,11 +119,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
       <div className="flex min-h-screen w-full bg-muted/20">
         <Sidebar className="border-r border-border/50">
           <SidebarHeader className="h-16 flex items-center justify-center px-4 border-b border-border/50">
-            <div className="flex items-center gap-2 font-display font-bold text-xl text-primary">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-sm shadow-primary/30">
-                <Zap className="w-4 h-4 text-white" />
-              </div>
-              <span>OJTask</span>
+            <div className="flex items-center gap-0.5">
+              <img src="/ojt-logo.png" className="w-14 h-10 object-contain" alt="OJTask logo" />
+              <span className="font-display font-bold text-xl text-primary -ml-0.5">ask</span>
             </div>
           </SidebarHeader>
           <SidebarContent>

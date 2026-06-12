@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import {
   Clock, ListTodo, Users, CalendarDays, FileText, MessageSquare,
-  CheckCircle, ArrowRight, Zap, GraduationCap, Building2, BookOpen,
+  CheckCircle, ArrowRight, GraduationCap, Building2, BookOpen,
   Menu, X, BarChart3, ShieldCheck, Layers, Sun, Moon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -127,11 +127,9 @@ export default function LandingPage() {
           : "bg-transparent"
       }`}>
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center gap-4">
-          <Link href="/" className="flex items-center gap-2.5 font-black text-xl tracking-tight text-slate-900 dark:text-white shrink-0">
-            <div className="w-8 h-8 bg-violet-600 rounded-lg flex items-center justify-center shadow-md shadow-violet-500/30">
-              <Zap className="w-4 h-4 text-white" />
-            </div>
-            OJTask
+          <Link href="/" className="flex items-center gap-0.5 shrink-0">
+            <img src="/ojt-logo.png" className="w-14 h-10 object-contain" alt="OJTask logo" />
+            <span className="font-black text-xl tracking-tight text-slate-900 dark:text-white -ml-0.5">ask</span>
           </Link>
 
           <div className="flex-1" />
@@ -378,11 +376,9 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-8 pt-16 pb-10">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
             <div className="col-span-2 md:col-span-1">
-              <Link href="/" className="flex items-center gap-2 font-black text-xl text-white mb-5">
-                <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                  <Zap className="w-4 h-4 text-white" />
-                </div>
-                OJTask
+              <Link href="/" className="flex items-center gap-0.5 mb-5">
+                <img src="/ojt-logo.png" className="w-14 h-10 object-contain brightness-0 invert" alt="OJTask logo" />
+                <span className="font-black text-xl text-white -ml-0.5">ask</span>
               </Link>
               <p className="text-white/60 text-sm leading-relaxed">The OJT management platform for Philippine schools and companies.</p>
             </div>

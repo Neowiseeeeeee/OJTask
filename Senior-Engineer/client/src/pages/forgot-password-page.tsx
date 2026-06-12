@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Zap, Loader2, ArrowLeft, Eye, EyeOff, Check, X, Mail, KeyRound, ShieldCheck } from "lucide-react";
+import { Loader2, ArrowLeft, Eye, EyeOff, Check, X, Mail, KeyRound, ShieldCheck } from "lucide-react";
 import { useLocation } from "wouter";
 
 type Step = "email" | "otp" | "newPassword";
@@ -126,10 +126,8 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-background p-4">
       <div className="w-full max-w-md">
         <div className="flex flex-col items-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-primary/30">
-            <Zap className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-4xl font-display font-bold text-foreground tracking-tight">OJTask</h1>
+          <img src="/ojt-logo.png" className="w-24 h-auto object-contain mb-4 drop-shadow-md" alt="OJTask logo" />
+          <h1 className="text-4xl font-display font-bold text-foreground tracking-tight">OJ<span className="text-primary">Task</span></h1>
           <p className="text-muted-foreground mt-2 text-sm">Your internship, organized and on track.</p>
         </div>
 

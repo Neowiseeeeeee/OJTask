@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Zap, Loader2, Eye, EyeOff, Check, X, AlertCircle } from "lucide-react";
+import { Loader2, Eye, EyeOff, Check, X, AlertCircle } from "lucide-react";
 import { useLocation, Link } from "wouter";
 
 function PasswordStrengthIndicator({ password }: { password: string }) {
@@ -147,11 +147,9 @@ export default function AuthPage() {
         <div className="flex justify-center px-5 h-16">
           <div className="w-full max-w-7xl flex items-center gap-6">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2.5 font-display font-bold text-lg text-foreground shrink-0">
-              <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-purple-700 rounded-lg flex items-center justify-center shadow-sm shadow-violet-500/30">
-                <Zap className="w-4 h-4 text-white" />
-              </div>
-              <span>OJTask</span>
+            <Link href="/" className="flex items-center gap-0.5 shrink-0">
+              <img src="/ojt-logo.png" className="w-14 h-10 object-contain" alt="OJTask logo" />
+              <span className="font-display font-bold text-lg text-foreground -ml-0.5">ask</span>
             </Link>
 
             <div className="flex-1" />
@@ -171,10 +169,8 @@ export default function AuthPage() {
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="flex flex-col items-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-primary/30">
-            <Zap className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-4xl font-display font-bold text-foreground tracking-tight">OJTask</h1>
+          <img src="/ojt-logo.png" className="w-24 h-auto object-contain mb-4 drop-shadow-md" alt="OJTask logo" />
+          <h1 className="text-4xl font-display font-bold text-foreground tracking-tight">OJ<span className="text-primary">Task</span></h1>
           <p className="text-muted-foreground mt-2 text-sm">Your internship, organized and on track.</p>
         </div>
 
