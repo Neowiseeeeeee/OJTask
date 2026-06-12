@@ -13,10 +13,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Document } from "@shared/schema";
 import {
   FileText, Upload, FileSignature, FileArchive, FolderOpen, CheckCircle, Clock,
-  XCircle, Filter, Eye, Calendar, Tag, User, Download, AlertCircle
+  XCircle, Filter, Eye, Calendar, Tag, User, Download, AlertCircle, Loader2
 } from "lucide-react";
 import { format } from "date-fns";
 import { useUserProfileModal } from "@/hooks/use-user-profile-modal";
+import { useToast } from "@/hooks/use-toast";
 
 const getDocIcon = (t: string, size = "w-7 h-7") => {
   switch (t) {
@@ -59,14 +60,37 @@ function DocumentPreviewModal({
   onClose: () => void;
 }) {
   const hasFile = !!(doc as any).filePath;
+  const [downloading, setDownloading] = useState(false);
+  const { toast } = useToast();
 
-  const handleDownload = () => {
-    const a = document.createElement("a");
-    a.href = `/api/documents/${doc.id}/file`;
-    a.download = (doc as any).originalFileName ?? doc.name;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+  const handleDownload = async () => {
+    setDownloading(true);
+    try {
+      const res = await fetch(`/api/documents/${doc.id}/file`, { credentials: "include" });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ message: "File not available" }));
+        toast({ title: "Download failed", description: err.message ?? "The file could not be downloaded.", variant: "destructive" });
+        return;
+      }
+      const blob = await res.blob();
+      const contentDisposition = res.headers.get("Content-Disposition") ?? "";
+      const filenameMatch = contentDisposition.match(/filename[^;=\n]*=["']?([^"';\n]+)/i);
+      const filename = filenameMatch
+        ? decodeURIComponent(filenameMatch[1])
+        : (doc as any).originalFileName ?? doc.name;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      toast({ title: "Download failed", description: "An unexpected error occurred.", variant: "destructive" });
+    } finally {
+      setDownloading(false);
+    }
   };
 
   return (
@@ -107,8 +131,9 @@ function DocumentPreviewModal({
                 <p className="text-sm text-muted-foreground mt-0.5">{formatBytes((doc as any).fileSize)}</p>
               )}
             </div>
-            <Button onClick={handleDownload} className="gap-2">
-              <Download className="w-4 h-4" /> Download File
+            <Button onClick={handleDownload} disabled={downloading} className="gap-2">
+              {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              {downloading ? "Downloading..." : "Download File"}
             </Button>
           </div>
         ) : (

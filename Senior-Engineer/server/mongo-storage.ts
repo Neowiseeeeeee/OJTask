@@ -411,6 +411,7 @@ export class MongoStorage implements IStorage {
       filePath: insertDoc.filePath ?? null,
       fileSize: insertDoc.fileSize ?? null,
       mimeType: insertDoc.mimeType ?? null,
+      originalFileName: insertDoc.originalFileName ?? null,
       notes: insertDoc.notes ?? null,
       isRequired: insertDoc.isRequired ?? false,
       deadline: insertDoc.deadline ?? null,

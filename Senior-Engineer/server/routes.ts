@@ -771,15 +771,26 @@ export async function registerRoutes(
       const docId = Number(req.params.id);
       const allDocs = await getStorage().getAllDocuments();
       const doc = allDocs.find((d: any) => d.id === docId);
-      if (!doc || !doc.filePath) return res.status(404).json({ message: "File not found" });
-      const absPath = path.resolve(process.cwd(), doc.filePath.replace(/^\//, ''));
+      console.log(`[DOWNLOAD] doc=${docId} filePath=${(doc as any)?.filePath} originalFileName=${(doc as any)?.originalFileName}`);
+      if (!doc || !(doc as any).filePath) return res.status(404).json({ message: "No file attached to this document" });
+      const rawPath: string = (doc as any).filePath;
+      const absPath = path.isAbsolute(rawPath)
+        ? rawPath
+        : path.resolve(process.cwd(), rawPath.replace(/^\//, ''));
+      console.log(`[DOWNLOAD] absPath=${absPath} exists=${fs.existsSync(absPath)}`);
       if (!fs.existsSync(absPath)) return res.status(404).json({ message: "File not found on disk" });
-      const filename = doc.originalFileName || path.basename(absPath);
-      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-      if (doc.mimeType) res.setHeader('Content-Type', doc.mimeType);
-      res.sendFile(absPath);
+      const filename = (doc as any).originalFileName || path.basename(absPath);
+      res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
+      if ((doc as any).mimeType) res.setHeader('Content-Type', (doc as any).mimeType);
+      res.sendFile(absPath, (err) => {
+        if (err && !res.headersSent) {
+          console.error('[DOWNLOAD] sendFile error:', err);
+          res.status(500).json({ message: "Failed to serve file" });
+        }
+      });
     } catch (err) {
-      res.status(500).json({ message: "Internal error" });
+      console.error('[DOWNLOAD] error:', err);
+      if (!res.headersSent) res.status(500).json({ message: "Internal error" });
     }
   });
 
