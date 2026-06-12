@@ -3,9 +3,10 @@ import { Link } from "wouter";
 import {
   Clock, ListTodo, Users, CalendarDays, FileText, MessageSquare,
   CheckCircle, ArrowRight, Zap, GraduationCap, Building2, BookOpen,
-  Menu, X, BarChart3, ShieldCheck, Layers,
+  Menu, X, BarChart3, ShieldCheck, Layers, Sun, Moon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTheme } from "@/components/theme-provider";
 
 // ── Marquee items ──────────────────────────────────────────────────────────
 const marqueeItems = [
@@ -94,6 +95,7 @@ const steps = [
 
 // ── Main component ─────────────────────────────────────────────────────────
 export default function LandingPage() {
+  const { theme, setTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [statsValues, setStatsValues] = useState({
@@ -478,7 +480,20 @@ export default function LandingPage() {
         {/* Small top bar above wordmark */}
         <div className="max-w-7xl mx-auto px-8 py-5 flex items-center justify-between">
           <p className="text-sm text-white/40">© {new Date().getFullYear()} OJTask. All rights reserved.</p>
-          <p className="text-sm text-white/40 hidden md:block">Made with 💜 for Filipino interns</p>
+          <div className="flex items-center gap-4">
+            <p className="text-sm text-white/40 hidden md:block">Made with 💜 for Filipino interns</p>
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white/70 hover:text-white text-xs font-semibold transition-all"
+              aria-label="Toggle dark mode"
+            >
+              {theme === "dark" ? (
+                <><Sun className="w-3.5 h-3.5" /> Light mode</>
+              ) : (
+                <><Moon className="w-3.5 h-3.5" /> Dark mode</>
+              )}
+            </button>
+          </div>
         </div>
 
         {/* ── GIANT WORDMARK ──────────────────────────────────── */}
