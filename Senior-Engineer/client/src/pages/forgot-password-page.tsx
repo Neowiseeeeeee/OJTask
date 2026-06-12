@@ -126,8 +126,7 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-background p-4">
       <div className="w-full max-w-md">
         <div className="flex flex-col items-center mb-8">
-          <img src="/ojt-logo.png" className="w-24 h-auto object-contain mb-4 drop-shadow-md" alt="OJTask logo" />
-          <h1 className="text-4xl font-display font-bold text-foreground tracking-tight">OJ<span className="text-primary">Task</span></h1>
+          <img src="/ojtask-logo.png" className="h-16 w-auto object-contain mb-2" alt="OJTask logo" />
           <p className="text-muted-foreground mt-2 text-sm">Your internship, organized and on track.</p>
         </div>
 

@@ -148,8 +148,7 @@ export default function AuthPage() {
           <div className="w-full max-w-7xl flex items-center gap-6">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-0.5 shrink-0">
-              <img src="/ojt-logo.png" className="w-14 h-10 object-contain" alt="OJTask logo" />
-              <span className="font-display font-bold text-lg text-foreground -ml-0.5">ask</span>
+              <img src="/ojtask-logo.png" className="h-10 w-auto object-contain mt-1" alt="OJTask logo" />
             </Link>
 
             <div className="flex-1" />
@@ -169,8 +168,7 @@ export default function AuthPage() {
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="flex flex-col items-center mb-8">
-          <img src="/ojt-logo.png" className="w-24 h-auto object-contain mb-4 drop-shadow-md" alt="OJTask logo" />
-          <h1 className="text-4xl font-display font-bold text-foreground tracking-tight">OJ<span className="text-primary">Task</span></h1>
+          <img src="/ojtask-logo.png" className="h-16 w-auto object-contain mb-2" alt="OJTask logo" />
           <p className="text-muted-foreground mt-2 text-sm">Your internship, organized and on track.</p>
         </div>
 
