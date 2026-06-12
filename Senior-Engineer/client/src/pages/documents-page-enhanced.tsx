@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useSpace } from "@/hooks/use-space";
 import { useMarkNotificationsRead } from "@/hooks/use-notifications";
 import { useSpaceSettings } from "@/hooks/use-space-settings";
-import { useDocuments, useCreateDocument, useApproveDocument, useRejectDocument, useSpaceMembers } from "@/hooks/use-features";
+import { useDocuments, useCreateDocument, useApproveDocument, useRejectDocument, useSpaceMembers, useDeleteDocument } from "@/hooks/use-features";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,7 +16,7 @@ import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import {
   FileText, Upload, CheckCircle2, XCircle, Clock, AlertCircle,
-  Plus, Eye, Target, FolderOpen, Filter, Download, Loader2
+  Plus, Eye, Target, FolderOpen, Filter, Download, Loader2, Trash2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -160,6 +160,7 @@ function StudentDocuments() {
   const completedRequired = myDocs.filter(d => requiredDocs.includes(d.documentType) && d.status === "approved").length;
   const completionPct = requiredDocs.length > 0 ? Math.round((completedRequired / requiredDocs.length) * 100) : 0;
 
+  const deleteDocument = useDeleteDocument(activeSpaceId);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [preselectedType, setPreselectedType] = useState("");
   const [selectedDoc, setSelectedDoc] = useState<any>(null);
@@ -247,9 +248,28 @@ function StudentDocuments() {
                               <Button size="sm" onClick={() => openUpload(docType)} className="shrink-0">Upload</Button>
                             )}
                             {myDoc && (
-                              <Button size="sm" variant="outline" onClick={() => setSelectedDoc(myDoc)} className="shrink-0">
-                                <Eye className="w-4 h-4" />
-                              </Button>
+                              <>
+                                <Button size="sm" variant="outline" onClick={() => setSelectedDoc(myDoc)} className="shrink-0">
+                                  <Eye className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  disabled={myDoc.status === "approved" || deleteDocument.isPending}
+                                  title={myDoc.status === "approved" ? "Cannot delete an approved document" : "Delete"}
+                                  className={`h-7 w-7 p-0 shrink-0 ${myDoc.status === "approved" ? "opacity-40 cursor-not-allowed" : "text-red-500 border-red-300 hover:bg-red-50"}`}
+                                  onClick={async () => {
+                                    try {
+                                      await deleteDocument.mutateAsync(myDoc.id);
+                                      toast({ title: "Document deleted" });
+                                    } catch (e: any) {
+                                      toast({ title: "Delete failed", description: e.message, variant: "destructive" });
+                                    }
+                                  }}
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </Button>
+                              </>
                             )}
                           </div>
                         );
@@ -296,6 +316,23 @@ function StudentDocuments() {
                           </div>
                           <Button size="sm" variant="outline" onClick={() => setSelectedDoc(doc)} className="shrink-0">
                             <Eye className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={doc.status === "approved" || deleteDocument.isPending}
+                            title={doc.status === "approved" ? "Cannot delete an approved document" : "Delete"}
+                            className={`h-7 w-7 p-0 shrink-0 ${doc.status === "approved" ? "opacity-40 cursor-not-allowed" : "text-red-500 border-red-300 hover:bg-red-50"}`}
+                            onClick={async () => {
+                              try {
+                                await deleteDocument.mutateAsync(doc.id);
+                                toast({ title: "Document deleted" });
+                              } catch (e: any) {
+                                toast({ title: "Delete failed", description: e.message, variant: "destructive" });
+                              }
+                            }}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
                           </Button>
                         </div>
                       ))}

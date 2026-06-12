@@ -225,6 +225,39 @@ export function useCreateDocument(spaceId?: number | null) {
   });
 }
 
+export function useDeleteDocument(spaceId: number | null) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const res = await fetch(`/api/spaces/${spaceId}/documents/${id}`, { method: "DELETE", credentials: "include" });
+      if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.message ?? "Failed to delete document"); }
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [api.documents.list.path, spaceId] }),
+  });
+}
+
+export function useDeleteScrum(spaceId: number | null) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const res = await fetch(`/api/spaces/${spaceId}/scrums/${id}`, { method: "DELETE", credentials: "include" });
+      if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.message ?? "Failed to delete scrum"); }
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [api.scrums.list.path, spaceId] }),
+  });
+}
+
+export function useDeleteLeaveRequest(spaceId: number | null) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const res = await fetch(`/api/spaces/${spaceId}/leave-requests/${id}`, { method: "DELETE", credentials: "include" });
+      if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.message ?? "Failed to delete leave request"); }
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [api.leaveRequests.list.path, spaceId] }),
+  });
+}
+
 // --- MESSAGES ---
 export function useMessages(spaceId: number | null, channelId: string = 'general') {
   return useQuery<Message[]>({

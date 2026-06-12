@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useSpace } from "@/hooks/use-space";
 import { useMarkNotificationsRead } from "@/hooks/use-notifications";
-import { useAttendance, useCreateAttendance, useSpaceMembers, useLeaveRequests, useCreateLeaveRequest, useApproveLeaveRequest, useRejectLeaveRequest } from "@/hooks/use-features";
+import { useAttendance, useCreateAttendance, useSpaceMembers, useLeaveRequests, useCreateLeaveRequest, useApproveLeaveRequest, useRejectLeaveRequest, useDeleteLeaveRequest } from "@/hooks/use-features";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarDays, FolderOpen, Users, CheckCircle, XCircle, Clock, PlusCircle } from "lucide-react";
+import { CalendarDays, FolderOpen, Users, CheckCircle, XCircle, Clock, PlusCircle, Trash2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { UserCardWithPicture } from "@/components/user-card-with-picture";
 
@@ -37,6 +38,8 @@ function StudentAttendance() {
   const { data: allLeaves = [] } = useLeaveRequests(activeSpaceId);
   const createAtt = useCreateAttendance(activeSpaceId);
   const createLeave = useCreateLeaveRequest(activeSpaceId);
+  const deleteLeave = useDeleteLeaveRequest(activeSpaceId);
+  const { toast } = useToast();
   const markRead = useMarkNotificationsRead('attendance');
   useEffect(() => { markRead(); }, [markRead]);
 
@@ -169,6 +172,23 @@ function StudentAttendance() {
                       <div className="text-xs text-muted-foreground mt-0.5">{lr.reason}</div>
                     </div>
                     {leaveStatusBadge(lr.status)}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={lr.status === "approved" || deleteLeave.isPending}
+                      title={lr.status === "approved" ? "Cannot delete an approved leave request" : "Delete this leave request"}
+                      className={`h-7 w-7 p-0 shrink-0 ${lr.status === "approved" ? "opacity-40 cursor-not-allowed" : "text-red-500 border-red-300 hover:bg-red-50"}`}
+                      onClick={async () => {
+                        try {
+                          await deleteLeave.mutateAsync(lr.id);
+                          toast({ title: "Leave request deleted", description: "Your leave request has been removed." });
+                        } catch (e: any) {
+                          toast({ title: "Delete failed", description: e.message, variant: "destructive" });
+                        }
+                      }}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
                   </CardContent>
                 </Card>
               ))}

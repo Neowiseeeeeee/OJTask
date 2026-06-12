@@ -549,6 +549,22 @@ export async function registerRoutes(
     res.json(scrum);
   });
 
+  app.delete('/api/spaces/:spaceId/scrums/:id', requireAuth, async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const scrums = await getStorage().getScrums(Number(req.params.spaceId));
+      const scrum = scrums.find(s => s.id === id);
+      if (!scrum) return res.status(404).json({ message: "Not found" });
+      if (scrum.isApproved) return res.status(403).json({ message: "Cannot delete an approved scrum" });
+      const userId = (req as any).session.userId;
+      if (scrum.userId !== userId) return res.status(403).json({ message: "Not authorized" });
+      await getStorage().deleteScrum(id);
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ message: "Internal error" });
+    }
+  });
+
   // Tasks
   app.get(api.tasks.list.path, requireAuth, requireSpaceMembership, async (req, res) => {
     try {
@@ -843,6 +859,22 @@ export async function registerRoutes(
       res.status(201).json(doc);
     } catch (err) {
       console.error('[DOC CREATE ERROR]', err);
+      res.status(500).json({ message: "Internal error" });
+    }
+  });
+
+  app.delete('/api/spaces/:spaceId/documents/:id', requireAuth, async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const docs = await getStorage().getDocuments(Number(req.params.spaceId));
+      const doc = docs.find(d => d.id === id);
+      if (!doc) return res.status(404).json({ message: "Not found" });
+      if (doc.status === 'approved') return res.status(403).json({ message: "Cannot delete an approved document" });
+      const userId = (req as any).session.userId;
+      if (doc.uploaderId !== userId) return res.status(403).json({ message: "Not authorized" });
+      await getStorage().deleteDocument(id);
+      res.json({ success: true });
+    } catch (err) {
       res.status(500).json({ message: "Internal error" });
     }
   });
@@ -1157,6 +1189,22 @@ export async function registerRoutes(
       res.status(201).json(lr);
     } catch (err) {
       if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      res.status(500).json({ message: "Internal error" });
+    }
+  });
+
+  app.delete('/api/spaces/:spaceId/leave-requests/:id', requireAuth, async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const leaves = await getStorage().getLeaveRequests(Number(req.params.spaceId));
+      const lr = leaves.find(l => l.id === id);
+      if (!lr) return res.status(404).json({ message: "Not found" });
+      if (lr.status === 'approved') return res.status(403).json({ message: "Cannot delete an approved leave request" });
+      const userId = (req as any).session.userId;
+      if (lr.userId !== userId) return res.status(403).json({ message: "Not authorized" });
+      await getStorage().deleteLeaveRequest(id);
+      res.json({ success: true });
+    } catch (err) {
       res.status(500).json({ message: "Internal error" });
     }
   });

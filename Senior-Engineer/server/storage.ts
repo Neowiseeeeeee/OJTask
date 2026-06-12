@@ -37,6 +37,7 @@ export interface IStorage {
   getScrums(spaceId: number, userId?: number, date?: string): Promise<Scrum[]>;
   createScrum(scrum: InsertScrum): Promise<Scrum>;
   approveScrum(id: number): Promise<Scrum | undefined>;
+  deleteScrum(id: number): Promise<void>;
 
   // Tasks
   getTasks(spaceId: number): Promise<Task[]>;
@@ -58,6 +59,7 @@ export interface IStorage {
   createDocument(doc: any): Promise<Document>;
   approveDocument(id: number): Promise<Document | undefined>;
   rejectDocument(id: number): Promise<Document | undefined>;
+  deleteDocument(id: number): Promise<void>;
 
   // Messages
   getMessages(spaceId: number, channelId?: string): Promise<Message[]>;
@@ -74,6 +76,7 @@ export interface IStorage {
   createLeaveRequest(lr: InsertLeaveRequest): Promise<LeaveRequest>;
   approveLeaveRequest(id: number): Promise<LeaveRequest | undefined>;
   rejectLeaveRequest(id: number): Promise<LeaveRequest | undefined>;
+  deleteLeaveRequest(id: number): Promise<void>;
 
   // Announcements
   getAnnouncements(spaceId: number): Promise<Announcement[]>;
@@ -280,6 +283,8 @@ export class MemStorage implements IStorage {
     this.scrums.set(id, updated);
     return updated;
   }
+  async deleteScrum(id: number): Promise<void> { this.scrums.delete(id); return;
+  }
 
   // Tasks
   async getTasks(spaceId: number): Promise<Task[]> {
@@ -368,6 +373,7 @@ export class MemStorage implements IStorage {
     this.documents.set(id, updated);
     return updated;
   }
+  async deleteDocument(id: number): Promise<void> { this.documents.delete(id); }
   async rejectDocument(id: number): Promise<Document | undefined> {
     const doc = this.documents.get(id);
     if (!doc) return undefined;
@@ -432,6 +438,7 @@ export class MemStorage implements IStorage {
     this.leaveRequests.set(id, updated);
     return updated;
   }
+  async deleteLeaveRequest(id: number): Promise<void> { this.leaveRequests.delete(id); }
 
   // Announcements
   async getAnnouncements(spaceId: number): Promise<Announcement[]> {

@@ -592,6 +592,18 @@ export class MongoStorage implements IStorage {
     return result ? this.toLeaveRequest(result) : undefined;
   }
 
+  async deleteLeaveRequest(id: number): Promise<void> {
+    await this.db.collection('leaveRequests').deleteOne({ id });
+  }
+
+  async deleteScrum(id: number): Promise<void> {
+    await this.db.collection('scrums').deleteOne({ id });
+  }
+
+  async deleteDocument(id: number): Promise<void> {
+    await this.db.collection('documents').deleteOne({ id });
+  }
+
   // Announcements
   async getAnnouncements(spaceId: number): Promise<Announcement[]> {
     const anns = await this.db.collection('announcements').find({ spaceId }).toArray();

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useSpace } from "@/hooks/use-space";
-import { useScrums, useCreateScrum, useApproveScrum, useSpaceMembers } from "@/hooks/use-features";
+import { useScrums, useCreateScrum, useApproveScrum, useSpaceMembers, useDeleteScrum } from "@/hooks/use-features";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,7 +14,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
 import { useUserProfileModal } from "@/hooks/use-user-profile-modal";
-import { FileText, FolderOpen, CheckCircle, Clock, Users, Filter, BarChart3, Lock } from "lucide-react";
+import { FileText, FolderOpen, CheckCircle, Clock, Users, Filter, BarChart3, Lock, Trash2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 type Member = { id: number; userId: number; role: string; user: { id: number; name: string; role: string } };
 
@@ -24,6 +25,8 @@ function StudentScrums() {
   const { activeSpaceId } = useSpace();
   const { data: allScrums = [] } = useScrums(activeSpaceId);
   const createScrum = useCreateScrum(activeSpaceId);
+  const deleteScrum = useDeleteScrum(activeSpaceId);
+  const { toast } = useToast();
 
   const scrums = allScrums.filter(s => s.userId === user?.id);
   const latestApproved = scrums.filter(s => s.isApproved).sort((a, b) => b.date.localeCompare(a.date))[0];
@@ -170,6 +173,23 @@ function StudentScrums() {
                     {scrum.isApproved
                       ? <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20"><CheckCircle className="w-3 h-3 mr-1" />Approved</Badge>
                       : <Badge variant="outline" className="text-amber-600 border-amber-400/40"><Clock className="w-3 h-3 mr-1" />Pending</Badge>}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={scrum.isApproved || deleteScrum.isPending}
+                      title={scrum.isApproved ? "Cannot delete an approved scrum" : "Delete this scrum"}
+                      className={`h-7 w-7 p-0 ${scrum.isApproved ? "opacity-40 cursor-not-allowed" : "text-red-500 border-red-300 hover:bg-red-50"}`}
+                      onClick={async () => {
+                        try {
+                          await deleteScrum.mutateAsync(scrum.id);
+                          toast({ title: "Scrum deleted", description: "Your scrum report has been removed." });
+                        } catch (e: any) {
+                          toast({ title: "Delete failed", description: e.message, variant: "destructive" });
+                        }
+                      }}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
                   </div>
                 </div>
                 {!scrum.isApproved && (
