@@ -1,0 +1,20 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "tzNfYTjJWUEvX6lf5zYf2"
+uri = "file://artifacts/mockup-sandbox/public/images/hero-dark-immersive.png"
+type = "image"
+title = "Dark abstract tech hero image"
+
+[[generated]]
+id = "kuIvn1M6eL19srs5Yi2UD"
+uri = "file://artifacts/mockup-sandbox/public/images/hero-editorial.png"
+type = "image"
+title = "students working in modern office"
+
+[[generated]]
+id = "otsAoL9QlWWud6GxLvdb8"
+uri = "file://artifacts/mockup-sandbox/public/images/hero-bold.png"
+type = "image"
+title = "energetic students collaborating"
