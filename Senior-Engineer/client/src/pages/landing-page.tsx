@@ -13,7 +13,7 @@ const features = [
   {
     icon: Clock,
     title: "Time Tracking",
-    desc: "Log daily working hours and get supervisor sign-off without a single email or spreadsheet.",
+    desc: "Accurately log your daily OJT hours and get instant supervisor sign-off. No emails, no spreadsheets, no delays.",
     gradient: "from-violet-500 to-purple-600",
     light: "bg-violet-50 dark:bg-violet-950/40",
     text: "text-violet-600 dark:text-violet-400",
@@ -21,7 +21,7 @@ const features = [
   {
     icon: Users,
     title: "Daily Scrum",
-    desc: "A two-minute check-in replaces a 30-minute status meeting. Yesterday, today, blockers — done.",
+    desc: "A two-minute structured check-in replaces long status meetings. Share yesterday's progress, today's goals, and blockers in seconds.",
     gradient: "from-indigo-500 to-blue-600",
     light: "bg-indigo-50 dark:bg-indigo-950/40",
     text: "text-indigo-600 dark:text-indigo-400",
@@ -29,7 +29,7 @@ const features = [
   {
     icon: ListTodo,
     title: "Task Board",
-    desc: "Kanban-style task management built around how interns actually work — simple, visual, fast.",
+    desc: "Kanban-style OJT task management built around how interns actually work. Simple, visual, and fast to use from day one.",
     gradient: "from-emerald-500 to-teal-600",
     light: "bg-emerald-50 dark:bg-emerald-950/40",
     text: "text-emerald-600 dark:text-emerald-400",
@@ -37,7 +37,7 @@ const features = [
   {
     icon: CalendarDays,
     title: "Attendance",
-    desc: "Mark present, absent, or holiday in under ten seconds. Your coordinator sees it instantly.",
+    desc: "Log your internship attendance in seconds with a single tap. Supervisors and school coordinators get real-time visibility, always.",
     gradient: "from-amber-500 to-orange-500",
     light: "bg-amber-50 dark:bg-amber-950/40",
     text: "text-amber-600 dark:text-amber-400",
@@ -45,7 +45,7 @@ const features = [
   {
     icon: FileText,
     title: "Document Hub",
-    desc: "Upload endorsement letters, MOAs, and progress reports — all in one place, ready for review.",
+    desc: "Upload endorsement letters, MOAs, and OJT progress reports in one secure hub. Organized and ready for review anytime.",
     gradient: "from-rose-500 to-pink-600",
     light: "bg-rose-50 dark:bg-rose-950/40",
     text: "text-rose-600 dark:text-rose-400",
@@ -53,7 +53,7 @@ const features = [
   {
     icon: MessageSquare,
     title: "Team Chat",
-    desc: "Dedicated channels for work updates and casual conversation, without cluttering your personal inbox.",
+    desc: "Communicate in dedicated channels for work updates and team discussions, without flooding anyone's personal inbox.",
     gradient: "from-cyan-500 to-sky-600",
     light: "bg-cyan-50 dark:bg-cyan-950/40",
     text: "text-cyan-600 dark:text-cyan-400",
@@ -71,10 +71,10 @@ const stats = [
 
 
 const howItWorks = [
-  { step: "01", title: "Create Your Space", desc: "Supervisors open a dedicated OJT space and share the join code with their interns. Takes under two minutes.", icon: Layers },
-  { step: "02", title: "Students Join & Set Up", desc: "Interns join with the code, pick their role, and see all six modules immediately — no training needed.", icon: GraduationCap },
-  { step: "03", title: "Track & Report Daily", desc: "Students log hours, submit scrums, and update task boards. Supervisors approve with a single click.", icon: BarChart3 },
-  { step: "04", title: "Review & Close Out", desc: "Coordinators pull records, verify documents, and finalize evaluations without chasing anyone down.", icon: ShieldCheck },
+  { step: "01", title: "Create Your Space", desc: "Supervisors set up a dedicated OJT workspace and share a unique join code with their interns. Ready in under two minutes.", icon: Layers },
+  { step: "02", title: "Students Join and Set Up", desc: "Interns join using the code, choose their role, and get instant access to all six modules. No training or setup required.", icon: GraduationCap },
+  { step: "03", title: "Track and Report Daily", desc: "Students log hours, submit daily scrum reports, and update their task boards. Supervisors approve everything with a single click.", icon: BarChart3 },
+  { step: "04", title: "Review and Close Out", desc: "Coordinators access complete records, verify documents, and finalize OJT evaluations without chasing anyone for updates.", icon: ShieldCheck },
 ];
 
 export default function LandingPage() {
@@ -118,7 +118,7 @@ export default function LandingPage() {
   }, []);
 
   useEffect(() => {
-    document.title = "OJTask — Internship Management Built for Students & Supervisors";
+    document.title = "OJTask | OJT Management System for Students, Supervisors and Coordinators";
     const setMeta = (name: string, content: string) => {
       let el = document.querySelector(`meta[name="${name}"]`);
       if (!el) { el = document.createElement("meta"); (el as HTMLMetaElement).name = name; document.head.appendChild(el); }
@@ -129,10 +129,10 @@ export default function LandingPage() {
       if (!el) { el = document.createElement("meta"); el.setAttribute("property", prop); document.head.appendChild(el); }
       el.setAttribute("content", content);
     };
-    setMeta("description", "OJTask is an OJT and internship management platform that connects students, company supervisors, and school coordinators. Track time, attendance, tasks, scrums, and documents in one workspace.");
-    setMeta("keywords", "OJT management system, internship tracker, on-the-job training software, scrum for interns, student attendance tracking Philippines");
-    setOg("og:title", "OJTask — Internship Management Built for Students & Supervisors");
-    setOg("og:description", "Track time, attendance, tasks, and daily scrums — everything your OJT program needs in one place.");
+    setMeta("description", "OJTask is an OJT management system built for Philippine schools and companies. Track internship hours, attendance, daily scrums, tasks, and documents in one shared workspace for students, supervisors, and school coordinators.");
+    setMeta("keywords", "OJT management system, internship management software, on-the-job training tracker, OJT platform Philippines, student internship tracker, daily scrum for interns, OJT attendance monitoring, internship document hub");
+    setOg("og:title", "OJTask | OJT Management System for Students, Supervisors and Coordinators");
+    setOg("og:description", "Manage your entire OJT program in one place. Track hours, attendance, tasks, and daily reports without the back-and-forth. Built for Philippine schools and companies.");
     setOg("og:type", "website");
     return () => { document.title = "OJTask"; };
   }, []);
@@ -217,18 +217,18 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto text-center relative">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-violet-200 dark:border-violet-800/50 bg-violet-50 dark:bg-violet-950/50 text-violet-700 dark:text-violet-300 text-sm font-medium mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
-            Purpose-built for OJT programs in the Philippines
+            The OJT Management System Built for the Philippines
           </div>
 
           <h1 className="text-5xl md:text-6xl lg:text-[4.5rem] font-display font-extrabold tracking-tight leading-[1.08] mb-6 text-slate-900 dark:text-white">
             Your Internship,{" "}
             <span className="bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-500 bg-clip-text text-transparent dark:from-violet-400 dark:via-purple-400 dark:to-indigo-300">
-              Actually Organized
+              Finally Organized
             </span>
           </h1>
 
           <p className="text-lg md:text-xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-            OJTask connects students, supervisors, and school coordinators in a shared workspace — so daily reports, time logs, and document submissions happen without the back-and-forth.
+            OJTask brings students, supervisors, and school coordinators into one shared OJT workspace, so daily reports, time logs, and document submissions happen without the constant back-and-forth.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3.5 justify-center">
@@ -255,7 +255,7 @@ export default function LandingPage() {
           </div>
 
           <p className="mt-5 text-xs text-muted-foreground">
-            Built for supervisors and students — log in to create your space.
+            Designed for OJT supervisors and students. Log in and create your space today.
           </p>
 
         </div>
@@ -280,40 +280,40 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-14">
             <Badge variant="outline" className="mb-4 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-800 bg-violet-50 dark:bg-violet-950/40">Who Uses OJTask</Badge>
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4 text-slate-900 dark:text-white">One Platform, Three Roles</h2>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">Each person in the OJT process has a clear view of exactly what they need.</p>
+            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4 text-slate-900 dark:text-white">One OJT Platform Built for Everyone Involved</h2>
+            <p className="text-muted-foreground text-lg max-w-xl mx-auto">Students, supervisors, and school coordinators each get a tailored view with exactly the tools they need.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {[
               {
                 icon: GraduationCap,
                 title: "Students",
-                subtitle: "The ones doing the work",
+                subtitle: "OJT students managing their daily internship tasks",
                 bg: "bg-violet-50 dark:bg-violet-950/30",
                 border: "border-violet-100 dark:border-violet-900/50",
                 iconBg: "bg-violet-100 dark:bg-violet-900/50",
                 iconColor: "text-violet-600 dark:text-violet-400",
-                items: ["Log daily time & tasks", "Submit daily scrum reports", "Mark attendance status", "Upload required documents"]
+                items: ["Log daily OJT hours and tasks", "Submit structured daily scrum reports", "Record attendance status instantly", "Upload required internship documents"]
               },
               {
                 icon: Building2,
                 title: "Company Supervisors",
-                subtitle: "The ones guiding the work",
+                subtitle: "Company supervisors overseeing intern performance",
                 bg: "bg-indigo-50 dark:bg-indigo-950/30",
                 border: "border-indigo-100 dark:border-indigo-900/50",
                 iconBg: "bg-indigo-100 dark:bg-indigo-900/50",
                 iconColor: "text-indigo-600 dark:text-indigo-400",
-                items: ["Approve time logs & scrums", "Assign and track tasks", "Monitor intern attendance", "Message team by channel"]
+                items: ["Approve intern time logs and scrums", "Assign tasks and track progress", "Monitor intern attendance in real time", "Communicate via dedicated team channels"]
               },
               {
                 icon: BookOpen,
                 title: "School Coordinators",
-                subtitle: "The ones overseeing it all",
+                subtitle: "School coordinators monitoring the full OJT program",
                 bg: "bg-emerald-50 dark:bg-emerald-950/30",
                 border: "border-emerald-100 dark:border-emerald-900/50",
                 iconBg: "bg-emerald-100 dark:bg-emerald-900/50",
                 iconColor: "text-emerald-600 dark:text-emerald-400",
-                items: ["View all student progress", "Monitor across companies", "Check and approve documents", "Track overall attendance"]
+                items: ["View all student progress at a glance", "Monitor interns across multiple companies", "Review and approve submitted documents", "Track attendance across the entire program"]
               },
             ].map((role) => (
               <div
@@ -345,8 +345,8 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
             <Badge variant="outline" className="mb-4 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-800 bg-violet-50 dark:bg-violet-950/40">Six Core Modules</Badge>
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4 text-slate-900 dark:text-white">Everything You Need, Nothing You Don't</h2>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">No bloat, no steep learning curve. Six modules that cover the full internship workflow.</p>
+            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4 text-slate-900 dark:text-white">Everything Your OJT Program Needs in One Place</h2>
+            <p className="text-muted-foreground text-lg max-w-xl mx-auto">Six focused modules that cover the complete internship workflow. No bloat, no steep learning curve, just tools that work.</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
             {features.map((f) => (
@@ -372,7 +372,7 @@ export default function LandingPage() {
           <div className="text-center mb-14">
             <Badge variant="outline" className="mb-4 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-800 bg-violet-50 dark:bg-violet-950/40">Getting Started</Badge>
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4 text-slate-900 dark:text-white">Up and Running in Under Five Minutes</h2>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">No IT department required. No long onboarding sessions.</p>
+            <p className="text-muted-foreground text-lg max-w-xl mx-auto">No IT setup required. No lengthy onboarding sessions. Just create your space and start tracking.</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
             {howItWorks.map((step, i) => (
@@ -411,10 +411,10 @@ export default function LandingPage() {
             <div className="absolute -bottom-10 -left-10 w-48 h-48 rounded-full bg-indigo-400/20 blur-2xl pointer-events-none" />
             <div className="relative">
               <h2 className="text-3xl md:text-4xl font-display font-extrabold text-white mb-5 leading-tight">
-                Stop Coordinating Internships Over Group Chats
+                Your OJT Program Deserves Better Than Group Chats
               </h2>
               <p className="text-violet-200 text-lg mb-10 max-w-xl mx-auto">
-                Give students a space to log their work and supervisors a view that requires zero follow-up.
+                Give interns a dedicated space to log their work and give supervisors real-time visibility that needs zero follow-up.
               </p>
               <Link href="/auth">
                 <Button
@@ -444,7 +444,7 @@ export default function LandingPage() {
               OJTask
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-              Internship management for Philippine schools and companies. Built to reduce paperwork, not add it.
+              The OJT management platform built for Philippine schools and companies. Reduce paperwork, boost visibility, and keep every internship on track.
             </p>
           </div>
 
