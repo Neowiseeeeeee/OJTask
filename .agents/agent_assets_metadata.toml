@@ -36,6 +36,24 @@ uri = "file://Senior-Engineer/client/public/logo-option-3.png"
 type = "image"
 title = "ojtask logo option 3"
 
+[[generated]]
+id = "AR_A72Te8EecsD2cv1N6u"
+uri = "file://Senior-Engineer/client/public/logo-v2-1.png"
+type = "image"
+title = "ojtask circle check logo"
+
+[[generated]]
+id = "UlH7LIDVR2dFIAl271b1D"
+uri = "file://Senior-Engineer/client/public/logo-v2-2.png"
+type = "image"
+title = "ojtask circle lightning logo"
+
+[[generated]]
+id = "AzC1nhmRTNUDBy6Mvcn96"
+uri = "file://Senior-Engineer/client/public/logo-v2-3.png"
+type = "image"
+title = "ojtask ring check logo"
+
 [[outputs]]
 id = "28aM-5_IyVufl5pyJpfJq"
 uri = "file://Senior-Engineer/client/public/logo-option-1.png"
@@ -53,3 +71,21 @@ id = "beaJHj6hPHBqohXLHIpGn"
 uri = "file://Senior-Engineer/client/public/logo-option-3.png"
 type = "image"
 title = "Option 3 — OJ monogram"
+
+[[outputs]]
+id = "4BLjFXaqZPgJuT4Sgr-Ey"
+uri = "file://Senior-Engineer/client/public/logo-v2-1.png"
+type = "image"
+title = "Option A — Circle + checkmark"
+
+[[outputs]]
+id = "9YMw1Vd7iB7bzjNF74Qn-"
+uri = "file://Senior-Engineer/client/public/logo-v2-2.png"
+type = "image"
+title = "Option B — Circle + lightning"
+
+[[outputs]]
+id = "Jf3DR6tBUhFAl1EIIsQYJ"
+uri = "file://Senior-Engineer/client/public/logo-v2-3.png"
+type = "image"
+title = "Option C — Ring + check tail"

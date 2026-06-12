@@ -46,24 +46,24 @@ const roles = [
     icon: GraduationCap, title: "Students",
     subtitle: "Everything you need to get through OJT without the stress.",
     accent: "bg-violet-600",
-    lightBg: "bg-violet-50", darkBg: "dark:bg-violet-950/40",
-    lightRing: "ring-violet-200", darkRing: "dark:ring-violet-800/50",
+    lightBg: "#f5f3ff", darkBg: "rgba(109,40,217,0.12)",
+    lightRing: "rgba(167,139,250,0.4)", darkRing: "rgba(109,40,217,0.3)",
     items: ["Log daily OJT hours and tasks", "Submit structured daily scrum reports", "Record attendance instantly", "Upload required internship documents"],
   },
   {
     icon: Building2, title: "Company Supervisors",
     subtitle: "Stay on top of every intern without the constant follow-ups.",
     accent: "bg-indigo-600",
-    lightBg: "bg-indigo-50", darkBg: "dark:bg-indigo-950/40",
-    lightRing: "ring-indigo-200", darkRing: "dark:ring-indigo-800/50",
+    lightBg: "#eef2ff", darkBg: "rgba(79,70,229,0.12)",
+    lightRing: "rgba(165,180,252,0.4)", darkRing: "rgba(79,70,229,0.3)",
     items: ["Approve time logs and scrums in one click", "Assign tasks and track progress visually", "Monitor attendance in real time", "Communicate via dedicated team channels"],
   },
   {
     icon: BookOpen, title: "School Coordinators",
     subtitle: "Full program visibility without chasing anyone for updates.",
     accent: "bg-emerald-600",
-    lightBg: "bg-emerald-50", darkBg: "dark:bg-emerald-950/40",
-    lightRing: "ring-emerald-200", darkRing: "dark:ring-emerald-800/50",
+    lightBg: "#ecfdf5", darkBg: "rgba(5,150,105,0.12)",
+    lightRing: "rgba(110,231,183,0.4)", darkRing: "rgba(5,150,105,0.3)",
     items: ["View all student progress at a glance", "Monitor interns across multiple companies", "Review and approve submitted documents", "Track attendance program-wide"],
   },
 ];
@@ -251,7 +251,11 @@ export default function LandingPage() {
             {roles.map((role) => (
               <div
                 key={role.title}
-                className={`rounded-3xl ${role.lightBg} ${role.darkBg} ring-1 ${role.lightRing} ${role.darkRing} p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300`}
+                className="rounded-3xl p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+                style={{
+                  background: isDark ? role.darkBg : role.lightBg,
+                  border: `1px solid ${isDark ? role.darkRing : role.lightRing}`,
+                }}
                 data-testid={`card-role-${role.title.split(' ')[0].toLowerCase()}`}
               >
                 <div className={`w-12 h-12 ${role.accent} rounded-2xl flex items-center justify-center mb-5 shadow-md`}>
@@ -290,7 +294,11 @@ export default function LandingPage() {
             {features.map((f) => (
               <div
                 key={f.title}
-                className="group p-7 rounded-3xl border border-slate-100 dark:border-white/8 bg-white dark:bg-white/3 hover:shadow-xl dark:hover:bg-white/5 hover:-translate-y-1 transition-all duration-300"
+                className="group p-7 rounded-3xl hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                style={{
+                  background: isDark ? "rgba(255,255,255,0.04)" : "#ffffff",
+                  border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #f1f5f9",
+                }}
                 data-testid={`card-feature-${f.title.toLowerCase().replace(/\s+/g, '-')}`}
               >
                 <div className={`w-12 h-12 ${isDark ? f.darkColor : f.lightColor} rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform`}>
@@ -321,7 +329,12 @@ export default function LandingPage() {
             {steps.map((step, i) => (
               <div
                 key={step.step}
-                className="relative group bg-white dark:bg-white/5 rounded-3xl p-7 shadow-sm dark:shadow-none border border-transparent dark:border-white/8 hover:shadow-xl dark:hover:bg-white/8 hover:-translate-y-1 transition-all duration-300"
+                className="relative group rounded-3xl p-7 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                style={{
+                  background: isDark ? "rgba(255,255,255,0.05)" : "#ffffff",
+                  border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid transparent",
+                  boxShadow: isDark ? "none" : "0 1px 3px rgba(0,0,0,0.06)",
+                }}
                 data-testid={`card-step-${step.step}`}
               >
                 <div className="text-6xl font-black text-violet-100 dark:text-violet-900/60 absolute top-5 right-6 leading-none select-none">{step.step}</div>
