@@ -16,11 +16,33 @@ import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import {
   FileText, Upload, CheckCircle2, XCircle, Clock, AlertCircle,
-  Plus, Eye, Target, FolderOpen, Users, Filter
+  Plus, Eye, Target, FolderOpen, Filter, Download, Loader2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { UserCardWithPicture } from "@/components/user-card-with-picture";
+
+async function downloadDocument(doc: any, toast: ReturnType<typeof useToast>["toast"]) {
+  try {
+    const res = await fetch(`/api/documents/${doc.id}/file`, { credentials: "include" });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ message: "File not available" }));
+      toast({ title: "Download failed", description: err.message ?? "The file could not be downloaded.", variant: "destructive" });
+      return;
+    }
+    const blob = await res.blob();
+    const cd = res.headers.get("Content-Disposition") ?? "";
+    const match = cd.match(/filename[^;=\n]*=["']?([^"';\n]+)/i);
+    const filename = match ? decodeURIComponent(match[1]) : doc.originalFileName ?? doc.name;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+  } catch {
+    toast({ title: "Download failed", description: "An unexpected error occurred.", variant: "destructive" });
+  }
+}
 
 function getStatusIcon(status: string) {
   if (status === "approved") return <CheckCircle2 className="w-4 h-4 text-emerald-500" />;
@@ -64,24 +86,12 @@ function UploadDialog({
       return;
     }
     try {
-      const fileData = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-
       await createDocument.mutateAsync({
         spaceId,
         name: file.name,
         type: "requirement",
         documentType: docType,
-        fileData,
-        fileSize: file.size,
-        mimeType: file.type,
-        notes,
-        isRequired: requiredDocs.includes(docType),
-        deadline: documentDeadlines?.[requiredDocs.indexOf(docType)] ?? "",
+        file,
       });
 
       toast({ title: "Document Uploaded", description: "Your document has been submitted for review." });
@@ -153,6 +163,7 @@ function StudentDocuments() {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [preselectedType, setPreselectedType] = useState("");
   const [selectedDoc, setSelectedDoc] = useState<any>(null);
+  const [downloading, setDownloading] = useState(false);
 
   const openUpload = (type = "") => { setPreselectedType(type); setUploadOpen(true); };
 
@@ -302,22 +313,27 @@ function StudentDocuments() {
         preselectedType={preselectedType} />
 
       {/* Document detail dialog */}
-      <Dialog open={!!selectedDoc} onOpenChange={() => setSelectedDoc(null)}>
+      <Dialog open={!!selectedDoc} onOpenChange={() => { setSelectedDoc(null); setDownloading(false); }}>
         <DialogContent>
           <DialogHeader><DialogTitle>Document Details</DialogTitle></DialogHeader>
           {selectedDoc && (
             <div className="space-y-3 py-2">
-              <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">File Name</Label><p className="font-medium mt-1">{selectedDoc.name}</p></div>
+              <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">File Name</Label><p className="font-medium mt-1">{selectedDoc.originalFileName ?? selectedDoc.name}</p></div>
               <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">Document Type</Label><p className="font-medium mt-1">{selectedDoc.documentType}</p></div>
               <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">Status</Label><div className="mt-1"><StatusBadge status={selectedDoc.status} /></div></div>
               <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">Uploaded</Label><p className="font-medium mt-1">{selectedDoc.uploadDate ? format(new Date(selectedDoc.uploadDate), "MMMM d, yyyy") : "—"}</p></div>
               {selectedDoc.fileSize && <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">File Size</Label><p className="font-medium mt-1">{(selectedDoc.fileSize / 1024 / 1024).toFixed(2)} MB</p></div>}
               {selectedDoc.rejectionReason && <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">Rejection Reason</Label><p className="font-medium text-red-600 mt-1">{selectedDoc.rejectionReason}</p></div>}
               {selectedDoc.approvedDate && <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">Reviewed On</Label><p className="font-medium mt-1">{format(new Date(selectedDoc.approvedDate), "MMMM d, yyyy")}</p></div>}
-              {selectedDoc.fileData && (
-                <a href={selectedDoc.fileData} download={selectedDoc.name} className="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity">
-                  Download File
-                </a>
+              {selectedDoc.filePath && (
+                <Button
+                  disabled={downloading}
+                  onClick={async () => { setDownloading(true); await downloadDocument(selectedDoc, toast); setDownloading(false); }}
+                  className="gap-2 w-full"
+                >
+                  {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                  {downloading ? "Downloading..." : "Download File"}
+                </Button>
               )}
             </div>
           )}
@@ -348,6 +364,7 @@ function ManagerDocuments() {
   const [selectedDoc, setSelectedDoc] = useState<any>(null);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [rejectDocId, setRejectDocId] = useState<number | null>(null);
+  const [downloading, setDownloading] = useState(false);
 
   const getName = (uid: number) => members.find(m => m.userId === uid)?.user?.name ?? `User #${uid}`;
 
@@ -513,23 +530,28 @@ function ManagerDocuments() {
       </Dialog>
 
       {/* Document detail dialog */}
-      <Dialog open={!!selectedDoc} onOpenChange={() => setSelectedDoc(null)}>
+      <Dialog open={!!selectedDoc} onOpenChange={() => { setSelectedDoc(null); setDownloading(false); }}>
         <DialogContent>
           <DialogHeader><DialogTitle>Document Details</DialogTitle></DialogHeader>
           {selectedDoc && (
             <div className="space-y-3 py-2">
               <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">Submitted By</Label><p className="font-medium mt-1">{getName(selectedDoc.uploaderId)}</p></div>
-              <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">File Name</Label><p className="font-medium mt-1">{selectedDoc.name}</p></div>
+              <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">File Name</Label><p className="font-medium mt-1">{selectedDoc.originalFileName ?? selectedDoc.name}</p></div>
               <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">Document Type</Label><p className="font-medium mt-1">{selectedDoc.documentType}</p></div>
               <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">Status</Label><div className="mt-1"><StatusBadge status={selectedDoc.status} /></div></div>
               <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">Uploaded</Label><p className="font-medium mt-1">{selectedDoc.uploadDate ? format(new Date(selectedDoc.uploadDate), "MMMM d, yyyy") : "—"}</p></div>
               {selectedDoc.fileSize && <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">File Size</Label><p className="font-medium mt-1">{(selectedDoc.fileSize / 1024 / 1024).toFixed(2)} MB</p></div>}
               {selectedDoc.rejectionReason && <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">Rejection Reason</Label><p className="font-medium text-red-600 mt-1">{selectedDoc.rejectionReason}</p></div>}
               {selectedDoc.approvedDate && <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">Reviewed On</Label><p className="font-medium mt-1">{format(new Date(selectedDoc.approvedDate), "MMMM d, yyyy")}</p></div>}
-              {selectedDoc.fileData && (
-                <a href={selectedDoc.fileData} download={selectedDoc.name} className="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity">
-                  Download File
-                </a>
+              {selectedDoc.filePath && (
+                <Button
+                  disabled={downloading}
+                  onClick={async () => { setDownloading(true); await downloadDocument(selectedDoc, toast); setDownloading(false); }}
+                  className="gap-2 w-full"
+                >
+                  {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                  {downloading ? "Downloading..." : "Download File"}
+                </Button>
               )}
             </div>
           )}
