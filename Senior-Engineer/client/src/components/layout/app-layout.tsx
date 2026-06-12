@@ -120,7 +120,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         <Sidebar className="border-r border-border/50">
           <SidebarHeader className="h-16 flex items-center justify-center px-4 border-b border-border/50">
             <div className="flex items-center">
-              <img src="/ojtask-logo.png" className="h-12 w-auto object-contain" alt="OJTask logo" />
+              <img src="/ojtask-logo.png" className="h-14 w-auto object-contain self-center" alt="OJTask logo" />
             </div>
           </SidebarHeader>
           <SidebarContent>
