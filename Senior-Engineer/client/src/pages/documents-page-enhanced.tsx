@@ -325,16 +325,20 @@ function StudentDocuments() {
               {selectedDoc.fileSize && <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">File Size</Label><p className="font-medium mt-1">{(selectedDoc.fileSize / 1024 / 1024).toFixed(2)} MB</p></div>}
               {selectedDoc.rejectionReason && <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">Rejection Reason</Label><p className="font-medium text-red-600 mt-1">{selectedDoc.rejectionReason}</p></div>}
               {selectedDoc.approvedDate && <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">Reviewed On</Label><p className="font-medium mt-1">{format(new Date(selectedDoc.approvedDate), "MMMM d, yyyy")}</p></div>}
-              {selectedDoc.filePath && (
-                <Button
-                  disabled={downloading}
-                  onClick={async () => { setDownloading(true); await downloadDocument(selectedDoc, toast); setDownloading(false); }}
-                  className="gap-2 w-full"
-                >
-                  {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                  {downloading ? "Downloading..." : "Download File"}
-                </Button>
-              )}
+              <div className="pt-1">
+                {selectedDoc.filePath ? (
+                  <Button
+                    disabled={downloading}
+                    onClick={async () => { setDownloading(true); await downloadDocument(selectedDoc, toast); setDownloading(false); }}
+                    className="gap-2 w-full"
+                  >
+                    {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                    {downloading ? "Downloading..." : "Download File"}
+                  </Button>
+                ) : (
+                  <p className="text-xs text-muted-foreground italic">No file attached to this document.</p>
+                )}
+              </div>
             </div>
           )}
         </DialogContent>
@@ -543,16 +547,20 @@ function ManagerDocuments() {
               {selectedDoc.fileSize && <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">File Size</Label><p className="font-medium mt-1">{(selectedDoc.fileSize / 1024 / 1024).toFixed(2)} MB</p></div>}
               {selectedDoc.rejectionReason && <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">Rejection Reason</Label><p className="font-medium text-red-600 mt-1">{selectedDoc.rejectionReason}</p></div>}
               {selectedDoc.approvedDate && <div><Label className="text-xs text-muted-foreground uppercase tracking-wider">Reviewed On</Label><p className="font-medium mt-1">{format(new Date(selectedDoc.approvedDate), "MMMM d, yyyy")}</p></div>}
-              {selectedDoc.filePath && (
-                <Button
-                  disabled={downloading}
-                  onClick={async () => { setDownloading(true); await downloadDocument(selectedDoc, toast); setDownloading(false); }}
-                  className="gap-2 w-full"
-                >
-                  {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                  {downloading ? "Downloading..." : "Download File"}
-                </Button>
-              )}
+              <div className="pt-1">
+                {selectedDoc.filePath ? (
+                  <Button
+                    disabled={downloading}
+                    onClick={async () => { setDownloading(true); await downloadDocument(selectedDoc, toast); setDownloading(false); }}
+                    className="gap-2 w-full"
+                  >
+                    {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                    {downloading ? "Downloading..." : "Download File"}
+                  </Button>
+                ) : (
+                  <p className="text-xs text-muted-foreground italic">No file attached to this document.</p>
+                )}
+              </div>
             </div>
           )}
         </DialogContent>
