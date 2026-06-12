@@ -5,8 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Zap, Loader2, Eye, EyeOff, Check, X, AlertCircle, ArrowLeft } from "lucide-react";
-import { useLocation } from "wouter";
+import { Zap, Loader2, Eye, EyeOff, Check, X, AlertCircle } from "lucide-react";
+import { useLocation, Link } from "wouter";
 
 function PasswordStrengthIndicator({ password }: { password: string }) {
   const strength = {
@@ -65,6 +65,13 @@ export default function AuthPage() {
   const { login, register, isLoginPending, isRegisterPending, user } = useAuth();
   const [, setLocation] = useLocation();
   const [isLogin, setIsLogin] = useState(true);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -130,19 +137,38 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-background p-4">
-      <div className="w-full max-w-md">
-        {/* Back to Home */}
-        <div className="mb-6">
-          <button
-            onClick={() => setLocation("/")}
-            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group"
-          >
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-            Back to Home
-          </button>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-background">
+      {/* ── NAVBAR ─────────────────────────────────────────── */}
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-white/80 dark:bg-[#0d0f1a]/80 backdrop-blur-xl border-b border-black/8 dark:border-white/8 shadow-sm"
+          : "bg-transparent"
+      }`}>
+        <div className="flex justify-center px-5 h-16">
+          <div className="w-full max-w-7xl flex items-center gap-6">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2.5 font-display font-bold text-lg text-foreground shrink-0">
+              <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-purple-700 rounded-lg flex items-center justify-center shadow-sm shadow-violet-500/30">
+                <Zap className="w-4 h-4 text-white" />
+              </div>
+              <span>OJTask</span>
+            </Link>
 
+            <div className="flex-1" />
+
+            {/* Back to Home */}
+            <Link href="/">
+              <Button variant="ghost" size="sm" className="font-medium text-muted-foreground hover:text-foreground">
+                ← Back to Home
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+      {/* Page content */}
+      <div className="flex items-center justify-center min-h-screen pt-16 p-4">
+      <div className="w-full max-w-md">
         {/* Header */}
         <div className="flex flex-col items-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-primary/30">
@@ -493,6 +519,7 @@ export default function AuthPage() {
         <p className="text-center text-xs text-muted-foreground mt-6">
           By signing up, you agree to our Terms of Service and Privacy Policy
         </p>
+      </div>
       </div>
     </div>
   );
