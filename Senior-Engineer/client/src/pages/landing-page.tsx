@@ -128,8 +128,7 @@ export default function LandingPage() {
       }`}>
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center gap-4">
           <Link href="/" className="flex items-center gap-0.5 shrink-0">
-            <img src="/ojt-logo.png" className="w-14 h-10 object-contain" alt="OJTask logo" />
-            <span className="font-black text-xl tracking-tight text-slate-900 dark:text-white -ml-0.5">ask</span>
+            <img src="/ojtask-logo.png" className="h-12 w-auto object-contain" alt="OJTask logo" />
           </Link>
 
           <div className="flex-1" />
@@ -377,8 +376,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
             <div className="col-span-2 md:col-span-1">
               <Link href="/" className="flex items-center gap-0.5 mb-5">
-                <img src="/ojt-logo.png" className="w-14 h-10 object-contain brightness-0 invert" alt="OJTask logo" />
-                <span className="font-black text-xl text-white -ml-0.5">ask</span>
+                <img src="/ojtask-logo.png" className="h-10 w-auto object-contain brightness-0 invert" alt="OJTask logo" />
               </Link>
               <p className="text-white/60 text-sm leading-relaxed">The OJT management platform for Philippine schools and companies.</p>
             </div>

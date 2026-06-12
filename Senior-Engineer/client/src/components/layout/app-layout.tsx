@@ -119,9 +119,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
       <div className="flex min-h-screen w-full bg-muted/20">
         <Sidebar className="border-r border-border/50">
           <SidebarHeader className="h-16 flex items-center justify-center px-4 border-b border-border/50">
-            <div className="flex items-center gap-0.5">
-              <img src="/ojt-logo.png" className="w-14 h-10 object-contain" alt="OJTask logo" />
-              <span className="font-display font-bold text-xl text-primary -ml-0.5">ask</span>
+            <div className="flex items-center">
+              <img src="/ojtask-logo.png" className="h-12 w-auto object-contain" alt="OJTask logo" />
             </div>
           </SidebarHeader>
           <SidebarContent>
