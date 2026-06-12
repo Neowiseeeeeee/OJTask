@@ -61,10 +61,10 @@ const features = [
 ];
 
 const stats = [
-  { value: "—", label: "Students Onboarded" },
-  { value: "—", label: "Companies Using It" },
-  { value: "—", label: "Schools Enrolled" },
-  { value: "—", label: "Supervisor Satisfaction" },
+  { value: "...", label: "Students Onboarded" },
+  { value: "...", label: "Companies Using It" },
+  { value: "...", label: "Schools Enrolled" },
+  { value: "...", label: "Supervisor Satisfaction" },
 ];
 
 
@@ -83,10 +83,10 @@ export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
 
   const [statsValues, setStatsValues] = useState<Record<string, string>>({
-    "Students Onboarded": "—",
-    "Companies Using It": "—",
-    "Schools Enrolled": "—",
-    "Supervisor Satisfaction": "—",
+    "Students Onboarded": "...",
+    "Companies Using It": "...",
+    "Schools Enrolled": "...",
+    "Supervisor Satisfaction": "...",
   });
 
   useEffect(() => {
@@ -96,10 +96,10 @@ export default function LandingPage() {
       .then((data) => {
         if (!mounted || !data) return;
         setStatsValues({
-          "Students Onboarded": String(data.studentsOnboarded ?? "—"),
-          "Companies Using It": String(data.companiesUsingIt ?? "—"),
-          "Schools Enrolled": String(data.schoolsEnrolled ?? "—"),
-          "Supervisor Satisfaction": String(data.supervisorSatisfaction ?? "—"),
+          "Students Onboarded": String(data.studentsOnboarded ?? "..."),
+          "Companies Using It": String(data.companiesUsingIt ?? "..."),
+          "Schools Enrolled": String(data.schoolsEnrolled ?? "..."),
+          "Supervisor Satisfaction": String(data.supervisorSatisfaction ?? "..."),
         });
       })
       .catch(() => {
