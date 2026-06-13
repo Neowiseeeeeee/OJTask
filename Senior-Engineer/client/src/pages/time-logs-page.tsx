@@ -299,7 +299,7 @@ function StudentTimeLogs() {
               <div className="text-xs text-muted-foreground mb-1">Time tracked</div>
               <div className="font-mono text-2xl font-bold text-primary">{formatElapsed(displayMs)}</div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label>Date</Label>
                 <Input type="date" value={timerDate} onChange={e => setTimerDate(e.target.value)} />
@@ -390,7 +390,8 @@ function StudentTimeLogs() {
           </div>
 
           {/* Logs Table */}
-          <Card className="border-border/50 shadow-sm overflow-hidden">
+          <Card className="border-border/50 shadow-sm">
+            <div className="overflow-x-auto">
             <Table>
               <TableHeader className="bg-muted/50">
                 <TableRow>
@@ -437,6 +438,7 @@ function StudentTimeLogs() {
                 ))}
               </TableBody>
             </Table>
+            </div>
           </Card>
         </>
       )}
@@ -552,7 +554,8 @@ function ManagerTimeLogs() {
           <p className="font-medium text-muted-foreground">Select a space to view time logs</p>
         </div>
       ) : (
-        <Card className="border-border/50 shadow-sm overflow-hidden">
+        <Card className="border-border/50 shadow-sm">
+          <div className="overflow-x-auto">
           <Table>
             <TableHeader className="bg-muted/50">
               <TableRow>
@@ -616,6 +619,7 @@ function ManagerTimeLogs() {
               ))}
             </TableBody>
           </Table>
+          </div>
         </Card>
       )}
     </div>

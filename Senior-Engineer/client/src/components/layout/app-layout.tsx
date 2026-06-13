@@ -184,7 +184,12 @@ export function AppLayout({ children }: { children: ReactNode }) {
         </Sidebar>
 
         <div className="flex flex-col flex-1 min-w-0">
-          <main className="flex-1 p-6 lg:p-8 overflow-y-auto overflow-x-hidden">
+          {/* Mobile top bar — only visible when sidebar is collapsed */}
+          <header className="md:hidden flex items-center gap-3 px-4 h-14 border-b border-border/50 bg-background/95 backdrop-blur-sm shrink-0 sticky top-0 z-20">
+            <SidebarTrigger className="h-9 w-9" />
+            <img src="/ojtask-logo.png" className="h-8 w-auto object-contain" alt="OJTask" />
+          </header>
+          <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto overflow-x-hidden">
             <div className="max-w-6xl mx-auto">
               {children}
             </div>

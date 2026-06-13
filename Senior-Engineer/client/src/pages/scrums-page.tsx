@@ -66,7 +66,7 @@ function StudentScrums() {
 
   return (
     <div className="animate-in fade-in duration-500">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
         <div>
           <h1 className="text-3xl font-display font-bold">Daily Scrum</h1>
           <p className="text-muted-foreground">Submit your daily progress report</p>
@@ -80,15 +80,15 @@ function StudentScrums() {
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader><DialogTitle>Daily Scrum Report</DialogTitle></DialogHeader>
             <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2"><Label>Date</Label><Input type="date" name="date" value={formData.date} onChange={handleChange} /></div>
                 <div className="space-y-2"><Label>Hours Spent</Label><Input type="number" name="timeSpent" value={formData.timeSpent} onChange={handleChange} /></div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2"><Label>Yesterday – Planned</Label><Textarea name="taskYesterdayPlanned" value={formData.taskYesterdayPlanned} onChange={handleChange} placeholder="What did you plan?" /></div>
                 <div className="space-y-2"><Label>Yesterday – Completed</Label><Textarea name="taskYesterdayCompleted" value={formData.taskYesterdayCompleted} onChange={handleChange} placeholder="What did you finish?" /></div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2"><Label>Today – Planned</Label><Textarea name="taskTodayPlanned" value={formData.taskTodayPlanned} onChange={handleChange} placeholder="What will you do today?" /></div>
                 <div className="space-y-2"><Label>Today – Done so far</Label><Textarea name="taskTodayCompleted" value={formData.taskTodayCompleted} onChange={handleChange} placeholder="What's done already?" /></div>
               </div>

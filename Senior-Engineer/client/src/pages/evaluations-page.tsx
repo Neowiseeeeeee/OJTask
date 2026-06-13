@@ -333,7 +333,7 @@ function ManagerEvaluations() {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>New Evaluation (Grade 1–100)</DialogTitle></DialogHeader>
           <div className="grid gap-5 py-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Student</Label>
                 {/* Searchable student selection */}
