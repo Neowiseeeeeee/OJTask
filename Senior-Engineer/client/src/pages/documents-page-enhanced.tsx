@@ -556,7 +556,7 @@ function ManagerDocuments() {
         <DialogContent>
           <DialogHeader><DialogTitle>Reject Document</DialogTitle></DialogHeader>
           <p className="text-sm text-muted-foreground py-2">Are you sure you want to reject this document? The student will be notified and can re-upload.</p>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Button
               variant="destructive"
               onClick={() => rejectDocId && handleReject(rejectDocId)}

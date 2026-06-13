@@ -138,7 +138,8 @@ function StudentAttendance() {
                   ))}
                 </div>
               )}
-              <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-3">
+              <div className="overflow-x-auto">
+                <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-3 min-w-0">
                 {attendance.map(record => {
                   const conf = statusConfig[record.status] ?? statusConfig.present;
                   return (
@@ -150,6 +151,7 @@ function StudentAttendance() {
                   );
                 })}
                 {attendance.length === 0 && <div className="col-span-full py-12 text-center text-muted-foreground">No records yet. Mark your first day above!</div>}
+                </div>
               </div>
             </>
           )}
@@ -351,7 +353,8 @@ function ManagerAttendance() {
               {students.length === 0 && <div className="col-span-2 text-center py-12 rounded-xl border-2 border-dashed border-border/50 text-muted-foreground">No students in this space.</div>}
             </div>
           ) : (
-            <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-3">
+            <div className="overflow-x-auto">
+            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-3 min-w-0">
               {filtered.map(record => {
                 const conf = statusConfig[record.status] ?? statusConfig.present;
                 return (
@@ -363,6 +366,7 @@ function ManagerAttendance() {
                 );
               })}
               {filtered.length === 0 && <div className="col-span-full py-12 text-center text-muted-foreground">No records for this student.</div>}
+            </div>
             </div>
           )}
         </TabsContent>
