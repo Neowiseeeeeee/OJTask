@@ -13,7 +13,7 @@ const NOTIFICATION_SECTION_MAP: Record<string, string> = {
   // '/tasks':    'tasks',
 };
 
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useSpace } from "@/hooks/use-space";
@@ -52,8 +52,12 @@ import {
   BarChart3,
   ShieldCheck,
   Settings,
-  User
+  User,
+  Cpu,
+  Construction,
+  X
 } from "lucide-react";
+import { useMaintenanceMode } from "@/hooks/use-admin";
 import { SpaceSelector } from "./space-selector";
 
 export function AppLayout({ children }: { children: ReactNode }) {
@@ -66,6 +70,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const { data: tasks = [] } = useTasks(activeSpaceId);
   const { data: scrums = [] } = useScrums(activeSpaceId);
   const [location] = useLocation();
+  const { data: maintenance } = useMaintenanceMode();
+  const [maintenanceDismissed, setMaintenanceDismissed] = useState(false);
 
   const taskBadge = user?.role === "student"
     ? tasks.filter((t: any) => t.status !== "done" && t.assignedToId === user.id).length
@@ -83,7 +89,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
     { title: "Analytics", href: "/system-admin/analytics", icon: BarChart3 },
     { title: "Audit Logs", href: "/system-admin/logs", icon: Activity },
     { title: "Security", href: "/system-admin/security", icon: ShieldCheck },
-    { title: "Settings", href: "/system-admin/settings", icon: Users },
+    { title: "Environment", href: "/system-admin/environment", icon: Cpu },
+    { title: "Settings", href: "/system-admin/settings", icon: Settings },
   ];
 
   // Generic badge resolver — reads from NOTIFICATION_SECTION_MAP at the top of this file.
@@ -194,6 +201,26 @@ export function AppLayout({ children }: { children: ReactNode }) {
               )}
             </div>
           </header>
+          {maintenance?.enabled && !maintenanceDismissed && user?.role !== "admin" && (
+            <div className="shrink-0 bg-amber-500 dark:bg-amber-600 text-white px-4 py-2.5 flex items-center gap-3 text-sm">
+              <Construction className="w-4 h-4 shrink-0" />
+              <span className="flex-1 font-medium">
+                {maintenance.message || "System maintenance in progress. We'll be back shortly."}
+                {maintenance.endsAt && (
+                  <span className="ml-2 font-normal opacity-90">
+                    — Expected back: {new Date(maintenance.endsAt).toLocaleString()}
+                  </span>
+                )}
+              </span>
+              <button
+                onClick={() => setMaintenanceDismissed(true)}
+                className="shrink-0 hover:opacity-70 transition-opacity"
+                aria-label="Dismiss"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
           <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto overflow-x-hidden">
             <div className="max-w-6xl mx-auto">
               {children}

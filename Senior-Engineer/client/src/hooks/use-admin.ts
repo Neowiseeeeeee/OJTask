@@ -112,3 +112,32 @@ export function useSystemLogs(limit?: number) {
     }
   });
 }
+
+export function useMaintenanceMode() {
+  return useQuery({
+    queryKey: ['maintenance'],
+    queryFn: async () => {
+      const res = await fetch('/api/system/maintenance');
+      if (!res.ok) throw new Error('Failed to fetch maintenance status');
+      return res.json() as Promise<{ enabled: boolean; message: string; endsAt: string | null }>;
+    },
+    staleTime: 30_000,
+  });
+}
+
+export function useSetMaintenanceMode() {
+  return useMutation({
+    mutationFn: async (payload: { enabled: boolean; message: string; endsAt: string | null }) => {
+      const res = await fetch('/api/admin/maintenance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error('Failed to update maintenance mode');
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['maintenance'] });
+    }
+  });
+}

@@ -1823,6 +1823,90 @@ export async function registerRoutes(
     }
   });
 
+  // Environment Health Check (admin-only)
+  app.get("/api/admin/env-health", requireAdmin, (req, res) => {
+    const vars = [
+      {
+        key: "MONGODB_URI",
+        required: true,
+        description: "MongoDB Atlas connection string. Required for all database operations.",
+        impact: "Nothing works without this — the app cannot connect to any database.",
+      },
+      {
+        key: "SESSION_SECRET",
+        required: true,
+        description: "Secret used to sign session cookies. Required for user authentication.",
+        impact: "Sessions are insecure or fail to work; users cannot log in.",
+      },
+      {
+        key: "GOOGLE_CLIENT_ID",
+        required: false,
+        description: "Google OAuth 2.0 client ID. Enables 'Continue with Google' sign-in.",
+        impact: "Google sign-in button will be hidden or show an error.",
+      },
+      {
+        key: "GOOGLE_CLIENT_SECRET",
+        required: false,
+        description: "Google OAuth 2.0 client secret. Required alongside GOOGLE_CLIENT_ID.",
+        impact: "Google OAuth callback will fail even if client ID is set.",
+      },
+      {
+        key: "GMAIL_USER",
+        required: false,
+        description: "Gmail address used as the sender for OTP and notification emails.",
+        impact: "Forgot-password OTP emails cannot be sent; a warning banner will appear.",
+      },
+      {
+        key: "GMAIL_APP_PASSWORD",
+        required: false,
+        description: "Gmail App Password (not your Gmail account password) for SMTP auth.",
+        impact: "Email delivery will fail even if GMAIL_USER is set.",
+      },
+      {
+        key: "APP_URL",
+        required: false,
+        description: "Public base URL of the deployment (e.g. https://ojtask.vercel.app). Used for Google OAuth callbacks.",
+        impact: "OAuth callback URL may be auto-detected incorrectly on some hosting providers.",
+      },
+    ];
+
+    const result = vars.map(v => ({
+      ...v,
+      present: !!process.env[v.key],
+    }));
+
+    res.json(result);
+  });
+
+  // Get maintenance mode status (public — used by all clients)
+  app.get("/api/system/maintenance", async (req, res) => {
+    try {
+      const db = getDB();
+      const doc = await db.collection("systemSettings").findOne({ key: "maintenanceMode" });
+      if (!doc) return res.json({ enabled: false, message: "", endsAt: null });
+      res.json({ enabled: doc.enabled ?? false, message: doc.message ?? "", endsAt: doc.endsAt ?? null });
+    } catch {
+      res.json({ enabled: false, message: "", endsAt: null });
+    }
+  });
+
+  // Set maintenance mode (admin-only)
+  app.post("/api/admin/maintenance", requireAdmin, async (req, res) => {
+    try {
+      const { enabled, message, endsAt } = req.body;
+      if (typeof enabled !== "boolean") return res.status(400).json({ message: "enabled must be a boolean" });
+      const db = getDB();
+      await db.collection("systemSettings").updateOne(
+        { key: "maintenanceMode" },
+        { $set: { key: "maintenanceMode", enabled, message: message ?? "", endsAt: endsAt ?? null, updatedAt: new Date() } },
+        { upsert: true }
+      );
+      res.json({ enabled, message, endsAt });
+    } catch {
+      res.status(500).json({ message: "Internal error" });
+    }
+  });
+
   // Public contact form endpoint
   app.post("/api/contact", async (req, res) => {
     try {

@@ -29,6 +29,7 @@ import AdminAnalytics from "@/pages/admin/analytics";
 import AdminLogs from "@/pages/admin/logs";
 import AdminSecurity from "@/pages/admin/security";
 import AdminSettings from "@/pages/admin/settings";
+import AdminEnvironment from "@/pages/admin/environment";
 import UserProfile from "@/pages/user-profile";
 import UserSettings from "@/pages/user-settings";
 import SpaceAdminPage from "@/pages/space-admin";
@@ -152,6 +153,9 @@ function Router() {
       </Route>
       <Route path="/system-admin/settings">
         <AppLayout><ProtectedRoute component={AdminSettings} systemAdminOnly /></AppLayout>
+      </Route>
+      <Route path="/system-admin/environment">
+        <AppLayout><ProtectedRoute component={AdminEnvironment} systemAdminOnly /></AppLayout>
       </Route>
       
       {/* User profile and settings (all roles) */}
