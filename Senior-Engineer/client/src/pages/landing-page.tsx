@@ -272,11 +272,28 @@ export default function LandingPage() {
     return () => { document.title = "OJTask"; };
   }, []);
 
-  const rolesGradient   = isDark ? "linear-gradient(175deg, #13102a 0%, #1a1040 100%)"              : "linear-gradient(175deg, #fafafa 0%, #f5f3ff 100%)";
-  const stepsGradient   = isDark ? "linear-gradient(175deg, #13102a 0%, #1e1b4b 100%)"              : "linear-gradient(175deg, #f5f3ff 0%, #ede9fe 100%)";
+  const pageBg = isDark ? "linear-gradient(160deg, #160d35 0%, #2a1260 20%, #1a0d45 45%, #0f0820 70%, #1a0a3e 100%)" : "linear-gradient(160deg, #f0ebff 0%, #e8d9ff 20%, #f5f0ff 55%, #faf7ff 100%)";
 
   return (
-    <div className="bg-white dark:bg-[#0d0f1a] text-slate-900 dark:text-white overflow-x-hidden transition-colors duration-300">
+    <div className="text-slate-900 dark:text-white overflow-x-hidden transition-colors duration-300" style={{ background: pageBg }}>
+
+      {/* ── Full-page persistent particle canvas ─────────────────────────── */}
+      {isDark && (
+        <div className="fixed inset-0 pointer-events-none z-0">
+          <ParticleCanvas />
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
+            backgroundSize: "60px 60px",
+          }} />
+        </div>
+      )}
+      {!isDark && (
+        <div className="fixed inset-0 pointer-events-none z-0" style={{
+          backgroundImage: "linear-gradient(rgba(124,58,237,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(124,58,237,0.04) 1px, transparent 1px)",
+          backgroundSize: "60px 60px",
+        }} />
+      )}
 
       {/* ── NAVBAR ──────────────────────────────────────────────────────── */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -321,27 +338,11 @@ export default function LandingPage() {
       </nav>
 
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <section
-        className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center overflow-hidden"
-        style={{ background: isDark
-          ? "linear-gradient(145deg, #160d35 0%, #3b1d72 35%, #1e0a4a 65%, #0f0820 100%)"
-          : "linear-gradient(145deg, #f0ebff 0%, #e4d8ff 35%, #f5f0ff 65%, #faf7ff 100%)" }}
-      >
-        {/* Particle network */}
-        {isDark && <ParticleCanvas />}
-
+      <section className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center overflow-hidden z-10">
         {/* Animated background blobs */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full bg-violet-600/25 dark:bg-violet-500/20 blur-[130px] pointer-events-none animate-blob" />
-        <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] rounded-full bg-indigo-500/20 dark:bg-fuchsia-600/15 blur-[110px] pointer-events-none animate-blob animation-delay-2000" />
-        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-purple-500/20 dark:bg-indigo-500/15 blur-[100px] pointer-events-none animate-blob animation-delay-4000" />
-
-        {/* Subtle grid overlay */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          backgroundImage: isDark
-            ? "linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)"
-            : "linear-gradient(rgba(124,58,237,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(124,58,237,0.05) 1px, transparent 1px)",
-          backgroundSize: "60px 60px",
-        }} />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full bg-violet-600/20 dark:bg-violet-500/15 blur-[130px] pointer-events-none animate-blob" />
+        <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] rounded-full bg-indigo-500/15 dark:bg-fuchsia-600/10 blur-[110px] pointer-events-none animate-blob animation-delay-2000" />
+        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-purple-500/15 dark:bg-indigo-500/10 blur-[100px] pointer-events-none animate-blob animation-delay-4000" />
 
         {/* Floating decorative chips */}
         <div className="absolute top-28 left-[8%] hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 dark:bg-white/20 backdrop-blur-sm border border-white/60 dark:border-white/30 shadow-lg text-xs font-semibold text-slate-700 dark:text-white animate-float">
@@ -401,26 +402,64 @@ export default function LandingPage() {
       </section>
 
       {/* ── MARQUEE ───────────────────────────────────────────────────────── */}
-      <section className="py-2 overflow-hidden" style={{ background: "linear-gradient(90deg, #7c3aed, #6d28d9, #5b21b6)" }}>
+      <section className="relative z-10 py-2 overflow-hidden" style={{ background: "linear-gradient(90deg, #7c3aed, #6d28d9, #5b21b6)" }}>
         <MarqueeStrip />
         <MarqueeStrip reverse />
       </section>
 
       {/* ── STATS ─────────────────────────────────────────────────────────── */}
-      <section className="min-h-[40vh] flex items-center py-20 px-6 bg-white dark:bg-[#0d0f1a]">
-        <div className="max-w-3xl mx-auto w-full grid grid-cols-1 sm:grid-cols-3 gap-10 place-items-center">
-          {[
-            { value: statsValues.students,  label: "Students Onboarded" },
-            { value: statsValues.companies, label: "Companies Using It" },
-            { value: statsValues.schools,   label: "Schools Enrolled" },
-          ].map((s) => (
-            <StatCard key={s.label} raw={s.value} label={s.label} />
-          ))}
+      <section className="relative min-h-[50vh] flex items-center py-24 px-6 overflow-hidden z-10">
+        {/* Decorative glowing orbs behind the cards */}
+        <div className="absolute left-1/4 top-1/2 -translate-y-1/2 w-72 h-72 rounded-full bg-violet-600/30 dark:bg-violet-500/20 blur-[90px] pointer-events-none animate-blob" />
+        <div className="absolute right-1/4 top-1/2 -translate-y-1/2 w-56 h-56 rounded-full bg-indigo-500/25 dark:bg-fuchsia-600/15 blur-[80px] pointer-events-none animate-blob animation-delay-2000" />
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-4 w-[600px] h-28 rounded-full bg-purple-600/20 dark:bg-purple-800/20 blur-[60px] pointer-events-none" />
+
+        {/* Decorative SVG circuit lines */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.07] dark:opacity-[0.12]" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="circuit" x="0" y="0" width="120" height="120" patternUnits="userSpaceOnUse">
+              <path d="M0 60 H40 M40 60 V20 H80 M80 20 H120" stroke="#a78bfa" strokeWidth="1" fill="none"/>
+              <path d="M0 90 H20 M20 90 V60 M60 120 V80 H100 M100 80 V60 H120" stroke="#818cf8" strokeWidth="1" fill="none"/>
+              <circle cx="40" cy="60" r="3" fill="#a78bfa"/>
+              <circle cx="80" cy="20" r="3" fill="#818cf8"/>
+              <circle cx="20" cy="90" r="2.5" fill="#c084fc"/>
+              <circle cx="100" cy="80" r="2.5" fill="#a78bfa"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#circuit)"/>
+        </svg>
+
+        <div className="relative max-w-5xl mx-auto w-full">
+          {/* Section label */}
+          <div className="text-center mb-12">
+            <p className="text-violet-500 dark:text-violet-300 font-bold text-sm uppercase tracking-widest mb-2">By the Numbers</p>
+            <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white">OJTask is already making an impact</h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {[
+              { value: statsValues.students,  label: "Students Onboarded",  icon: "🎓", color: "from-violet-500/20 to-purple-600/20", border: "border-violet-400/30 dark:border-violet-500/30", glow: "shadow-violet-500/20" },
+              { value: statsValues.companies, label: "Companies Using It",   icon: "🏢", color: "from-indigo-500/20 to-blue-600/20",   border: "border-indigo-400/30 dark:border-indigo-500/30",  glow: "shadow-indigo-500/20" },
+              { value: statsValues.schools,   label: "Schools Enrolled",     icon: "📚", color: "from-fuchsia-500/20 to-pink-600/20",  border: "border-fuchsia-400/30 dark:border-fuchsia-500/30", glow: "shadow-fuchsia-500/20" },
+            ].map((s, i) => (
+                <AnimCard key={s.label} delay={i * 120}>
+                  <div className={`relative rounded-3xl p-8 text-center bg-gradient-to-br ${s.color} backdrop-blur-md border ${s.border} shadow-2xl ${s.glow} overflow-hidden hover:-translate-y-2 transition-all duration-300`}
+                    style={{ background: isDark ? undefined : "rgba(255,255,255,0.6)" }}>
+                    {/* Shimmering top edge */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-violet-400/60 to-transparent" />
+                    <div className="text-3xl mb-3">{s.icon}</div>
+                    <StatCard raw={s.value} label={s.label} />
+                    {/* Bottom glow dot */}
+                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-8 h-1 rounded-full bg-violet-400/40 blur-sm" />
+                  </div>
+                </AnimCard>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ── WHO IS IT FOR ─────────────────────────────────────────────────── */}
-      <Section className="px-6 py-20" style={{ background: rolesGradient }}>
+      <Section className="px-6 py-20 z-10 relative">
         <div className="max-w-7xl mx-auto w-full">
           <div className="text-center mb-16">
             <p className="text-violet-600 dark:text-violet-300 font-bold text-sm uppercase tracking-widest mb-4">Who Uses OJTask</p>
@@ -464,7 +503,7 @@ export default function LandingPage() {
       </Section>
 
       {/* ── FEATURES ──────────────────────────────────────────────────────── */}
-      <Section id="features" className="px-6 py-20 bg-white dark:bg-[#0d0f1a]">
+      <Section id="features" className="px-6 py-20 z-10 relative">
         <div className="max-w-7xl mx-auto w-full">
           <div className="text-center mb-16">
             <p className="text-violet-600 dark:text-violet-300 font-bold text-sm uppercase tracking-widest mb-4">Six Core Modules</p>
@@ -500,7 +539,7 @@ export default function LandingPage() {
       </Section>
 
       {/* ── HOW IT WORKS ──────────────────────────────────────────────────── */}
-      <Section id="how-it-works" className="px-6 py-20" style={{ background: stepsGradient }}>
+      <Section id="how-it-works" className="px-6 py-20 z-10 relative">
         <div className="max-w-7xl mx-auto w-full">
           <div className="text-center mb-16">
             <p className="text-violet-600 dark:text-violet-300 font-bold text-sm uppercase tracking-widest mb-4">Getting Started</p>
@@ -543,7 +582,7 @@ export default function LandingPage() {
       </Section>
 
       {/* ── CTA ───────────────────────────────────────────────────────────── */}
-      <Section className="px-6 py-20 bg-white dark:bg-[#0d0f1a] relative overflow-hidden">
+      <Section className="px-6 py-20 relative overflow-hidden z-10">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-violet-400/10 dark:bg-violet-600/8 blur-[100px] animate-blob" />
         </div>
@@ -565,7 +604,7 @@ export default function LandingPage() {
       </Section>
 
       {/* ── FOOTER ────────────────────────────────────────────────────────── */}
-      <footer style={{ background: "linear-gradient(175deg, #7c3aed 0%, #6d28d9 30%, #5b21b6 70%, #4c1d95 100%)" }}>
+      <footer className="relative z-10" style={{ background: "linear-gradient(175deg, #7c3aed 0%, #6d28d9 30%, #5b21b6 70%, #4c1d95 100%)" }}>
         <div className="max-w-7xl mx-auto px-8 pt-16 pb-10">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
             <div className="col-span-2 md:col-span-1">
