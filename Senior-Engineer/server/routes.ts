@@ -12,7 +12,7 @@ import MongoStore from "connect-mongo";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import { sendOtpEmail } from "./email";
+import { sendOtpEmail, verifyEmailConfig } from "./email";
 import { getDB } from "./db";
 import bcrypt from "bcrypt";
 import { uploadToCloudinary, deleteFromCloudinary } from "./cloudinary";
@@ -300,18 +300,14 @@ export async function registerRoutes(
       const otp = generateOtp();
       await setOtp(email.toLowerCase().trim(), otp);
 
-      try {
-        await sendOtpEmail(email, otp, user.name || user.username);
-      } catch (mailErr: any) {
-        console.error("sendOtpEmail failed:", mailErr);
-        await deleteOtp(email.toLowerCase().trim());
-        return res.status(503).json({
-          message: "Failed to send the reset email. Please check your email address and try again.",
-          code: "EMAIL_SEND_FAILED",
-        });
-      }
-
+      // Respond immediately — email sends in background so the user isn't waiting on SMTP
       res.status(200).json({ message: "Reset code sent to your email." });
+
+      sendOtpEmail(email, otp, user.name || user.username).catch((mailErr) => {
+        console.error("sendOtpEmail failed:", mailErr);
+        // Clean up OTP so the user can retry
+        deleteOtp(email.toLowerCase().trim()).catch(() => {});
+      });
     } catch (err: any) {
       console.error("Forgot password error:", err);
       res.status(500).json({ message: "Failed to send reset code." });

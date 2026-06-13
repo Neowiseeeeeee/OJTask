@@ -113,6 +113,10 @@ app.use((req, res, next) => {
   await registerRoutes(httpServer, app);
   console.log('Routes registered successfully');
 
+  // Verify email config at startup (non-blocking)
+  const { verifyEmailConfig } = await import("./email");
+  verifyEmailConfig().catch(() => {});
+
   // Setup static serving before error handlers for production
   if (process.env.NODE_ENV === "production") {
     console.log('Running in production mode');

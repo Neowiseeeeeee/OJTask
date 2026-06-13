@@ -1,17 +1,41 @@
 import nodemailer from "nodemailer";
 
-function getTransporter() {
+let _transporter: nodemailer.Transporter | null = null;
+
+function getTransporter(): nodemailer.Transporter {
+  if (_transporter) return _transporter;
+
   const user = process.env.GMAIL_USER;
   const pass = process.env.GMAIL_APP_PASSWORD;
 
   if (!user || !pass) {
-    throw new Error("GMAIL_USER and GMAIL_APP_PASSWORD environment variables are required for email sending.");
+    throw new Error("GMAIL_USER and GMAIL_APP_PASSWORD environment variables are required.");
   }
 
-  return nodemailer.createTransport({
-    service: "gmail",
+  _transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
     auth: { user, pass },
+    pool: true,
+    maxConnections: 3,
+    socketTimeout: 10000,
+    connectionTimeout: 10000,
   });
+
+  return _transporter;
+}
+
+export async function verifyEmailConfig(): Promise<boolean> {
+  try {
+    const t = getTransporter();
+    await t.verify();
+    console.log("✅ Email (Gmail SMTP) verified and ready");
+    return true;
+  } catch (err) {
+    console.warn("⚠️  Email (Gmail SMTP) verification failed:", err);
+    return false;
+  }
 }
 
 export async function sendOtpEmail(toEmail: string, otp: string, name: string): Promise<void> {
