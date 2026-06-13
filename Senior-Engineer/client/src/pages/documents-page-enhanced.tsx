@@ -54,7 +54,7 @@ function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
     approved: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20",
     rejected: "bg-red-500/10 text-red-700 border-red-500/20",
-    submitted: "bg-amber-500/10 text-amber-700 border-amber-400/30",
+    submitted: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-400/30",
   };
   return (
     <Badge className={map[status] ?? "bg-muted text-muted-foreground"}>

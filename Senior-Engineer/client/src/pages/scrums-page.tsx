@@ -172,7 +172,7 @@ function StudentScrums() {
                     </div>
                     {scrum.isApproved
                       ? <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20"><CheckCircle className="w-3 h-3 mr-1" />Approved</Badge>
-                      : <Badge variant="outline" className="text-amber-600 border-amber-400/40"><Clock className="w-3 h-3 mr-1" />Pending</Badge>}
+                      : <Badge variant="outline" className="text-amber-600 dark:text-amber-400 border-amber-400/40"><Clock className="w-3 h-3 mr-1" />Pending</Badge>}
                     <Button
                       size="sm"
                       variant="outline"
@@ -321,7 +321,7 @@ function ManagerScrums() {
                           <CheckCircle className="w-3.5 h-3.5 mr-1" /> Approve
                         </Button>
                       ) : (
-                        <Badge variant="outline" className="text-amber-600 border-amber-400/40"><Clock className="w-3 h-3 mr-1" />Pending</Badge>
+                        <Badge variant="outline" className="text-amber-600 dark:text-amber-400 border-amber-400/40"><Clock className="w-3 h-3 mr-1" />Pending</Badge>
                       )}
                   </div>
                 </div>

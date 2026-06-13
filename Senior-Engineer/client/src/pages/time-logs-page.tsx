@@ -428,7 +428,7 @@ function StudentTimeLogs() {
                         variant={log.status === "approved" ? "default" : "secondary"}
                         className={log.status === "approved"
                           ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                          : "text-amber-600 border-amber-300"}
+                          : "text-amber-600 dark:text-amber-400 border-amber-300 dark:border-amber-600/50"}
                       >
                         {log.status === "approved" ? "Approved" : "Pending"}
                       </Badge>
@@ -593,7 +593,7 @@ function ManagerTimeLogs() {
                       variant={log.status === "approved" ? "default" : "secondary"}
                       className={log.status === "approved"
                         ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                        : "text-amber-600 border-amber-300"}
+                        : "text-amber-600 dark:text-amber-400 border-amber-300 dark:border-amber-600/50"}
                     >
                       {log.status === "approved" ? "Approved" : "Pending"}
                     </Badge>

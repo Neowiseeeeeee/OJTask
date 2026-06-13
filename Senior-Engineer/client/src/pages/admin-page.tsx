@@ -201,7 +201,7 @@ export default function AdminPage() {
                       <span className="text-xs font-bold text-primary">{s.completionPercentage}%</span>
                       {s.isApproved
                         ? <Badge className="text-[10px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20"><ShieldCheck className="w-3 h-3 mr-0.5" />Approved</Badge>
-                        : <Badge variant="outline" className="text-[10px] text-amber-600 border-amber-300">Pending</Badge>}
+                        : <Badge variant="outline" className="text-[10px] text-amber-600 dark:text-amber-400 border-amber-300 dark:border-amber-600/50">Pending</Badge>}
                     </div>
                   </div>
                 );

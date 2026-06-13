@@ -128,7 +128,7 @@ export default function LandingPage() {
       }`}>
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center gap-4">
           <Link href="/" className="flex items-center gap-0.5 shrink-0">
-            <img src="/ojtask-logo.png" className="h-9 w-auto object-contain" alt="OJTask logo" />
+            <img src="/ojtask-logo.png" className="h-14 w-auto object-contain mt-2" alt="OJTask logo" />
           </Link>
 
           <div className="flex-1" />
@@ -367,7 +367,7 @@ export default function LandingPage() {
               Get Started — it's free
             </Button>
           </Link>
-          <p className="mt-5 text-sm text-slate-400 dark:text-slate-500">No credit card needed · Free to start</p>
+          <p className="mt-5 text-sm text-slate-500 dark:text-slate-400">No credit card needed · Free to start</p>
         </div>
       </section>
 

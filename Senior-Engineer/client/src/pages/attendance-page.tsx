@@ -21,13 +21,13 @@ const statusConfig: Record<string, { cls: string; label: string }> = {
   present: { cls: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20 dark:text-emerald-400", label: "Present" },
   absent:  { cls: "bg-red-500/10 text-red-700 border-red-500/20 dark:text-red-400",                label: "Absent" },
   holiday: { cls: "bg-blue-500/10 text-blue-700 border-blue-500/20 dark:text-blue-400",            label: "Holiday" },
-  weekend: { cls: "bg-slate-500/10 text-slate-600 border-slate-400/20",                            label: "Weekend" },
+  weekend: { cls: "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-400/20",        label: "Weekend" },
 };
 
 const leaveStatusBadge = (status: string) => {
   if (status === "approved") return <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px]"><CheckCircle className="w-3 h-3 mr-1" />Approved</Badge>;
   if (status === "rejected") return <Badge className="bg-red-500/10 text-red-600 border-red-500/20 text-[10px]"><XCircle className="w-3 h-3 mr-1" />Rejected</Badge>;
-  return <Badge variant="outline" className="text-amber-600 border-amber-300 text-[10px]"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
+  return <Badge variant="outline" className="text-amber-600 dark:text-amber-400 border-amber-300 dark:border-amber-500/50 text-[10px]"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
 };
 
 // ─── STUDENT ──────────────────────────────────────────────────────────────────
