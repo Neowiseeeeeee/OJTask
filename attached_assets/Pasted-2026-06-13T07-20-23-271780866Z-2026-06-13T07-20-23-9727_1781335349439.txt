@@ -1,0 +1,108 @@
+2026-06-13T07:20:23.271780866Z 
+2026-06-13T07:20:23.97277335Z building client...
+2026-06-13T07:20:24.050370555Z vite v7.3.5 building client environment for production...
+2026-06-13T07:20:24.549002156Z transforming...
+2026-06-13T07:20:30.084450984Z ✓ 2817 modules transformed.
+2026-06-13T07:20:30.844216246Z Generated an empty chunk: "vendor".
+2026-06-13T07:20:31.195324736Z rendering chunks...
+2026-06-13T07:20:37.093713736Z computing gzip size...
+2026-06-13T07:20:37.116416537Z ../dist/public/index.html                   3.19 kB │ gzip:   1.19 kB
+2026-06-13T07:20:37.116689303Z 
+2026-06-13T07:20:37.172748732Z ../dist/public/assets/index-CrrupTXx.css  119.34 kB │ gzip:  18.23 kB
+2026-06-13T07:20:37.172753212Z (!) Some chunks are larger than 500 kB after minification. Consider:
+2026-06-13T07:20:37.172760212Z ../dist/public/assets/vendor-l0sNRNKZ.js    0.00 kB │ gzip:   0.02 kB
+2026-06-13T07:20:37.172762893Z - Using dynamic import() to code-split the application
+2026-06-13T07:20:37.172765413Z ../dist/public/assets/router-DGcK9_ZT.js   12.04 kB │ gzip:   4.87 kB
+2026-06-13T07:20:37.172776203Z - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+2026-06-13T07:20:37.172781793Z - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+2026-06-13T07:20:37.172810094Z ../dist/public/assets/query-BidpsDnS.js    36.34 kB │ gzip:  10.78 kB
+2026-06-13T07:20:37.172817474Z ../dist/public/assets/forms-CgnnJIcd.js    59.51 kB │ gzip:  14.03 kB
+2026-06-13T07:20:37.172823224Z ../dist/public/assets/ui-F0BhPRu4.js      199.51 kB │ gzip:  65.77 kB
+2026-06-13T07:20:37.172828834Z ../dist/public/assets/index-kHgkSUxY.js   982.82 kB │ gzip: 236.14 kB
+2026-06-13T07:20:37.172834704Z ✓ built in 12.89s
+2026-06-13T07:20:37.172840234Z building server...
+2026-06-13T07:20:37.468000798Z 
+2026-06-13T07:20:37.468023009Z   dist/index.cjs  1.4mb ⚠️
+2026-06-13T07:20:37.468035079Z 
+2026-06-13T07:20:37.468038349Z ⚡ Done in 282ms
+2026-06-13T07:21:15.882371061Z ==> Uploading build...
+2026-06-13T07:21:25.931311253Z ==> Uploaded in 6.1s. Compression took 3.9s
+2026-06-13T07:21:25.984929278Z ==> Build successful 🎉
+2026-06-13T07:21:32.788051328Z ==> Deploying...
+2026-06-13T07:21:32.999448408Z ==> Setting WEB_CONCURRENCY=1 by default, based on available CPUs in the instance
+2026-06-13T07:21:49.334660201Z ==> Running 'npm start'
+2026-06-13T07:21:50.339360188Z 
+2026-06-13T07:21:50.339388269Z > rest-express@1.0.0 start
+2026-06-13T07:21:50.339392279Z > NODE_ENV=production node dist/index.cjs
+2026-06-13T07:21:50.339394409Z 
+2026-06-13T07:21:52.535661289Z ◇ injected env (0) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+2026-06-13T07:21:52.538430121Z Starting server initialization...
+2026-06-13T07:21:52.538642626Z 🔗 Connecting to MongoDB Atlas...
+2026-06-13T07:21:52.538690247Z 🔗 Connection URI: mongodb+srv:***@cluster0.haavtu6.mongodb.net/?appName=Cluster0
+2026-06-13T07:21:52.538725438Z 🔄 Connection attempt 1/5...
+2026-06-13T07:21:53.237172158Z ✅ Connected to MongoDB Atlas - PERSISTENT DATABASE
+2026-06-13T07:21:53.276953154Z ✅ MongoDB Atlas ping successful: { ok: 1 }
+2026-06-13T07:21:53.338682961Z 🗄️  Using database: ojtask
+2026-06-13T07:21:53.338711751Z 🎯 MongoDB Atlas connection established successfully!
+2026-06-13T07:21:53.338717541Z 🎯 MongoDB Atlas connection established - server can start
+2026-06-13T07:21:53.339647292Z Initializing MongoDB storage...
+2026-06-13T07:21:53.339786035Z 🔄 Initializing MongoDB Atlas storage (CLOUD ONLY)...
+2026-06-13T07:21:53.33997615Z 🗄️  Using database: ojtask
+2026-06-13T07:21:54.315554377Z ✅ MongoDB Atlas storage initialized successfully - CLOUD DATABASE
+2026-06-13T07:21:54.315575908Z âœ“ MongoDB storage initialized
+2026-06-13T07:21:54.315582078Z Starting database seeding...
+2026-06-13T07:21:54.316832366Z [SEED] ============================================
+2026-06-13T07:21:54.316848146Z [SEED] STARTING SEED PROCESS
+2026-06-13T07:21:54.316853326Z [SEED] ============================================
+2026-06-13T07:21:54.316858156Z [SEED] Using storage backend
+2026-06-13T07:21:54.369188933Z [SEED] User check completed
+2026-06-13T07:21:54.369310796Z [SEED] Creating 4 users...
+2026-06-13T07:21:54.40584965Z [SEED]   - User already exists: admin1
+2026-06-13T07:21:54.476780211Z [SEED]   - User already exists: supervisor1
+2026-06-13T07:21:54.547997919Z [SEED]   - User already exists: student1
+2026-06-13T07:21:54.584607175Z [SEED]   - User already exists: student2
+2026-06-13T07:21:54.584684507Z [SEED] ✓ Users created - NO pre-populated spaces
+2026-06-13T07:21:54.584742308Z [SEED] ✓ Users must create their own spaces or join via codes
+2026-06-13T07:21:54.584787269Z [SEED] ============================================
+2026-06-13T07:21:54.584792489Z 
+2026-06-13T07:21:54.58483398Z âœ“ Database seeding complete
+2026-06-13T07:21:54.58752776Z /opt/render/project/src/Senior-Engineer/dist/index.cjs:156
+2026-06-13T07:21:56.389869086Z ==> Exited with status 1
+2026-06-13T07:21:56.392788282Z ==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys
+2026-06-13T07:22:00.209676802Z ==> Running 'npm start'
+2026-06-13T07:22:01.103962577Z 
+2026-06-13T07:22:01.103987578Z > rest-express@1.0.0 start
+2026-06-13T07:22:01.103993078Z > NODE_ENV=production node dist/index.cjs
+2026-06-13T07:22:01.103995598Z 
+2026-06-13T07:22:03.409971994Z ◇ injected env (0) from .env // tip: ⌘ suppress logs { quiet: true }
+2026-06-13T07:22:03.498813634Z Starting server initialization...
+2026-06-13T07:22:03.500072782Z 🔗 Connecting to MongoDB Atlas...
+2026-06-13T07:22:03.500084123Z 🔗 Connection URI: mongodb+srv:***@cluster0.haavtu6.mongodb.net/?appName=Cluster0
+2026-06-13T07:22:03.500087892Z 🔄 Connection attempt 1/5...
+2026-06-13T07:22:04.139052247Z ✅ Connected to MongoDB Atlas - PERSISTENT DATABASE
+2026-06-13T07:22:04.199181617Z ✅ MongoDB Atlas ping successful: { ok: 1 }
+2026-06-13T07:22:04.239437345Z 🗄️  Using database: ojtask
+2026-06-13T07:22:04.239458735Z 🎯 MongoDB Atlas connection established successfully!
+2026-06-13T07:22:04.239462295Z 🎯 MongoDB Atlas connection established - server can start
+2026-06-13T07:22:04.240337814Z Initializing MongoDB storage...
+2026-06-13T07:22:04.240430797Z 🔄 Initializing MongoDB Atlas storage (CLOUD ONLY)...
+2026-06-13T07:22:04.240611751Z 🗄️  Using database: ojtask
+2026-06-13T07:22:05.155100457Z ✅ MongoDB Atlas storage initialized successfully - CLOUD DATABASE
+2026-06-13T07:22:05.155117887Z âœ“ MongoDB storage initialized
+2026-06-13T07:22:05.155121347Z Starting database seeding...
+2026-06-13T07:22:05.155485035Z [SEED] ============================================
+2026-06-13T07:22:05.155548277Z [SEED] STARTING SEED PROCESS
+2026-06-13T07:22:05.155609578Z [SEED] ============================================
+2026-06-13T07:22:05.1556681Z [SEED] Using storage backend
+2026-06-13T07:22:05.190914716Z [SEED] User check completed
+2026-06-13T07:22:05.191005167Z [SEED] Creating 4 users...
+2026-06-13T07:22:05.225079047Z [SEED]   - User already exists: admin1
+2026-06-13T07:22:05.291952608Z [SEED]   - User already exists: supervisor1
+2026-06-13T07:22:05.360049906Z [SEED]   - User already exists: student1
+2026-06-13T07:22:05.393638404Z [SEED]   - User already exists: student2
+2026-06-13T07:22:05.393759297Z [SEED] ✓ Users created - NO pre-populated spaces
+2026-06-13T07:22:05.393779808Z [SEED] ✓ Users must create their own spaces or join via codes
+2026-06-13T07:22:05.39385824Z [SEED] ============================================
+2026-06-13T07:22:05.3938884Z 
+2026-06-13T07:22:05.393925801Z âœ“ Database seeding complete
+2026-06-13T07:22:05.395854444Z /opt/render/project/src/Senior-Engineer/dist/index.cjs:156
