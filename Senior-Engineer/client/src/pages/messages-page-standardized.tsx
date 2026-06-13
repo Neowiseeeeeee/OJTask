@@ -297,7 +297,7 @@ export default function MessagesPageStandardized() {
     setDmOpen(false);
     setDmSearch("");
     // Set channel after dialog closes to avoid layout conflicts
-    setTimeout(() => setChannelId(ch), 0);
+    setTimeout(() => { setChannelId(ch); setShowMobileSidebar(false); }, 0);
   };
 
   const handleSend = async (e: React.FormEvent) => {
@@ -329,7 +329,7 @@ export default function MessagesPageStandardized() {
     }
   };
 
-  const [showMobileSidebar, setShowMobileSidebar] = useState(true);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
   if (!user) return null;
 

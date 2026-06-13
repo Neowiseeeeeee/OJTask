@@ -62,7 +62,7 @@ function StudentTasks() {
 
   return (
     <div className="h-full flex flex-col animate-in fade-in duration-500">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
         <div>
           <h1 className="text-3xl font-display font-bold">My Tasks</h1>
           <p className="text-muted-foreground">Personal tasks and assigned work</p>
