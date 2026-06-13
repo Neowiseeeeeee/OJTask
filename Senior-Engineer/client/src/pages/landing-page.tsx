@@ -1,12 +1,46 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Link } from "wouter";
 import {
   Clock, ListTodo, Users, CalendarDays, FileText, MessageSquare,
   CheckCircle, ArrowRight, GraduationCap, Building2, BookOpen,
-  Menu, X, BarChart3, ShieldCheck, Layers, Sun, Moon,
+  Menu, X, BarChart3, ShieldCheck, Layers, Sun, Moon, ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
+
+// ── Hooks ───────────────────────────────────────────────────────────────────
+
+function useInView(threshold = 0.15) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setInView(true); obs.disconnect(); } },
+      { threshold }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return { ref, inView };
+}
+
+function useCounter(target: number, active: boolean, duration = 1400) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    if (!active || target === 0) return;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const p = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      setValue(Math.round(ease * target));
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [active, target, duration]);
+  return value;
+}
 
 // ── Marquee ────────────────────────────────────────────────────────────────
 const marqueeItems = [
@@ -45,7 +79,7 @@ const roles = [
   {
     icon: GraduationCap, title: "Students",
     subtitle: "Everything you need to get through OJT without the stress.",
-    accent: "bg-violet-600",
+    accent: "bg-violet-600", gradFrom: "#7c3aed", gradTo: "#6d28d9",
     lightBg: "#f5f3ff", darkBg: "rgba(109,40,217,0.12)",
     lightRing: "rgba(167,139,250,0.4)", darkRing: "rgba(109,40,217,0.3)",
     items: ["Log daily OJT hours and tasks", "Submit structured daily scrum reports", "Record attendance instantly", "Upload required internship documents"],
@@ -53,7 +87,7 @@ const roles = [
   {
     icon: Building2, title: "Company Supervisors",
     subtitle: "Stay on top of every intern without the constant follow-ups.",
-    accent: "bg-indigo-600",
+    accent: "bg-indigo-600", gradFrom: "#4f46e5", gradTo: "#3730a3",
     lightBg: "#eef2ff", darkBg: "rgba(79,70,229,0.12)",
     lightRing: "rgba(165,180,252,0.4)", darkRing: "rgba(79,70,229,0.3)",
     items: ["Approve time logs and scrums in one click", "Assign tasks and track progress visually", "Monitor attendance in real time", "Communicate via dedicated team channels"],
@@ -61,7 +95,7 @@ const roles = [
   {
     icon: BookOpen, title: "School Coordinators",
     subtitle: "Full program visibility without chasing anyone for updates.",
-    accent: "bg-emerald-600",
+    accent: "bg-emerald-600", gradFrom: "#059669", gradTo: "#047857",
     lightBg: "#ecfdf5", darkBg: "rgba(5,150,105,0.12)",
     lightRing: "rgba(110,231,183,0.4)", darkRing: "rgba(5,150,105,0.3)",
     items: ["View all student progress at a glance", "Monitor interns across multiple companies", "Review and approve submitted documents", "Track attendance program-wide"],
@@ -74,6 +108,57 @@ const steps = [
   { step: "03", title: "Track Daily",          desc: "Log hours, submit scrum reports, update task boards. Supervisors approve with one click.", icon: BarChart3 },
   { step: "04", title: "Close Out",            desc: "Coordinators access complete records, verify documents, and finalize evaluations.", icon: ShieldCheck },
 ];
+
+// ── Animated Section wrapper ───────────────────────────────────────────────
+function Section({ children, className = "", style = {}, id }: {
+  children: React.ReactNode; className?: string; style?: React.CSSProperties; id?: string;
+}) {
+  const { ref, inView } = useInView(0.1);
+  return (
+    <section
+      id={id}
+      ref={ref}
+      className={`min-h-screen flex flex-col justify-center ${className}`}
+      style={style}
+    >
+      <div className={`transition-all duration-1000 ease-out ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+        {children}
+      </div>
+    </section>
+  );
+}
+
+// ── Staggered card wrapper ─────────────────────────────────────────────────
+function AnimCard({ children, delay = 0, className = "", style = {} }: {
+  children: React.ReactNode; delay?: number; className?: string; style?: React.CSSProperties;
+}) {
+  const { ref, inView } = useInView(0.1);
+  return (
+    <div
+      ref={ref}
+      className={`transition-all duration-700 ease-out ${inView ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-8 scale-95"} ${className}`}
+      style={{ transitionDelay: `${delay}ms`, ...style }}
+    >
+      {children}
+    </div>
+  );
+}
+
+// ── Stat counter card ──────────────────────────────────────────────────────
+function StatCard({ raw, label }: { raw: string; label: string }) {
+  const { ref, inView } = useInView(0.2);
+  const numericVal = parseInt(raw, 10);
+  const isNumber = !isNaN(numericVal) && raw !== "...";
+  const count = useCounter(isNumber ? numericVal : 0, inView && isNumber);
+  return (
+    <div ref={ref} className={`text-center transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
+      <div className="text-4xl md:text-5xl font-black text-violet-600 dark:text-violet-400 mb-2 tabular-nums">
+        {isNumber && inView ? count : raw}
+      </div>
+      <div className="text-sm font-medium text-slate-500 dark:text-slate-400">{label}</div>
+    </div>
+  );
+}
 
 // ── Component ──────────────────────────────────────────────────────────────
 export default function LandingPage() {
@@ -112,40 +197,35 @@ export default function LandingPage() {
     return () => { document.title = "OJTask"; };
   }, []);
 
-  // Gradient helpers — switch based on theme
-  const heroGradient    = isDark ? "linear-gradient(160deg, #1e1b4b 0%, #2e1065 40%, #1e1b4b 100%)" : "linear-gradient(160deg, #f5f3ff 0%, #ede9fe 40%, #ddd6fe 100%)";
   const rolesGradient   = isDark ? "linear-gradient(175deg, #0f0a1e 0%, #150d2e 100%)"              : "linear-gradient(175deg, #fafafa 0%, #f5f3ff 100%)";
   const stepsGradient   = isDark ? "linear-gradient(175deg, #0f0a1e 0%, #1e1b4b 100%)"              : "linear-gradient(175deg, #f5f3ff 0%, #ede9fe 100%)";
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0d0f1a] text-slate-900 dark:text-white overflow-x-hidden transition-colors duration-300">
+    <div className="bg-white dark:bg-[#0d0f1a] text-slate-900 dark:text-white overflow-x-hidden transition-colors duration-300">
 
       {/* ── NAVBAR ──────────────────────────────────────────────────────── */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-white/90 dark:bg-[#0d0f1a]/90 backdrop-blur-xl shadow-sm dark:shadow-black/40 border-b border-transparent dark:border-white/8"
+          ? "bg-white/90 dark:bg-[#0d0f1a]/90 backdrop-blur-xl shadow-sm dark:shadow-black/40 border-b border-slate-200/60 dark:border-white/8"
           : "bg-transparent"
       }`}>
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center gap-4">
           <Link href="/" className="flex items-center gap-0.5 shrink-0">
             <img src="/ojtask-logo.png" className="h-14 w-auto object-contain mt-2" alt="OJTask logo" />
           </Link>
-
           <div className="flex-1" />
-
           <div className="hidden md:flex items-center gap-2">
             <Link href="/auth">
-              <Button variant="ghost" size="sm" className="font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10" data-testid="link-nav-signin">
+              <Button variant="ghost" size="sm" className="font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10">
                 Sign In
               </Button>
             </Link>
             <Link href="/auth">
-              <Button size="sm" className="font-bold bg-violet-600 hover:bg-violet-700 text-white rounded-full px-5 shadow-md shadow-violet-500/25" data-testid="link-nav-getstarted">
+              <Button size="sm" className="font-bold bg-violet-600 hover:bg-violet-700 text-white rounded-full px-5 shadow-md shadow-violet-500/25">
                 Get Started <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
               </Button>
             </Link>
           </div>
-
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="md:hidden p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
@@ -153,7 +233,6 @@ export default function LandingPage() {
             {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
-
         {menuOpen && (
           <div className="md:hidden bg-white dark:bg-[#0d0f1a] border-t border-slate-100 dark:border-white/8 px-6 py-4 flex gap-3">
             <Link href="/auth" className="flex-1">
@@ -168,13 +247,29 @@ export default function LandingPage() {
 
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section
-        className="relative pt-36 pb-32 px-6 text-center overflow-hidden transition-colors duration-300"
-        style={{ background: heroGradient }}
+        className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center overflow-hidden"
+        style={{ background: isDark ? "linear-gradient(160deg, #1e1b4b 0%, #2e1065 40%, #1e1b4b 100%)" : "linear-gradient(160deg, #f5f3ff 0%, #ede9fe 40%, #ddd6fe 100%)" }}
       >
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] rounded-full bg-violet-400/20 dark:bg-violet-600/10 blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full bg-indigo-400/15 dark:bg-indigo-600/10 blur-[80px] pointer-events-none" />
+        {/* Animated background blobs */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[700px] rounded-full bg-violet-500/20 dark:bg-violet-600/15 blur-[120px] pointer-events-none animate-blob" />
+        <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] rounded-full bg-indigo-500/15 dark:bg-indigo-600/10 blur-[100px] pointer-events-none animate-blob animation-delay-2000" />
+        <div className="absolute bottom-1/4 right-1/4 w-[350px] h-[350px] rounded-full bg-purple-500/15 dark:bg-purple-600/10 blur-[90px] pointer-events-none animate-blob animation-delay-4000" />
 
-        <div className="relative max-w-4xl mx-auto">
+        {/* Floating decorative chips */}
+        <div className="absolute top-28 left-[8%] hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-white/60 dark:border-white/10 shadow-lg text-xs font-semibold text-slate-700 dark:text-white/70 animate-float">
+          <Clock className="w-3.5 h-3.5 text-violet-500" /> Time Tracking
+        </div>
+        <div className="absolute top-44 right-[7%] hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-white/60 dark:border-white/10 shadow-lg text-xs font-semibold text-slate-700 dark:text-white/70 animate-float animation-delay-1000">
+          <Users className="w-3.5 h-3.5 text-indigo-500" /> Daily Scrum
+        </div>
+        <div className="absolute bottom-36 left-[10%] hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-white/60 dark:border-white/10 shadow-lg text-xs font-semibold text-slate-700 dark:text-white/70 animate-float animation-delay-2000">
+          <FileText className="w-3.5 h-3.5 text-rose-500" /> Document Hub
+        </div>
+        <div className="absolute bottom-48 right-[9%] hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-white/60 dark:border-white/10 shadow-lg text-xs font-semibold text-slate-700 dark:text-white/70 animate-float animation-delay-3000">
+          <ListTodo className="w-3.5 h-3.5 text-emerald-500" /> Task Board
+        </div>
+
+        <div className="relative max-w-4xl mx-auto animate-hero-enter">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/70 dark:bg-white/10 backdrop-blur-sm border border-violet-200 dark:border-violet-700/50 text-violet-700 dark:text-violet-300 text-sm font-semibold mb-8 shadow-sm">
             <span className="w-2 h-2 rounded-full bg-violet-500 animate-pulse" />
             Built for OJT in the Philippines 🇵🇭
@@ -182,7 +277,9 @@ export default function LandingPage() {
 
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tight leading-[1.04] mb-7 text-slate-900 dark:text-white">
             Your Internship,{" "}
-            <span className="text-violet-600 dark:text-violet-400">Finally Organized</span>
+            <span className="animate-gradient-text bg-gradient-to-r from-violet-600 via-purple-500 to-indigo-600 dark:from-violet-400 dark:via-purple-300 dark:to-indigo-400 bg-clip-text text-transparent" style={{ backgroundSize: "200% 100%" }}>
+              Finally Organized
+            </span>
           </h1>
 
           <p className="text-base sm:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed px-2">
@@ -191,12 +288,12 @@ export default function LandingPage() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Link href="/auth">
-              <Button size="lg" className="font-black text-base px-8 h-14 rounded-full bg-violet-600 hover:bg-violet-700 text-white shadow-xl shadow-violet-500/30 hover:shadow-violet-500/50 hover:-translate-y-0.5 transition-all" data-testid="button-hero-getstarted">
+              <Button size="lg" className="font-black text-base px-8 h-14 rounded-full bg-violet-600 hover:bg-violet-700 text-white shadow-xl shadow-violet-500/30 hover:shadow-violet-500/50 hover:-translate-y-1 active:translate-y-0 transition-all duration-200">
                 Try OJTask for free
               </Button>
             </Link>
             <Link href="/auth">
-              <Button size="lg" variant="outline" className="font-bold text-base px-8 h-14 rounded-full border-2 border-slate-300 dark:border-white/20 text-slate-700 dark:text-white hover:bg-white dark:hover:bg-white/10 bg-white/70 dark:bg-white/5 backdrop-blur-sm" data-testid="button-hero-signin">
+              <Button size="lg" variant="outline" className="font-bold text-base px-8 h-14 rounded-full border-2 border-slate-300 dark:border-white/20 text-slate-700 dark:text-white hover:bg-white dark:hover:bg-white/10 bg-white/70 dark:bg-white/5 backdrop-blur-sm hover:-translate-y-1 transition-all duration-200">
                 Sign In to Your Space
               </Button>
             </Link>
@@ -205,6 +302,12 @@ export default function LandingPage() {
           <p className="text-sm text-slate-500 dark:text-slate-400">
             No credit card needed · Set up in under 5 minutes · Free to start
           </p>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-slate-400 dark:text-white/30 animate-bounce-slow">
+          <span className="text-xs font-medium tracking-widest uppercase">Scroll</span>
+          <ChevronDown className="w-4 h-4" />
         </div>
       </section>
 
@@ -215,25 +318,22 @@ export default function LandingPage() {
       </section>
 
       {/* ── STATS ─────────────────────────────────────────────────────────── */}
-      <section className="py-20 px-6 bg-white dark:bg-[#0d0f1a]">
-        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+      <section className="min-h-[50vh] flex items-center py-20 px-6 bg-white dark:bg-[#0d0f1a]">
+        <div className="max-w-5xl mx-auto w-full grid grid-cols-2 md:grid-cols-4 gap-8">
           {[
-            { value: statsValues.students,    label: "Students Onboarded" },
-            { value: statsValues.companies,   label: "Companies Using It" },
-            { value: statsValues.schools,     label: "Schools Enrolled" },
+            { value: statsValues.students,     label: "Students Onboarded" },
+            { value: statsValues.companies,    label: "Companies Using It" },
+            { value: statsValues.schools,      label: "Schools Enrolled" },
             { value: statsValues.satisfaction, label: "Supervisor Satisfaction" },
           ].map((s) => (
-            <div key={s.label} data-testid={`stat-${s.label.toLowerCase().replace(/\s+/g, '-')}`}>
-              <div className="text-4xl md:text-5xl font-black text-violet-600 dark:text-violet-400 mb-2">{s.value}</div>
-              <div className="text-sm font-medium text-slate-500 dark:text-slate-400">{s.label}</div>
-            </div>
+            <StatCard key={s.label} raw={s.value} label={s.label} />
           ))}
         </div>
       </section>
 
       {/* ── WHO IS IT FOR ─────────────────────────────────────────────────── */}
-      <section className="py-28 px-6 transition-colors duration-300" style={{ background: rolesGradient }}>
-        <div className="max-w-7xl mx-auto">
+      <Section className="px-6 py-20" style={{ background: rolesGradient }}>
+        <div className="max-w-7xl mx-auto w-full">
           <div className="text-center mb-16">
             <p className="text-violet-600 dark:text-violet-400 font-bold text-sm uppercase tracking-widest mb-4">Who Uses OJTask</p>
             <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-5 text-slate-900 dark:text-white">
@@ -245,38 +345,39 @@ export default function LandingPage() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            {roles.map((role) => (
-              <div
-                key={role.title}
-                className="rounded-3xl p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
-                style={{
-                  background: isDark ? role.darkBg : role.lightBg,
-                  border: `1px solid ${isDark ? role.darkRing : role.lightRing}`,
-                }}
-                data-testid={`card-role-${role.title.split(' ')[0].toLowerCase()}`}
-              >
-                <div className={`w-12 h-12 ${role.accent} rounded-2xl flex items-center justify-center mb-5 shadow-md`}>
-                  <role.icon className="w-6 h-6 text-white" />
+            {roles.map((role, i) => (
+              <AnimCard key={role.title} delay={i * 120}>
+                <div
+                  className="rounded-3xl p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 h-full"
+                  style={{
+                    background: isDark ? role.darkBg : role.lightBg,
+                    border: `1px solid ${isDark ? role.darkRing : role.lightRing}`,
+                  }}
+                >
+                  <div className={`w-12 h-12 ${role.accent} rounded-2xl flex items-center justify-center mb-5 shadow-md`}>
+                    <role.icon className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-black mb-2 text-slate-900 dark:text-white">{role.title}</h3>
+                  <p className="text-slate-500 dark:text-slate-400 text-sm mb-6 leading-relaxed">{role.subtitle}</p>
+                  <ul className="space-y-3">
+                    {role.items.map((item, j) => (
+                      <li key={item} className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300"
+                        style={{ animationDelay: `${j * 80}ms` }}>
+                        <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <h3 className="text-xl font-black mb-2 text-slate-900 dark:text-white">{role.title}</h3>
-                <p className="text-slate-500 dark:text-slate-400 text-sm mb-6 leading-relaxed">{role.subtitle}</p>
-                <ul className="space-y-3">
-                  {role.items.map((item) => (
-                    <li key={item} className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300">
-                      <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              </AnimCard>
             ))}
           </div>
         </div>
-      </section>
+      </Section>
 
       {/* ── FEATURES ──────────────────────────────────────────────────────── */}
-      <section id="features" className="py-28 px-6 bg-white dark:bg-[#0d0f1a]">
-        <div className="max-w-7xl mx-auto">
+      <Section id="features" className="px-6 py-20 bg-white dark:bg-[#0d0f1a]">
+        <div className="max-w-7xl mx-auto w-full">
           <div className="text-center mb-16">
             <p className="text-violet-600 dark:text-violet-400 font-bold text-sm uppercase tracking-widest mb-4">Six Core Modules</p>
             <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-5 text-slate-900 dark:text-white">
@@ -288,31 +389,31 @@ export default function LandingPage() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {features.map((f) => (
-              <div
-                key={f.title}
-                className="group p-7 rounded-3xl hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-                style={{
-                  background: isDark ? "rgba(255,255,255,0.04)" : "#ffffff",
-                  border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e2e8f0",
-                  boxShadow: isDark ? "none" : "0 2px 12px rgba(0,0,0,0.06)",
-                }}
-                data-testid={`card-feature-${f.title.toLowerCase().replace(/\s+/g, '-')}`}
-              >
-                <div className={`w-12 h-12 ${isDark ? f.darkColor : f.lightColor} rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform`}>
-                  <f.icon className="w-6 h-6" />
+            {features.map((f, i) => (
+              <AnimCard key={f.title} delay={i * 80}>
+                <div
+                  className="group p-7 rounded-3xl hover:shadow-xl hover:-translate-y-2 transition-all duration-300 h-full"
+                  style={{
+                    background: isDark ? "rgba(255,255,255,0.04)" : "#ffffff",
+                    border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e2e8f0",
+                    boxShadow: isDark ? "none" : "0 2px 12px rgba(0,0,0,0.06)",
+                  }}
+                >
+                  <div className={`w-12 h-12 ${isDark ? f.darkColor : f.lightColor} rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300`}>
+                    <f.icon className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-lg font-black mb-2 text-slate-900 dark:text-white">{f.title}</h3>
+                  <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{f.desc}</p>
                 </div>
-                <h3 className="text-lg font-black mb-2 text-slate-900 dark:text-white">{f.title}</h3>
-                <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{f.desc}</p>
-              </div>
+              </AnimCard>
             ))}
           </div>
         </div>
-      </section>
+      </Section>
 
       {/* ── HOW IT WORKS ──────────────────────────────────────────────────── */}
-      <section id="how-it-works" className="py-28 px-6 transition-colors duration-300" style={{ background: stepsGradient }}>
-        <div className="max-w-7xl mx-auto">
+      <Section id="how-it-works" className="px-6 py-20" style={{ background: stepsGradient }}>
+        <div className="max-w-7xl mx-auto w-full">
           <div className="text-center mb-16">
             <p className="text-violet-600 dark:text-violet-400 font-bold text-sm uppercase tracking-widest mb-4">Getting Started</p>
             <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-5 text-slate-900 dark:text-white">
@@ -325,36 +426,40 @@ export default function LandingPage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
             {steps.map((step, i) => (
-              <div
-                key={step.step}
-                className="relative group rounded-3xl p-7 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-                style={{
-                  background: isDark ? "rgba(255,255,255,0.05)" : "#ffffff",
-                  border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e2e8f0",
-                  boxShadow: isDark ? "none" : "0 2px 12px rgba(0,0,0,0.06)",
-                }}
-                data-testid={`card-step-${step.step}`}
-              >
-                <div className="text-6xl font-black absolute top-5 right-6 leading-none select-none" style={{ color: isDark ? "rgba(109,40,217,0.35)" : "#ddd6fe" }}>{step.step}</div>
-                <div className="w-12 h-12 bg-violet-600 rounded-2xl flex items-center justify-center mb-5 shadow-md shadow-violet-500/30 group-hover:scale-110 transition-transform">
-                  <step.icon className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-base font-black text-slate-900 dark:text-white mb-2">{step.title}</h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{step.desc}</p>
-                {i < steps.length - 1 && (
-                  <div className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
-                    <ArrowRight className="w-5 h-5 text-violet-300 dark:text-violet-700" />
+              <AnimCard key={step.step} delay={i * 130}>
+                <div
+                  className="relative group rounded-3xl p-7 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 h-full overflow-hidden"
+                  style={{
+                    background: isDark ? "rgba(255,255,255,0.05)" : "#ffffff",
+                    border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e2e8f0",
+                    boxShadow: isDark ? "none" : "0 2px 12px rgba(0,0,0,0.06)",
+                  }}
+                >
+                  {/* Shimmering step number */}
+                  <div className="text-6xl font-black absolute top-4 right-5 leading-none select-none transition-all duration-300 group-hover:scale-110 group-hover:opacity-60" style={{ color: isDark ? "rgba(109,40,217,0.35)" : "#ddd6fe" }}>{step.step}</div>
+                  <div className="w-12 h-12 bg-violet-600 rounded-2xl flex items-center justify-center mb-5 shadow-md shadow-violet-500/30 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
+                    <step.icon className="w-6 h-6 text-white" />
                   </div>
-                )}
-              </div>
+                  <h3 className="text-base font-black text-slate-900 dark:text-white mb-2">{step.title}</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{step.desc}</p>
+                  {i < steps.length - 1 && (
+                    <div className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
+                      <ArrowRight className="w-5 h-5 text-violet-300 dark:text-violet-700" />
+                    </div>
+                  )}
+                </div>
+              </AnimCard>
             ))}
           </div>
         </div>
-      </section>
+      </Section>
 
       {/* ── CTA ───────────────────────────────────────────────────────────── */}
-      <section className="py-28 px-6 bg-white dark:bg-[#0d0f1a]">
-        <div className="max-w-3xl mx-auto text-center">
+      <Section className="px-6 py-20 bg-white dark:bg-[#0d0f1a] relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-violet-400/10 dark:bg-violet-600/8 blur-[100px] animate-blob" />
+        </div>
+        <div className="max-w-3xl mx-auto text-center relative">
           <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-6 text-slate-900 dark:text-white">
             Your OJT Program Deserves{" "}
             <span className="text-violet-600 dark:text-violet-400">Better Than Group Chats</span>
@@ -363,13 +468,13 @@ export default function LandingPage() {
             Give interns a dedicated space to log their work and give supervisors real-time visibility — zero follow-up required.
           </p>
           <Link href="/auth">
-            <Button size="lg" className="font-black text-base px-10 h-14 rounded-full bg-violet-600 hover:bg-violet-700 text-white shadow-xl shadow-violet-500/30 hover:shadow-violet-500/50 hover:-translate-y-0.5 transition-all" data-testid="button-cta-getstarted">
+            <Button size="lg" className="font-black text-base px-10 h-14 rounded-full bg-violet-600 hover:bg-violet-700 text-white shadow-xl shadow-violet-500/30 hover:shadow-violet-500/50 hover:-translate-y-1 transition-all duration-200">
               Get Started — it's free
             </Button>
           </Link>
           <p className="mt-5 text-sm text-slate-500 dark:text-slate-400">No credit card needed · Free to start</p>
         </div>
-      </section>
+      </Section>
 
       {/* ── FOOTER ────────────────────────────────────────────────────────── */}
       <footer style={{ background: "linear-gradient(175deg, #7c3aed 0%, #6d28d9 30%, #5b21b6 70%, #4c1d95 100%)" }}>
@@ -386,14 +491,14 @@ export default function LandingPage() {
               { title: "Product", links: [{ label: "Time Tracking", href: "/auth" }, { label: "Daily Scrum", href: "/auth" }, { label: "Task Board", href: "/auth" }, { label: "Documents", href: "/auth" }] },
               { title: "For",     links: [{ label: "Students", href: "/auth" }, { label: "Supervisors", href: "/auth" }, { label: "Coordinators", href: "/auth" }, { label: "Schools", href: "/auth" }] },
               { title: "Account", links: [{ label: "Sign In", href: "/auth" }, { label: "Get Started", href: "/auth" }, { label: "Forgot Password", href: "/forgot-password" }] },
-              { title: "Support", links: [{ label: "Help Center", href: "/help-center" }, { label: "Contact Us", href: "/contact" }, { label: "Privacy Policy", href: "/privacy-policy" }, { label: "Terms of Use", href: "/terms-of-use" }] },
+              { title: "Legal",   links: [{ label: "Privacy Policy", href: "/privacy" }, { label: "Terms of Use", href: "/terms" }, { label: "Contact Us", href: "/contact" }] },
             ].map((col) => (
               <div key={col.title}>
-                <div className="text-xs font-black uppercase tracking-widest text-white/50 mb-4">{col.title}</div>
-                <ul className="space-y-3">
-                  {col.links.map((link) => (
-                    <li key={link.label}>
-                      <Link href={link.href} className="text-sm text-white/80 hover:text-white transition-colors font-medium">{link.label}</Link>
+                <p className="text-white/90 font-bold text-sm mb-4">{col.title}</p>
+                <ul className="space-y-2.5">
+                  {col.links.map((l) => (
+                    <li key={l.label}>
+                      <Link href={l.href} className="text-white/55 hover:text-white text-sm transition-colors">{l.label}</Link>
                     </li>
                   ))}
                 </ul>
@@ -418,7 +523,6 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Giant wordmark */}
         <div className="w-full overflow-hidden leading-none select-none" aria-hidden="true">
           <div className="text-center font-black tracking-tight" style={{ fontSize: "clamp(80px, 18vw, 260px)", color: "rgba(255,255,255,0.08)", lineHeight: 0.88, paddingBottom: "0.05em", letterSpacing: "-0.03em" }}>
             OJTask
@@ -426,12 +530,47 @@ export default function LandingPage() {
         </div>
       </footer>
 
-      {/* Marquee keyframes */}
+      {/* ── Keyframes ─────────────────────────────────────────────────────── */}
       <style>{`
         @keyframes marquee         { from { transform: translateX(0); }    to { transform: translateX(-50%); } }
         @keyframes marquee-reverse { from { transform: translateX(-50%); } to { transform: translateX(0); } }
         .animate-marquee          { animation: marquee 28s linear infinite; }
         .animate-marquee-reverse  { animation: marquee-reverse 32s linear infinite; }
+
+        @keyframes blob {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          33%       { transform: translate(30px, -20px) scale(1.05); }
+          66%       { transform: translate(-20px, 15px) scale(0.97); }
+        }
+        .animate-blob { animation: blob 12s ease-in-out infinite; }
+        .animation-delay-1000 { animation-delay: 1s; }
+        .animation-delay-2000 { animation-delay: 2s; }
+        .animation-delay-3000 { animation-delay: 3s; }
+        .animation-delay-4000 { animation-delay: 4s; }
+
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50%       { transform: translateY(-10px); }
+        }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+
+        @keyframes hero-enter {
+          from { opacity: 0; transform: translateY(28px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .animate-hero-enter { animation: hero-enter 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+
+        @keyframes gradient-text {
+          0%, 100% { background-position: 0% 50%; }
+          50%       { background-position: 100% 50%; }
+        }
+        .animate-gradient-text { animation: gradient-text 4s ease infinite; background-size: 200% auto !important; }
+
+        @keyframes bounce-slow {
+          0%, 100% { transform: translateX(-50%) translateY(0); }
+          50%       { transform: translateX(-50%) translateY(6px); }
+        }
+        .animate-bounce-slow { animation: bounce-slow 2s ease-in-out infinite; }
       `}</style>
     </div>
   );
