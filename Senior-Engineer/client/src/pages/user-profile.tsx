@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Upload, Loader2, Check, AlertCircle } from "lucide-react";
+import { Upload, Loader2, Check, AlertCircle, CheckCircle2 } from "lucide-react";
 
 export default function UserProfilePage() {
   const { user } = useAuth();
@@ -33,17 +33,28 @@ export default function UserProfilePage() {
     return null;
   }
 
-  const handleProfilePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleProfilePictureChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      // For now, we'll just use a data URL
-      // In production, you'd upload to a server or cloud storage
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        setPreviewPicture(result);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+      if (!res.ok) throw new Error("Upload failed");
+      const data = await res.json();
+      setPreviewPicture(data.filePath);
+    } catch {
+      setMessage({ type: "error", text: "Failed to upload image. Please try again." });
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -153,14 +164,31 @@ export default function UserProfilePage() {
                       type="file"
                       accept="image/*"
                       onChange={handleProfilePictureChange}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      disabled={isUploading}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
                     />
-                    <Button variant="outline" className="w-full">
-                      <Upload className="w-4 h-4 mr-2" />
-                      Choose Image
+                    <Button variant="outline" className="w-full" disabled={isUploading}>
+                      {isUploading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Uploading…
+                        </>
+                      ) : previewPicture ? (
+                        <>
+                          <CheckCircle2 className="w-4 h-4 mr-2 text-green-500" />
+                          Change Image
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-4 h-4 mr-2" />
+                          Choose Image
+                        </>
+                      )}
                     </Button>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">JPG, PNG up to 5MB</p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {previewPicture ? "✓ Image uploaded to cloud — save to apply" : "JPG, PNG or GIF up to 20MB"}
+                  </p>
                 </div>
               )}
             </div>
@@ -259,7 +287,7 @@ export default function UserProfilePage() {
               <div className="flex gap-3 pt-4">
                 <Button
                   onClick={handleSaveProfile}
-                  disabled={isLoading}
+                  disabled={isLoading || isUploading}
                   className="bg-primary hover:bg-primary/90"
                 >
                   {isLoading ? (
