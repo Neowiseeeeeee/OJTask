@@ -15,6 +15,7 @@ import fs from "fs";
 import { sendOtpEmail } from "./email";
 import { getDB } from "./db";
 import bcrypt from "bcrypt";
+import { uploadToCloudinary, deleteFromCloudinary } from "./cloudinary";
 
 const BCRYPT_ROUNDS = 12;
 
@@ -53,18 +54,8 @@ function generateOtp(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// Set up multer disk storage for file uploads
-const uploadsDir = path.resolve(process.cwd(), "uploads");
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-
-const storage_disk = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, uploadsDir),
-  filename: (_req, file, cb) => {
-    const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    cb(null, `${unique}${path.extname(file.originalname)}`);
-  },
-});
-const upload = multer({ storage: storage_disk, limits: { fileSize: 20 * 1024 * 1024 } });
+// Use memory storage — files go directly to Cloudinary, nothing written to disk
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 20 * 1024 * 1024 } });
 
 export async function registerRoutes(
   httpServer: Server,
@@ -783,8 +774,9 @@ export async function registerRoutes(
     try {
       const file = req.file;
       if (!file) return res.status(400).json({ message: "No file uploaded" });
+      const { url } = await uploadToCloudinary(file.buffer, file.originalname, file.mimetype);
       res.json({
-        filePath: `/uploads/${file.filename}`,
+        filePath: url,
         fileName: file.originalname,
         fileSize: file.size,
         mimeType: file.mimetype,
@@ -1159,6 +1151,7 @@ export async function registerRoutes(
       const userId = (req as any).session.userId;
       const file = (req as any).file;
       if (!file) return res.status(400).json({ message: "No file uploaded" });
+      const { url } = await uploadToCloudinary(file.buffer, file.originalname, file.mimetype);
       const docType = req.body.documentType ?? req.body.type ?? "other";
       const doc = await getStorage().createDocument({
         spaceId: null as any,
@@ -1167,7 +1160,7 @@ export async function registerRoutes(
         type: "personal",
         documentType: docType,
         status: "submitted",
-        filePath: `/uploads/${file.filename}`,
+        filePath: url,
         originalFileName: file.originalname,
         fileSize: file.size,
         mimeType: file.mimetype,
@@ -1285,14 +1278,17 @@ export async function registerRoutes(
       const docId = Number(req.params.id);
       const allDocs = await getStorage().getAllDocuments();
       const doc = allDocs.find((d: any) => d.id === docId);
-      console.log(`[DOWNLOAD] doc=${docId} filePath=${(doc as any)?.filePath} originalFileName=${(doc as any)?.originalFileName}`);
       if (!doc || !(doc as any).filePath) return res.status(404).json({ message: "No file attached to this document" });
-      const rawPath: string = (doc as any).filePath;
-      const absPath = path.isAbsolute(rawPath)
-        ? rawPath
-        : path.resolve(process.cwd(), rawPath.replace(/^\//, ''));
-      console.log(`[DOWNLOAD] absPath=${absPath} exists=${fs.existsSync(absPath)}`);
-      if (!fs.existsSync(absPath)) return res.status(404).json({ message: "File not found on disk" });
+      const filePath: string = (doc as any).filePath;
+      // Cloudinary URLs are public — redirect the client directly
+      if (filePath.startsWith("http://") || filePath.startsWith("https://")) {
+        return res.redirect(filePath);
+      }
+      // Legacy: old local path still on disk (pre-Cloudinary uploads)
+      const absPath = path.isAbsolute(filePath)
+        ? filePath
+        : path.resolve(process.cwd(), filePath.replace(/^\//, ''));
+      if (!fs.existsSync(absPath)) return res.status(404).json({ message: "File not found" });
       const filename = (doc as any).originalFileName || path.basename(absPath);
       res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
       if ((doc as any).mimeType) res.setHeader('Content-Type', (doc as any).mimeType);
@@ -1327,7 +1323,8 @@ export async function registerRoutes(
       let originalFileName: string | null = null;
 
       if (req.file) {
-        filePath = `uploads/${req.file.filename}`;
+        const { url } = await uploadToCloudinary(req.file.buffer, req.file.originalname, req.file.mimetype);
+        filePath = url;
         fileSize = req.file.size;
         mimeType = req.file.mimetype;
         originalFileName = req.file.originalname;
