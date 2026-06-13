@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Eye, EyeOff, Check, X, AlertCircle } from "lucide-react";
+import { Loader2, Eye, EyeOff, Check, X, AlertCircle, Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useLocation, Link } from "wouter";
 
 function PasswordStrengthIndicator({ password }: { password: string }) {
@@ -67,6 +69,12 @@ export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [scrolled, setScrolled] = useState(false);
 
+  const { data: googleStatus } = useQuery<{ enabled: boolean; callbackUrl: string }>({
+    queryKey: ["/api/auth/google/status"],
+    queryFn: () => fetch("/api/auth/google/status").then((r) => r.json()),
+    staleTime: Infinity,
+  });
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
@@ -81,7 +89,8 @@ export default function AuthPage() {
     const params = new URLSearchParams(window.location.search);
     const err = params.get("error");
     if (err === "google_cancelled") setError("Google sign-in was cancelled.");
-    else if (err === "google_not_configured") setError("Google sign-in is not configured yet.");
+    else if (err === "google_not_configured") setError("Google sign-in is not set up yet. Please use username/password.");
+    else if (err === "google_token_failed") setError("Google authentication failed. Please try again or use username/password.");
     else if (err) setError("Google sign-in failed. Please try again.");
   }, []);
 
@@ -278,24 +287,47 @@ export default function AuthPage() {
                     )}
                   </Button>
 
-                  <div className="relative my-1">
-                    <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t border-border" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-card px-2 text-muted-foreground">or</span>
-                    </div>
-                  </div>
+                  {googleStatus && (
+                    <>
+                      <div className="relative my-1">
+                        <div className="absolute inset-0 flex items-center">
+                          <span className="w-full border-t border-border" />
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                          <span className="bg-card px-2 text-muted-foreground">or</span>
+                        </div>
+                      </div>
 
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full gap-2"
-                    onClick={() => { window.location.href = "/api/auth/google"; }}
-                  >
-                    <GoogleIcon />
-                    Continue with Google
-                  </Button>
+                      {googleStatus.enabled ? (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full gap-2"
+                          onClick={() => { window.location.href = "/api/auth/google"; }}
+                        >
+                          <GoogleIcon />
+                          Continue with Google
+                        </Button>
+                      ) : (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md border border-dashed border-border text-muted-foreground text-sm cursor-default select-none">
+                                <GoogleIcon />
+                                <span>Continue with Google</span>
+                                <Info className="w-3.5 h-3.5 ml-auto opacity-60" />
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent side="bottom" className="max-w-xs text-xs">
+                              <p className="font-semibold mb-1">Google sign-in not configured</p>
+                              <p>Add <code className="bg-muted px-1 rounded">GOOGLE_CLIENT_ID</code> and <code className="bg-muted px-1 rounded">GOOGLE_CLIENT_SECRET</code> to your environment variables.</p>
+                              <p className="mt-1 text-muted-foreground break-all">Callback URL: <span className="text-foreground">{googleStatus.callbackUrl}</span></p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                    </>
+                  )}
                 </>
               ) : (
                 // Registration Form
@@ -464,24 +496,47 @@ export default function AuthPage() {
                     )}
                   </Button>
 
-                  <div className="relative my-1">
-                    <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t border-border" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-card px-2 text-muted-foreground">or</span>
-                    </div>
-                  </div>
+                  {googleStatus && (
+                    <>
+                      <div className="relative my-1">
+                        <div className="absolute inset-0 flex items-center">
+                          <span className="w-full border-t border-border" />
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                          <span className="bg-card px-2 text-muted-foreground">or</span>
+                        </div>
+                      </div>
 
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full gap-2"
-                    onClick={() => { window.location.href = "/api/auth/google"; }}
-                  >
-                    <GoogleIcon />
-                    Sign up with Google
-                  </Button>
+                      {googleStatus.enabled ? (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full gap-2"
+                          onClick={() => { window.location.href = "/api/auth/google"; }}
+                        >
+                          <GoogleIcon />
+                          Sign up with Google
+                        </Button>
+                      ) : (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md border border-dashed border-border text-muted-foreground text-sm cursor-default select-none">
+                                <GoogleIcon />
+                                <span>Sign up with Google</span>
+                                <Info className="w-3.5 h-3.5 ml-auto opacity-60" />
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent side="bottom" className="max-w-xs text-xs">
+                              <p className="font-semibold mb-1">Google sign-in not configured</p>
+                              <p>Add <code className="bg-muted px-1 rounded">GOOGLE_CLIENT_ID</code> and <code className="bg-muted px-1 rounded">GOOGLE_CLIENT_SECRET</code> to your environment variables.</p>
+                              <p className="mt-1 text-muted-foreground break-all">Callback URL: <span className="text-foreground">{googleStatus.callbackUrl}</span></p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                    </>
+                  )}
                 </>
               )}
 

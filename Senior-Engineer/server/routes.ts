@@ -342,12 +342,37 @@ export async function registerRoutes(
   });
 
   // ── Google OAuth ───────────────────────────────────────────────────────────
+
+  // Resolves the base URL of the running app.
+  // Priority: APP_URL env var → x-forwarded-host (Vercel/proxy) → Host header.
+  // Always uses https in production so the OAuth callback URL is correct.
+  function getBaseUrl(req: Request): string {
+    if (process.env.APP_URL) return process.env.APP_URL.replace(/\/$/, "");
+    const proto =
+      process.env.NODE_ENV === "production"
+        ? "https"
+        : (req.headers["x-forwarded-proto"] as string) || "http";
+    const host =
+      (req.headers["x-forwarded-host"] as string) || req.headers.host || "localhost:5000";
+    return `${proto}://${host}`;
+  }
+
+  // Returns whether Google OAuth is configured and the exact callback URL to
+  // register in Google Cloud Console → Credentials → Authorised redirect URIs.
+  app.get("/api/auth/google/status", (req, res) => {
+    const enabled = !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
+    res.json({
+      enabled,
+      callbackUrl: `${getBaseUrl(req)}/api/auth/google/callback`,
+    });
+  });
+
   app.get("/api/auth/google", (req, res) => {
     const clientId = process.env.GOOGLE_CLIENT_ID;
     if (!clientId) {
-      return res.status(500).json({ message: "Google OAuth is not configured." });
+      return res.redirect("/auth?error=google_not_configured");
     }
-    const redirectUri = encodeURIComponent(`${process.env.APP_URL || `https://${req.headers.host}`}/api/auth/google/callback`);
+    const redirectUri = encodeURIComponent(`${getBaseUrl(req)}/api/auth/google/callback`);
     const scope = encodeURIComponent("openid email profile");
     const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&access_type=offline&prompt=select_account`;
     res.redirect(url);
@@ -362,7 +387,7 @@ export async function registerRoutes(
 
       const clientId = process.env.GOOGLE_CLIENT_ID;
       const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-      const redirectUri = `${process.env.APP_URL || `https://${req.headers.host}`}/api/auth/google/callback`;
+      const redirectUri = `${getBaseUrl(req)}/api/auth/google/callback`;
 
       if (!clientId || !clientSecret) {
         return res.redirect("/auth?error=google_not_configured");
