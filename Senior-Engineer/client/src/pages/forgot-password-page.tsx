@@ -50,13 +50,19 @@ export default function ForgotPasswordPage() {
     return { level: "Strong", color: "bg-green-500", width: "100%" };
   })();
 
+  const safeJson = async (res: Response) => {
+    const text = await res.text();
+    try { return JSON.parse(text); } catch { return { message: "Server error. Please try again." }; }
+  };
+
   const sendOtp = async (targetEmail: string) => {
     const res = await fetch("/api/auth/forgot-password", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ email: targetEmail }),
     });
-    const data = await res.json();
+    const data = await safeJson(res);
     if (!res.ok) throw new Error(data.message || "Failed to send code");
     setResendCooldown(60);
   };
@@ -99,9 +105,10 @@ export default function ForgotPasswordPage() {
       const res = await fetch("/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ email, otp }),
       });
-      const data = await res.json();
+      const data = await safeJson(res);
       if (!res.ok) throw new Error(data.message || "Invalid code");
       setSuccessMsg(null);
       setStep("newPassword");
@@ -124,9 +131,10 @@ export default function ForgotPasswordPage() {
       const res = await fetch("/api/auth/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ email, otp, newPassword }),
       });
-      const data = await res.json();
+      const data = await safeJson(res);
       if (!res.ok) throw new Error(data.message || "Failed to reset password");
       setSuccessMsg("Password reset successfully! Redirecting to sign in...");
       setTimeout(() => setLocation("/auth"), 2000);
