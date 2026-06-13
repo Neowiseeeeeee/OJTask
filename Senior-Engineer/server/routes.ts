@@ -8,7 +8,7 @@ import { taskQuerySchema, timeLogQuerySchema, scrumQuerySchema } from "@shared/s
 import { z } from "zod";
 import session from "express-session";
 import { MongoClient } from "mongodb";
-import memorystore from "memorystore";
+import MongoStore from "connect-mongo";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -59,38 +59,24 @@ export async function registerRoutes(
     console.error('Full error:', err);
   }
 
-  const MemoryStore = memorystore(session);
-  
-  // Session cleanup middleware
-  const sessionCleanup = (req: Request, res: Response, next: NextFunction) => {
-    // Clean up old sessions periodically
-    const store = (req as any).sessionStore;
-    if (store && store.cleanup) {
-      store.cleanup();
-    }
-    next();
-  };
-  
   app.use(session({
-    cookie: { 
+    cookie: {
       maxAge: 86400000,
-      secure: process.env.NODE_ENV === 'production' && process.env.HTTPS === 'true',
+      secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
       sameSite: 'lax'
     },
-    store: new MemoryStore({ 
-      checkPeriod: 86400000,
-      // Clean up expired sessions and limit storage
-      ttl: 86400000, // 24 hours
-      max: 100 // Maximum number of sessions to store
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI!,
+      dbName: 'ojtask',
+      collectionName: 'sessions',
+      ttl: 86400,
+      autoRemove: 'native',
     }),
     resave: false,
     saveUninitialized: false,
     secret: process.env.SESSION_SECRET || "ojt-management-secret"
   }));
-  
-  // Apply session cleanup middleware
-  app.use(sessionCleanup);
 
   // Auth Routes
   app.post(api.auth.login.path, async (req, res) => {

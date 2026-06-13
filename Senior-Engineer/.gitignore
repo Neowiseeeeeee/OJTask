@@ -13,3 +13,6 @@ vite.config.ts.*
 # Logs and temp files
 seed.log
 *.log
+
+# User-uploaded files — never commit these
+uploads/
