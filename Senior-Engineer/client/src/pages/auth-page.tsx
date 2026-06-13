@@ -153,8 +153,7 @@ export default function AuthPage() {
           ? "bg-white/80 dark:bg-[#0d0f1a]/80 backdrop-blur-xl border-b border-black/8 dark:border-white/8 shadow-sm"
           : "bg-transparent"
       }`}>
-        <div className="flex justify-center px-5 h-16">
-          <div className="w-full max-w-7xl flex items-center gap-6">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center gap-4">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-0.5 shrink-0">
               <img src="/ojtask-logo.png" className="h-14 w-auto object-contain mt-2" alt="OJTask logo" />
@@ -168,7 +167,6 @@ export default function AuthPage() {
                 ← Back to Home
               </Button>
             </Link>
-          </div>
         </div>
       </nav>
 

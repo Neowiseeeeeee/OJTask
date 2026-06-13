@@ -491,7 +491,7 @@ export default function LandingPage() {
               { title: "Product", links: [{ label: "Time Tracking", href: "/auth" }, { label: "Daily Scrum", href: "/auth" }, { label: "Task Board", href: "/auth" }, { label: "Documents", href: "/auth" }] },
               { title: "For",     links: [{ label: "Students", href: "/auth" }, { label: "Supervisors", href: "/auth" }, { label: "Coordinators", href: "/auth" }, { label: "Schools", href: "/auth" }] },
               { title: "Account", links: [{ label: "Sign In", href: "/auth" }, { label: "Get Started", href: "/auth" }, { label: "Forgot Password", href: "/forgot-password" }] },
-              { title: "Legal",   links: [{ label: "Privacy Policy", href: "/privacy" }, { label: "Terms of Use", href: "/terms" }, { label: "Contact Us", href: "/contact" }] },
+              { title: "Legal",   links: [{ label: "Privacy Policy", href: "/privacy-policy" }, { label: "Terms of Use", href: "/terms-of-use" }, { label: "Contact Us", href: "/contact" }] },
             ].map((col) => (
               <div key={col.title}>
                 <p className="text-white/90 font-bold text-sm mb-4">{col.title}</p>

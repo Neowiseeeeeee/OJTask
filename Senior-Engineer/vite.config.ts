@@ -33,16 +33,41 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom'],
-          router: ['wouter'],
-          ui: ['@radix-ui/react-avatar', '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
-          query: ['@tanstack/react-query'],
-          forms: ['react-hook-form', '@hookform/resolvers', 'zod'],
+          "react-core": ["react", "react-dom"],
+          router: ["wouter"],
+          query: ["@tanstack/react-query"],
+          forms: ["react-hook-form", "@hookform/resolvers", "zod"],
+          ui: [
+            "@radix-ui/react-avatar",
+            "@radix-ui/react-dialog",
+            "@radix-ui/react-dropdown-menu",
+            "@radix-ui/react-tabs",
+            "@radix-ui/react-select",
+            "@radix-ui/react-tooltip",
+            "@radix-ui/react-popover",
+            "@radix-ui/react-checkbox",
+            "@radix-ui/react-label",
+            "@radix-ui/react-slot",
+            "@radix-ui/react-separator",
+            "@radix-ui/react-switch",
+            "@radix-ui/react-progress",
+          ],
+          motion: ["framer-motion"],
+          charts: ["recharts"],
+          icons: ["lucide-react"],
+          dates: ["date-fns"],
         },
       },
     },
-    sourcemap: process.env.NODE_ENV !== 'production',
-    minify: 'terser',
+    sourcemap: false,
+    minify: "terser",
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
+    chunkSizeWarningLimit: 600,
   },
   server: {
     fs: {
@@ -51,6 +76,6 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'wouter'],
+    include: ["react", "react-dom", "wouter"],
   },
 });
