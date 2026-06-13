@@ -157,7 +157,7 @@ export default function AuthPage() {
           <div className="w-full max-w-7xl flex items-center gap-6">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-0.5 shrink-0">
-              <img src="/ojtask-logo.png" className="h-10 w-auto object-contain mt-1" alt="OJTask logo" />
+              <img src="/ojtask-logo.png" className="h-14 w-auto object-contain mt-2" alt="OJTask logo" />
             </Link>
 
             <div className="flex-1" />
