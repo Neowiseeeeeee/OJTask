@@ -45,20 +45,19 @@ export async function sendOtpEmail(toEmail: string, otp: string, name: string): 
   await transporter.sendMail({
     from: `"OJTask" <${fromAddress}>`,
     to: toEmail,
-    subject: "Your OJTask Password Reset Code",
+    subject: "OJTask password reset code",
+    text: `Hi ${name},\n\nYour OJTask password reset code is: ${otp}\n\nThis code expires in 10 minutes.\n\nIf you didn't request this, you can safely ignore this email.\n\n— OJTask`,
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #f9f9f9; border-radius: 12px;">
-        <div style="text-align: center; margin-bottom: 24px;">
-          <div style="display: inline-block; background: linear-gradient(135deg, #7c3aed, #6d28d9); border-radius: 12px; padding: 12px 16px;">
-            <span style="font-size: 28px; color: white; font-weight: bold;">⚡ OJTask</span>
-          </div>
+      <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px;color:#1a1a1a;">
+        <p style="margin:0 0 8px 0;font-size:15px;">Hi ${name},</p>
+        <p style="margin:0 0 20px 0;font-size:15px;color:#444;">Use the code below to reset your OJTask password. It expires in <strong>10 minutes</strong>.</p>
+        <div style="background:#f3f0ff;border-left:4px solid #7c3aed;padding:16px 24px;margin:0 0 20px 0;border-radius:4px;">
+          <p style="margin:0;font-size:13px;color:#555;text-transform:uppercase;letter-spacing:1px;">Reset code</p>
+          <p style="margin:4px 0 0 0;font-size:36px;font-weight:bold;letter-spacing:8px;color:#7c3aed;">${otp}</p>
         </div>
-        <h2 style="color: #1a1a1a; margin-bottom: 8px;">Password Reset Request</h2>
-        <p style="color: #555; margin-bottom: 24px;">Hi ${name}, use the code below to reset your password. This code expires in <strong>10 minutes</strong>.</p>
-        <div style="background: #fff; border: 2px solid #7c3aed; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 24px;">
-          <span style="font-size: 42px; font-weight: bold; letter-spacing: 10px; color: #7c3aed;">${otp}</span>
-        </div>
-        <p style="color: #888; font-size: 13px;">If you didn't request this, you can safely ignore this email. Your password will not change.</p>
+        <p style="margin:0;font-size:13px;color:#888;">If you didn't request this, ignore this email — your password won't change.</p>
+        <hr style="margin:24px 0;border:none;border-top:1px solid #eee;">
+        <p style="margin:0;font-size:12px;color:#bbb;">OJTask — Your internship, organized and on track.</p>
       </div>
     `,
   });
