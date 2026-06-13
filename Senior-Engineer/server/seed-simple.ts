@@ -1,7 +1,9 @@
 import { getStorage } from "./storage";
 import { writeFileSync, appendFileSync } from "fs";
 import { resolve } from "path";
+import bcrypt from "bcrypt";
 
+const BCRYPT_ROUNDS = 12;
 const logFile = resolve(process.cwd(), 'seed.log');
 
 function log(msg: string) {
@@ -21,6 +23,30 @@ function clearLog() {
   }
 }
 
+async function migratePasswordsTobcrypt() {
+  const storage = getStorage();
+  const db = (storage as any).db;
+  if (!db) return;
+
+  const users = await db.collection("users").find({}).toArray();
+  let migrated = 0;
+
+  for (const user of users) {
+    const isBcrypt = typeof user.password === "string" && user.password.startsWith("$2");
+    if (!isBcrypt && user.password) {
+      const hashed = await bcrypt.hash(user.password, BCRYPT_ROUNDS);
+      await db.collection("users").updateOne({ _id: user._id }, { $set: { password: hashed } });
+      migrated++;
+    }
+  }
+
+  if (migrated > 0) {
+    log(`[SEED] ✓ Migrated ${migrated} plain-text password(s) to bcrypt hashes`);
+  } else {
+    log(`[SEED] ✓ All passwords already hashed`);
+  }
+}
+
 export async function seedDatabase() {
   clearLog();
   log('[SEED] ============================================');
@@ -31,8 +57,10 @@ export async function seedDatabase() {
     const storage = getStorage();
     log(`[SEED] Using storage backend`);
     
-    // Check if any users already exist
-    const existingUsers = await storage.getUser(101); // Check for admin user
+    log('[SEED] Migrating plain-text passwords to bcrypt...');
+    await migratePasswordsTobcrypt();
+
+    const existingUsers = await storage.getUser(101);
     log(`[SEED] User check completed`);
     
     if (existingUsers) {
@@ -43,11 +71,12 @@ export async function seedDatabase() {
     
     log('[SEED] Creating 4 users...');
 
-    // Create users using storage
+    const SEED_PASSWORD = await bcrypt.hash('password123', BCRYPT_ROUNDS);
+
     const users = [
       {
         username: 'admin1',
-        password: 'password123',
+        password: SEED_PASSWORD,
         role: 'admin',
         name: 'Admin User',
         firstName: 'Admin',
@@ -59,7 +88,7 @@ export async function seedDatabase() {
       },
       {
         username: 'supervisor1',
-        password: 'password123',
+        password: SEED_PASSWORD,
         role: 'supervisor',
         name: 'Supervisor User',
         firstName: 'Supervisor',
@@ -71,7 +100,7 @@ export async function seedDatabase() {
       },
       {
         username: 'student1',
-        password: 'password123',
+        password: SEED_PASSWORD,
         role: 'student',
         name: 'John Student',
         firstName: 'John',
@@ -83,7 +112,7 @@ export async function seedDatabase() {
       },
       {
         username: 'student2',
-        password: 'password123',
+        password: SEED_PASSWORD,
         role: 'student',
         name: 'Jane Student',
         firstName: 'Jane',

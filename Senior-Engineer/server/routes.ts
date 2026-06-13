@@ -14,6 +14,9 @@ import path from "path";
 import fs from "fs";
 import { sendOtpEmail } from "./email";
 import { getDB } from "./db";
+import bcrypt from "bcrypt";
+
+const BCRYPT_ROUNDS = 12;
 
 // MongoDB-backed OTP helpers (safe for multi-instance / serverless)
 async function otpCollection() {
@@ -112,7 +115,11 @@ export async function registerRoutes(
     try {
       const input = api.auth.login.input.parse(req.body);
       const user = await getStorage().getUserByUsername(input.username);
-      if (!user || user.password !== input.password) {
+      if (!user) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      const passwordMatch = await bcrypt.compare(input.password, user.password);
+      if (!passwordMatch) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
       (req as any).session.userId = user.id;
@@ -136,7 +143,8 @@ export async function registerRoutes(
       if (existing) {
         return res.status(400).json({ message: "Username already exists", field: "username" });
       }
-      const user = await getStorage().createUser(input);
+      const hashedPassword = await bcrypt.hash(input.password, BCRYPT_ROUNDS);
+      const user = await getStorage().createUser({ ...input, password: hashedPassword });
       (req as any).session.userId = user.id;
       res.status(201).json({ user });
     } catch (err) {
@@ -256,18 +264,13 @@ export async function registerRoutes(
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Simple validation (in production, use bcrypt for hashing)
-      if (user.password !== currentPassword) {
+      const currentMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!currentMatch) {
         return res.status(401).json({ message: "Current password is incorrect" });
       }
 
-      // Update password
-      const users = await (getStorage() as any).getUsers();
-      const userIndex = users.findIndex((u: any) => u.id === userId);
-      if (userIndex !== -1) {
-        users[userIndex].password = newPassword;
-        (getStorage() as any).users = users;
-      }
+      const hashedNew = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
+      await getStorage().updateUser(userId, { password: hashedNew });
 
       res.json({ message: "Password changed successfully" });
     } catch (err) {
@@ -375,7 +378,8 @@ export async function registerRoutes(
         return res.status(404).json({ message: "User not found" });
       }
 
-      await getStorage().updateUser(user.id, { password: newPassword });
+      const hashedReset = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
+      await getStorage().updateUser(user.id, { password: hashedReset });
       await deleteOtp(email.toLowerCase().trim());
 
       res.status(200).json({ message: "Password reset successfully." });
@@ -510,9 +514,10 @@ export async function registerRoutes(
         username = `${baseUsername}${suffix++}`;
       }
 
+      const googlePlaceholder = await bcrypt.hash(`google_oauth_${Date.now()}_${Math.random()}`, BCRYPT_ROUNDS);
       const user = await getStorage().createUser({
         username,
-        password: `google_oauth_${Date.now()}`,
+        password: googlePlaceholder,
         name: pending.name || `${pending.firstName} ${pending.lastName}`.trim() || username,
         firstName: pending.firstName,
         lastName: pending.lastName,
