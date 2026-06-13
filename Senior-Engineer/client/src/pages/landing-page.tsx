@@ -128,7 +128,7 @@ export default function LandingPage() {
       }`}>
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center gap-4">
           <Link href="/" className="flex items-center gap-0.5 shrink-0">
-            <img src="/ojtask-logo.png" className="h-14 w-auto object-contain mt-1" alt="OJTask logo" />
+            <img src="/ojtask-logo.png" className="h-9 w-auto object-contain" alt="OJTask logo" />
           </Link>
 
           <div className="flex-1" />
