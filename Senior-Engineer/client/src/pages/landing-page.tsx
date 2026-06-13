@@ -304,11 +304,6 @@ export default function LandingPage() {
           </p>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-slate-400 dark:text-white/60 animate-bounce-slow">
-          <span className="text-xs font-medium tracking-widest uppercase">Scroll</span>
-          <ChevronDown className="w-4 h-4" />
-        </div>
       </section>
 
       {/* ── MARQUEE ───────────────────────────────────────────────────────── */}
@@ -321,10 +316,9 @@ export default function LandingPage() {
       <section className="min-h-[50vh] flex items-center py-20 px-6 bg-white dark:bg-[#0d0f1a]">
         <div className="max-w-5xl mx-auto w-full grid grid-cols-2 md:grid-cols-4 gap-8">
           {[
-            { value: statsValues.students,     label: "Students Onboarded" },
-            { value: statsValues.companies,    label: "Companies Using It" },
-            { value: statsValues.schools,      label: "Schools Enrolled" },
-            { value: statsValues.satisfaction, label: "Supervisor Satisfaction" },
+            { value: statsValues.students,  label: "Students Onboarded" },
+            { value: statsValues.companies, label: "Companies Using It" },
+            { value: statsValues.schools,   label: "Schools Enrolled" },
           ].map((s) => (
             <StatCard key={s.label} raw={s.value} label={s.label} />
           ))}
