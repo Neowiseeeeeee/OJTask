@@ -9,13 +9,11 @@ import { config } from "dotenv";
 config();
 
 import path from "path";
-import { fileURLToPath } from "url";
 
 const app = express();
 const httpServer = createServer(app);
 
 // Serve uploaded files statically so they can be previewed/downloaded
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const uploadsDir = path.resolve(process.cwd(), "uploads");
 app.use("/uploads", express.static(uploadsDir));
 

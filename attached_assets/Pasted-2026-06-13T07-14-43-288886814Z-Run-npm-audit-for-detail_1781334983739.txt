@@ -1,0 +1,95 @@
+2026-06-13T07:14:43.288886814Z Run `npm audit` for details.
+2026-06-13T07:14:43.51165078Z 
+2026-06-13T07:14:43.511680591Z > rest-express@1.0.0 build
+2026-06-13T07:14:43.511688091Z > tsx script/build.ts
+2026-06-13T07:14:43.511694001Z 
+2026-06-13T07:14:44.128906922Z building client...
+2026-06-13T07:14:44.184687166Z vite v7.3.5 building client environment for production...
+2026-06-13T07:14:44.739621588Z transforming...
+2026-06-13T07:14:49.93637051Z ✓ 2817 modules transformed.
+2026-06-13T07:14:50.58041421Z Generated an empty chunk: "vendor".
+2026-06-13T07:14:50.923662323Z rendering chunks...
+2026-06-13T07:14:56.763322713Z computing gzip size...
+2026-06-13T07:14:56.786427842Z ../dist/public/index.html                   3.19 kB │ gzip:   1.19 kB
+2026-06-13T07:14:56.786487113Z ../dist/public/assets/index-CrrupTXx.css  119.34 kB │ gzip:  18.23 kB
+2026-06-13T07:14:56.786598506Z ../dist/public/assets/vendor-l0sNRNKZ.js    0.00 kB │ gzip:   0.02 kB
+2026-06-13T07:14:56.786622357Z ../dist/public/assets/router-DGcK9_ZT.js   12.04 kB │ gzip:   4.87 kB
+2026-06-13T07:14:56.786657048Z ../dist/public/assets/query-BidpsDnS.js    36.34 kB │ gzip:  10.78 kB
+2026-06-13T07:14:56.786664418Z ../dist/public/assets/forms-CgnnJIcd.js    59.51 kB │ gzip:  14.03 kB
+2026-06-13T07:14:56.786682049Z ../dist/public/assets/ui-F0BhPRu4.js      199.51 kB │ gzip:  65.77 kB
+2026-06-13T07:14:56.786694159Z ../dist/public/assets/index-kHgkSUxY.js   982.82 kB │ gzip: 236.14 kB
+2026-06-13T07:14:56.78674641Z 
+2026-06-13T07:14:56.78675554Z (!) Some chunks are larger than 500 kB after minification. Consider:
+2026-06-13T07:14:56.786762691Z - Using dynamic import() to code-split the application
+2026-06-13T07:14:56.786767721Z - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+2026-06-13T07:14:56.786771591Z - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+2026-06-13T07:14:56.786946496Z ✓ built in 12.44s
+2026-06-13T07:14:56.78710226Z building server...
+2026-06-13T07:14:56.803422247Z ▲ [WARNING] "import.meta" is not available with the "cjs" output format and will be empty [empty-import-meta]
+2026-06-13T07:14:56.803480088Z 
+2026-06-13T07:14:56.803488799Z     server/index.ts:18:45:
+2026-06-13T07:14:56.803492719Z       18 │ const __dirname = path.dirname(fileURLToPath(import.meta.url));
+2026-06-13T07:14:56.803496039Z          ╵                                              ~~~~~~~~~~~
+2026-06-13T07:14:56.803498729Z 
+2026-06-13T07:14:56.803502649Z   You need to set the output format to "esm" for "import.meta" to work correctly.
+2026-06-13T07:14:56.803505479Z 
+2026-06-13T07:14:56.993730284Z 1 warning
+2026-06-13T07:14:56.993750035Z 
+2026-06-13T07:14:56.993754375Z   dist/index.cjs  1.4mb ⚠️
+2026-06-13T07:14:56.993757275Z 
+2026-06-13T07:14:56.993760925Z ⚡ Done in 192ms
+2026-06-13T07:15:09.006104825Z ==> Uploading build...
+2026-06-13T07:15:19.733469268Z ==> Uploaded in 5.8s. Compression took 4.9s
+2026-06-13T07:15:19.777677352Z ==> Build successful 🎉
+2026-06-13T07:15:26.85527528Z ==> Deploying...
+2026-06-13T07:15:27.12771961Z ==> Setting WEB_CONCURRENCY=1 by default, based on available CPUs in the instance
+2026-06-13T07:15:45.857089673Z ==> Running 'npm start'
+2026-06-13T07:15:46.854699715Z 
+2026-06-13T07:15:46.854734715Z > rest-express@1.0.0 start
+2026-06-13T07:15:46.854741495Z > NODE_ENV=production node dist/index.cjs
+2026-06-13T07:15:46.854745486Z 
+2026-06-13T07:15:48.866877658Z ◇ injected env (0) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+2026-06-13T07:15:48.946486412Z node:internal/url:1606
+2026-06-13T07:15:48.946510263Z     throw new ERR_INVALID_ARG_TYPE('path', ['string', 'URL'], path);
+2026-06-13T07:15:48.946515323Z     ^
+2026-06-13T07:15:48.946530703Z 
+2026-06-13T07:15:48.946535833Z TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string or an instance of URL. Received undefined
+2026-06-13T07:15:48.946542463Z     at fileURLToPath (node:internal/url:1606:11)
+2026-06-13T07:15:48.946547774Z     at Object.<anonymous> (/opt/render/project/src/Senior-Engineer/dist/index.cjs:156:157521)
+2026-06-13T07:15:48.946552034Z     at Module._compile (node:internal/modules/cjs/loader:1812:14)
+2026-06-13T07:15:48.946556934Z     at Object..js (node:internal/modules/cjs/loader:1943:10)
+2026-06-13T07:15:48.946564394Z     at Module.load (node:internal/modules/cjs/loader:1533:32)
+2026-06-13T07:15:48.946569084Z     at Module._load (node:internal/modules/cjs/loader:1335:12)
+2026-06-13T07:15:48.946573824Z     at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+2026-06-13T07:15:48.946578224Z     at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+2026-06-13T07:15:48.946582414Z     at node:internal/main/run_main_module:33:47 {
+2026-06-13T07:15:48.946587354Z   code: 'ERR_INVALID_ARG_TYPE'
+2026-06-13T07:15:48.946592244Z }
+2026-06-13T07:15:48.946596804Z 
+2026-06-13T07:15:48.946600495Z Node.js v24.14.1
+2026-06-13T07:15:50.453850257Z ==> Exited with status 1
+2026-06-13T07:15:50.456415677Z ==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys
+2026-06-13T07:15:54.846877493Z ==> Running 'npm start'
+2026-06-13T07:15:55.747062002Z 
+2026-06-13T07:15:55.747088162Z > rest-express@1.0.0 start
+2026-06-13T07:15:55.747093532Z > NODE_ENV=production node dist/index.cjs
+2026-06-13T07:15:55.747096542Z 
+2026-06-13T07:15:57.955444826Z ◇ injected env (0) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+2026-06-13T07:15:57.958613128Z node:internal/url:1606
+2026-06-13T07:15:57.958643899Z     throw new ERR_INVALID_ARG_TYPE('path', ['string', 'URL'], path);
+2026-06-13T07:15:57.958648149Z     ^
+2026-06-13T07:15:57.958651239Z 
+2026-06-13T07:15:57.958654729Z TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string or an instance of URL. Received undefined
+2026-06-13T07:15:57.958659899Z     at fileURLToPath (node:internal/url:1606:11)
+2026-06-13T07:15:57.958663759Z     at Object.<anonymous> (/opt/render/project/src/Senior-Engineer/dist/index.cjs:156:157521)
+2026-06-13T07:15:57.958666999Z     at Module._compile (node:internal/modules/cjs/loader:1812:14)
+2026-06-13T07:15:57.958670909Z     at Object..js (node:internal/modules/cjs/loader:1943:10)
+2026-06-13T07:15:57.958673809Z     at Module.load (node:internal/modules/cjs/loader:1533:32)
+2026-06-13T07:15:57.958676549Z     at Module._load (node:internal/modules/cjs/loader:1335:12)
+2026-06-13T07:15:57.95870515Z     at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+2026-06-13T07:15:57.95871228Z     at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+2026-06-13T07:15:57.95871504Z     at node:internal/main/run_main_module:33:47 {
+2026-06-13T07:15:57.95871884Z   code: 'ERR_INVALID_ARG_TYPE'
+2026-06-13T07:15:57.95872165Z }
+2026-06-13T07:15:57.958724421Z 
+2026-06-13T07:15:57.958727341Z Node.js v24.14.1
