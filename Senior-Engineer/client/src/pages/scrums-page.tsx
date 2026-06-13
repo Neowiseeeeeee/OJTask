@@ -14,7 +14,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
 import { useUserProfileModal } from "@/hooks/use-user-profile-modal";
-import { FileText, FolderOpen, CheckCircle, Clock, Users, Filter, BarChart3, Lock, Trash2 } from "lucide-react";
+import { FileText, CheckCircle, Clock, Users, Filter, BarChart3, Lock, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 type Member = { id: number; userId: number; role: string; user: { id: number; name: string; role: string } };
@@ -46,7 +46,6 @@ function StudentScrums() {
   const pctValue = Math.min(100, Math.max(0, parseInt(formData.completionPercentage, 10) || 0));
 
   const handleSubmit = async () => {
-    if (!activeSpaceId) return;
     await createScrum.mutateAsync({
       spaceId: activeSpaceId,
       userId: user!.id,
@@ -121,7 +120,7 @@ function StudentScrums() {
                 <Progress value={pctValue} className="h-2" />
               </div>
 
-              <Button onClick={handleSubmit} disabled={createScrum.isPending || !activeSpaceId} className="mt-2 w-full" data-testid="button-submit-scrum">
+              <Button onClick={handleSubmit} disabled={createScrum.isPending} className="mt-2 w-full" data-testid="button-submit-scrum">
                 {createScrum.isPending ? "Submitting..." : "Submit Scrum Report"}
               </Button>
             </div>
@@ -145,12 +144,7 @@ function StudentScrums() {
         </Card>
       )}
 
-      {!activeSpaceId ? (
-        <div className="flex flex-col items-center justify-center h-52 rounded-xl border-2 border-dashed border-border/50 bg-muted/20 text-center">
-          <FolderOpen className="w-10 h-10 text-muted-foreground/40 mb-3" />
-          <p className="font-medium text-muted-foreground">Select a space to view your scrum reports</p>
-        </div>
-      ) : scrums.length === 0 ? (
+      {scrums.length === 0 ? (
         <div className="text-center py-16 rounded-xl border-2 border-dashed border-border/50">
           <Users className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
           <p className="font-medium text-muted-foreground">No scrums yet. Submit your first daily report!</p>
@@ -275,12 +269,7 @@ function ManagerScrums() {
         </Select>
       </div>
 
-      {!activeSpaceId ? (
-        <div className="flex flex-col items-center justify-center h-52 rounded-xl border-2 border-dashed border-border/50 bg-muted/20 text-center">
-          <FolderOpen className="w-10 h-10 text-muted-foreground/40 mb-3" />
-          <p className="font-medium text-muted-foreground">Select a space to view scrum reports</p>
-        </div>
-      ) : filtered.length === 0 ? (
+      {filtered.length === 0 ? (
         <div className="text-center py-16 rounded-xl border-2 border-dashed border-border/50">
           <FileText className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
           <p className="font-medium text-muted-foreground">No scrum reports found.</p>

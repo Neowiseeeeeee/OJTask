@@ -32,11 +32,13 @@ export interface IStorage {
 
   // Time Logs
   getTimeLogs(spaceId: number): Promise<TimeLog[]>;
+  getPersonalTimeLogs(userId: number): Promise<TimeLog[]>;
   createTimeLog(log: InsertTimeLog): Promise<TimeLog>;
   approveTimeLog(id: number): Promise<TimeLog | undefined>;
 
   // Scrums
   getScrums(spaceId: number, userId?: number, date?: string): Promise<Scrum[]>;
+  getPersonalScrums(userId: number): Promise<Scrum[]>;
   createScrum(scrum: InsertScrum): Promise<Scrum>;
   approveScrum(id: number): Promise<Scrum | undefined>;
   deleteScrum(id: number): Promise<void>;
@@ -260,6 +262,9 @@ export class MemStorage implements IStorage {
   async getTimeLogs(spaceId: number): Promise<TimeLog[]> {
     return Array.from(this.timeLogs.values()).filter(t => t.spaceId === spaceId);
   }
+  async getPersonalTimeLogs(userId: number): Promise<TimeLog[]> {
+    return Array.from(this.timeLogs.values()).filter(t => t.spaceId === (null as any) && t.userId === userId);
+  }
   async createTimeLog(insertTimeLog: InsertTimeLog): Promise<TimeLog> {
     const id = this.currentIds.timeLog++;
     const log: TimeLog = { ...insertTimeLog, id, status: 'pending', taskId: insertTimeLog.taskId ?? null };
@@ -280,6 +285,9 @@ export class MemStorage implements IStorage {
     if (userId) scrums = scrums.filter(s => s.userId === userId);
     if (date) scrums = scrums.filter(s => s.date === date);
     return scrums;
+  }
+  async getPersonalScrums(userId: number): Promise<Scrum[]> {
+    return Array.from(this.scrums.values()).filter(s => s.spaceId === (null as any) && s.userId === userId);
   }
   async createScrum(insertScrum: InsertScrum): Promise<Scrum> {
     const id = this.currentIds.scrum++;

@@ -88,12 +88,13 @@ export function useTimeLogs(spaceId: number | null) {
   return useQuery<TimeLog[]>({
     queryKey: [api.timeLogs.list.path, spaceId],
     queryFn: async () => {
-      const url = buildUrl(api.timeLogs.list.path, { spaceId: spaceId! });
+      const url = spaceId
+        ? buildUrl(api.timeLogs.list.path, { spaceId })
+        : '/api/personal/time-logs';
       const res = await fetch(url, { credentials: "include" });
       if (!res.ok) throw new Error("Failed to fetch time logs");
       return res.json();
     },
-    enabled: !!spaceId,
     refetchInterval: 10000,
   });
 }
@@ -101,10 +102,12 @@ export function useTimeLogs(spaceId: number | null) {
 export function useCreateTimeLog(spaceId: number | null) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: z.infer<typeof api.timeLogs.create.input>) => {
-      const url = buildUrl(api.timeLogs.create.path, { spaceId: spaceId! });
+    mutationFn: async (data: any) => {
+      const url = spaceId
+        ? buildUrl(api.timeLogs.create.path, { spaceId })
+        : '/api/personal/time-logs';
       const res = await fetch(url, {
-        method: api.timeLogs.create.method,
+        method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
         credentials: "include",
@@ -121,12 +124,13 @@ export function useScrums(spaceId: number | null) {
   return useQuery<Scrum[]>({
     queryKey: [api.scrums.list.path, spaceId],
     queryFn: async () => {
-      const url = buildUrl(api.scrums.list.path, { spaceId: spaceId! });
+      const url = spaceId
+        ? buildUrl(api.scrums.list.path, { spaceId })
+        : '/api/personal/scrums';
       const res = await fetch(url, { credentials: "include" });
       if (!res.ok) throw new Error("Failed to fetch scrums");
       return res.json();
     },
-    enabled: !!spaceId,
     refetchInterval: 5000,
   });
 }
@@ -134,10 +138,12 @@ export function useScrums(spaceId: number | null) {
 export function useCreateScrum(spaceId: number | null) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: z.infer<typeof api.scrums.create.input>) => {
-      const url = buildUrl(api.scrums.create.path, { spaceId: spaceId! });
+    mutationFn: async (data: any) => {
+      const url = spaceId
+        ? buildUrl(api.scrums.create.path, { spaceId })
+        : '/api/personal/scrums';
       const res = await fetch(url, {
-        method: api.scrums.create.method,
+        method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
         credentials: "include",
@@ -240,7 +246,10 @@ export function useDeleteScrum(spaceId: number | null) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: number) => {
-      const res = await fetch(`/api/spaces/${spaceId}/scrums/${id}`, { method: "DELETE", credentials: "include" });
+      const url = spaceId
+        ? `/api/spaces/${spaceId}/scrums/${id}`
+        : `/api/personal/scrums/${id}`;
+      const res = await fetch(url, { method: "DELETE", credentials: "include" });
       if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.message ?? "Failed to delete scrum"); }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [api.scrums.list.path, spaceId] }),

@@ -125,7 +125,7 @@ function StudentTimeLogs() {
 
   const handleCreate = async () => {
     const h = parseInt(hours, 10);
-    if (!date || isNaN(h) || !activeSpaceId) return;
+    if (!date || isNaN(h)) return;
     await createLog.mutateAsync({ spaceId: activeSpaceId, userId: user!.id, date, hours: h, description: manualDesc || undefined } as any);
     setIsOpen(false);
     setManualDesc("");
@@ -191,11 +191,10 @@ function StudentTimeLogs() {
 
   const handleCancelTimer = () => {
     setTimerState("idle");
-    setElapsedMs(0);
+    setDisplayMs(0);
   };
 
   const handleSubmitTimer = async () => {
-    if (!activeSpaceId) return;
     await createLog.mutateAsync({
       spaceId: activeSpaceId,
       userId: user!.id,
@@ -205,7 +204,7 @@ function StudentTimeLogs() {
     } as any);
     setStopDialogOpen(false);
     setTimerState("idle");
-    setElapsedMs(0);
+    setDisplayMs(0);
     setTimerDesc("");
   };
 
@@ -277,7 +276,7 @@ function StudentTimeLogs() {
                     className="resize-none"
                   />
                 </div>
-                <Button onClick={handleCreate} disabled={createLog.isPending || !activeSpaceId} className="mt-2" data-testid="button-submit-log">
+                <Button onClick={handleCreate} disabled={createLog.isPending} className="mt-2" data-testid="button-submit-log">
                   {createLog.isPending ? "Saving..." : "Submit Log"}
                 </Button>
               </div>
@@ -287,7 +286,7 @@ function StudentTimeLogs() {
       </div>
 
       {/* Stop Timer Dialog */}
-      <Dialog open={stopDialogOpen} onOpenChange={open => { if (!open) { setStopDialogOpen(false); setTimerState("idle"); setElapsedMs(0); } }}>
+      <Dialog open={stopDialogOpen} onOpenChange={open => { if (!open) { setStopDialogOpen(false); setTimerState("idle"); setDisplayMs(0); } }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -332,14 +331,9 @@ function StudentTimeLogs() {
         </DialogContent>
       </Dialog>
 
-      {!activeSpaceId ? (
-        <div className="flex flex-col items-center justify-center h-52 rounded-xl border-2 border-dashed border-border/50 bg-muted/20 text-center">
-          <FolderOpen className="w-10 h-10 text-muted-foreground/40 mb-3" />
-          <p className="font-medium text-muted-foreground">Select a space to view time logs</p>
-        </div>
-      ) : (
-        <>
-          {/* OJT Progress */}
+      <>
+        {/* OJT Progress — only show when in a space (has a target) */}
+        {activeSpaceId && (
           <Card className="mb-6 border-border/50 shadow-sm bg-gradient-to-br from-primary/5 to-primary/0">
             <CardContent className="p-5">
               <div className="flex items-center justify-between mb-2">
@@ -356,92 +350,94 @@ function StudentTimeLogs() {
               </div>
             </CardContent>
           </Card>
+        )}
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <Card className="border-border/50 shadow-sm">
-              <CardContent className="p-5 flex items-center gap-4">
-                <div className="w-11 h-11 bg-primary/10 rounded-xl flex items-center justify-center">
-                  <Clock className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">{totalHours}h</div>
-                  <div className="text-xs text-muted-foreground">Total Hours Logged</div>
-                  {approvedScrumHours > 0 && (
-                    <div className="text-[10px] text-muted-foreground/70 mt-0.5">includes {approvedScrumHours}h from scrums</div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border-border/50 shadow-sm">
-              <CardContent className="p-5 flex items-center gap-4">
-                <div className="w-11 h-11 bg-emerald-500/10 rounded-xl flex items-center justify-center">
-                  <CheckCircle className="w-5 h-5 text-emerald-600" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-emerald-600">{approvedHours}h</div>
-                  <div className="text-xs text-muted-foreground">Approved Hours</div>
-                  {approvedScrumHours > 0 && (
-                    <div className="text-[10px] text-muted-foreground/70 mt-0.5">logs + scrums combined</div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Logs Table */}
+        {/* Stats */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
           <Card className="border-border/50 shadow-sm">
-            <div className="overflow-x-auto">
-            <Table>
-              <TableHeader className="bg-muted/50">
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Hours</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {myLogs.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center py-12 text-muted-foreground">
-                      No time logs yet. Click <strong>"Log Time"</strong> or <strong>"Track Time"</strong> to add your first entry.
-                    </TableCell>
-                  </TableRow>
-                ) : myLogs.map(log => (
-                  <TableRow key={log.id} data-testid={`row-log-${log.id}`}>
-                    <TableCell className="font-medium">{format(new Date(log.date + "T00:00:00"), "MMM d, yyyy")}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="w-4 h-4 text-muted-foreground" />
-                        {log.hours}h
-                      </div>
-                    </TableCell>
-                    <TableCell className="max-w-xs">
-                      {(log as any).description ? (
-                        <span className="text-sm text-muted-foreground line-clamp-2">{(log as any).description}</span>
-                      ) : (
-                        <span className="text-xs text-muted-foreground/40">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={log.status === "approved" ? "default" : "secondary"}
-                        className={log.status === "approved"
-                          ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                          : "text-amber-600 dark:text-amber-400 border-amber-300 dark:border-amber-600/50"}
-                      >
-                        {log.status === "approved" ? "Approved" : "Pending"}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            </div>
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="w-11 h-11 bg-primary/10 rounded-xl flex items-center justify-center">
+                <Clock className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold">{totalHours}h</div>
+                <div className="text-xs text-muted-foreground">Total Hours Logged</div>
+                {approvedScrumHours > 0 && (
+                  <div className="text-[10px] text-muted-foreground/70 mt-0.5">includes {approvedScrumHours}h from scrums</div>
+                )}
+              </div>
+            </CardContent>
           </Card>
-        </>
-      )}
+          <Card className="border-border/50 shadow-sm">
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="w-11 h-11 bg-emerald-500/10 rounded-xl flex items-center justify-center">
+                <CheckCircle className="w-5 h-5 text-emerald-600" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-emerald-600">{approvedHours}h</div>
+                <div className="text-xs text-muted-foreground">{activeSpaceId ? "Approved Hours" : "Total Hours"}</div>
+                {approvedScrumHours > 0 && (
+                  <div className="text-[10px] text-muted-foreground/70 mt-0.5">logs + scrums combined</div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Logs Table */}
+        <Card className="border-border/50 shadow-sm">
+          <div className="overflow-x-auto">
+          <Table>
+            <TableHeader className="bg-muted/50">
+              <TableRow>
+                <TableHead>Date</TableHead>
+                <TableHead>Hours</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {myLogs.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center py-12 text-muted-foreground">
+                    No time logs yet. Click <strong>"Log Time"</strong> or <strong>"Track Time"</strong> to add your first entry.
+                  </TableCell>
+                </TableRow>
+              ) : myLogs.map(log => (
+                <TableRow key={log.id} data-testid={`row-log-${log.id}`}>
+                  <TableCell className="font-medium">{format(new Date(log.date + "T00:00:00"), "MMM d, yyyy")}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1.5">
+                      <Clock className="w-4 h-4 text-muted-foreground" />
+                      {log.hours}h
+                    </div>
+                  </TableCell>
+                  <TableCell className="max-w-xs">
+                    {(log as any).description ? (
+                      <span className="text-sm text-muted-foreground line-clamp-2">{(log as any).description}</span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground/40">—</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={log.status === "approved" ? "default" : "secondary"}
+                      className={log.status === "approved"
+                        ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                        : activeSpaceId
+                          ? "text-amber-600 dark:text-amber-400 border-amber-300 dark:border-amber-600/50"
+                          : "bg-blue-500/10 text-blue-600 border-blue-500/20"}
+                    >
+                      {log.status === "approved" ? "Approved" : activeSpaceId ? "Pending" : "Personal"}
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          </div>
+        </Card>
+      </>
     </div>
   );
 }

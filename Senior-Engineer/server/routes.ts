@@ -995,6 +995,84 @@ export async function registerRoutes(
     }
   });
 
+  // Personal (no-space) Time Logs
+  app.get('/api/personal/time-logs', requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).session.userId;
+      const logs = await getStorage().getPersonalTimeLogs(userId);
+      res.json(logs);
+    } catch (err) {
+      res.status(500).json({ message: "Internal error" });
+    }
+  });
+
+  app.post('/api/personal/time-logs', requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).session.userId;
+      const schema = z.object({
+        date: z.string(),
+        hours: z.coerce.number().min(1).max(24),
+        description: z.string().optional().nullable(),
+      });
+      const input = schema.parse(req.body);
+      const log = await getStorage().createTimeLog({ ...input, userId, spaceId: null as any, taskId: null });
+      res.status(201).json(log);
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      res.status(500).json({ message: "Internal error" });
+    }
+  });
+
+  // Personal (no-space) Scrums
+  app.get('/api/personal/scrums', requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).session.userId;
+      const scrums = await getStorage().getPersonalScrums(userId);
+      res.json(scrums);
+    } catch (err) {
+      res.status(500).json({ message: "Internal error" });
+    }
+  });
+
+  app.post('/api/personal/scrums', requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).session.userId;
+      const schema = z.object({
+        date: z.string(),
+        taskYesterdayPlanned: z.string().default(''),
+        taskYesterdayCompleted: z.string().default(''),
+        taskTodayPlanned: z.string().default(''),
+        taskTodayCompleted: z.string().default(''),
+        whatNext: z.string().default(''),
+        timeSpent: z.coerce.number().default(0),
+        reflection: z.string().default(''),
+        completionPercentage: z.coerce.number().min(0).max(100).default(0),
+      });
+      const input = schema.parse(req.body);
+      const scrum = await getStorage().createScrum({ ...input, userId, spaceId: null as any });
+      res.status(201).json(scrum);
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      res.status(500).json({ message: "Internal error" });
+    }
+  });
+
+  app.delete('/api/personal/scrums/:id', requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).session.userId;
+      const id = Number(req.params.id);
+      const scrums = await getStorage().getPersonalScrums(userId);
+      const scrum = scrums.find(s => s.id === id);
+      if (!scrum) return res.status(404).json({ message: "Not found" });
+      if (scrum.isApproved) return res.status(403).json({ message: "Cannot delete an approved scrum" });
+      if (scrum.userId !== userId) return res.status(403).json({ message: "Not authorized" });
+      await getStorage().deleteScrum(id);
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ message: "Internal error" });
+    }
+  });
+
   // Time Logs
   app.get(api.timeLogs.list.path, requireAuth, requireSpaceMembership, async (req, res) => {
     try {

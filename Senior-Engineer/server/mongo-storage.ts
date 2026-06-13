@@ -257,6 +257,11 @@ export class MongoStorage implements IStorage {
     return logs.map(l => this.toTimeLog(l));
   }
 
+  async getPersonalTimeLogs(userId: number): Promise<TimeLog[]> {
+    const logs = await this.db.collection('timeLogs').find({ spaceId: null, userId }).toArray();
+    return logs.map(l => this.toTimeLog(l));
+  }
+
   async createTimeLog(insertTimeLog: InsertTimeLog): Promise<TimeLog> {
     const id = await this.getNextId('timeLog');
     const log = {
@@ -288,6 +293,11 @@ export class MongoStorage implements IStorage {
     if (userId) filter.userId = userId;
     if (date) filter.date = date;
     const scrums = await this.db.collection('scrums').find(filter).toArray();
+    return scrums.map(s => this.toScrum(s));
+  }
+
+  async getPersonalScrums(userId: number): Promise<Scrum[]> {
+    const scrums = await this.db.collection('scrums').find({ spaceId: null, userId }).toArray();
     return scrums.map(s => this.toScrum(s));
   }
 
