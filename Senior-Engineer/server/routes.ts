@@ -13,9 +13,38 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { sendOtpEmail } from "./email";
+import { getDB } from "./db";
 
-// In-memory OTP store: email -> { otp, expiresAt, verified }
-const otpStore = new Map<string, { otp: string; expiresAt: number; verified: boolean }>();
+// MongoDB-backed OTP helpers (safe for multi-instance / serverless)
+async function otpCollection() {
+  const db = getDB();
+  const col = db.collection("passwordResetOtps");
+  try {
+    await col.createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0, background: true });
+    await col.createIndex({ email: 1 }, { unique: true, background: true });
+  } catch {}
+  return col;
+}
+async function setOtp(email: string, otp: string) {
+  const col = await otpCollection();
+  await col.updateOne(
+    { email },
+    { $set: { email, otp, verified: false, expiresAt: new Date(Date.now() + 10 * 60 * 1000) } },
+    { upsert: true }
+  );
+}
+async function getOtp(email: string) {
+  const col = await otpCollection();
+  return col.findOne({ email }) as Promise<{ email: string; otp: string; verified: boolean; expiresAt: Date } | null>;
+}
+async function markOtpVerified(email: string) {
+  const col = await otpCollection();
+  await col.updateOne({ email }, { $set: { verified: true } });
+}
+async function deleteOtp(email: string) {
+  const col = await otpCollection();
+  await col.deleteOne({ email });
+}
 
 function generateOtp(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -247,6 +276,12 @@ export async function registerRoutes(
     }
   });
 
+  // ── Email status (is Gmail configured?) ─────────────────────────────────
+  app.get("/api/auth/email/status", (_req, res) => {
+    const configured = !!(process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD);
+    res.json({ configured, from: configured ? process.env.GMAIL_USER : null });
+  });
+
   // ── Forgot Password (OTP via Gmail) ──────────────────────────────────────
   app.post("/api/auth/forgot-password", async (req, res) => {
     try {
@@ -261,19 +296,31 @@ export async function registerRoutes(
         return res.status(200).json({ message: "If that email exists, a code was sent." });
       }
 
-      const otp = generateOtp();
-      otpStore.set(email.toLowerCase().trim(), {
-        otp,
-        expiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
-        verified: false,
-      });
+      if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
+        return res.status(503).json({
+          message: "Email sending is not configured on this server. Please contact the administrator.",
+          code: "EMAIL_NOT_CONFIGURED",
+        });
+      }
 
-      await sendOtpEmail(email, otp, user.name || user.username);
+      const otp = generateOtp();
+      await setOtp(email.toLowerCase().trim(), otp);
+
+      try {
+        await sendOtpEmail(email, otp, user.name || user.username);
+      } catch (mailErr: any) {
+        console.error("sendOtpEmail failed:", mailErr);
+        await deleteOtp(email.toLowerCase().trim());
+        return res.status(503).json({
+          message: "Failed to send the reset email. Please check your email address and try again.",
+          code: "EMAIL_SEND_FAILED",
+        });
+      }
 
       res.status(200).json({ message: "Reset code sent to your email." });
     } catch (err: any) {
       console.error("Forgot password error:", err);
-      res.status(500).json({ message: err.message || "Failed to send reset code. Check your email configuration." });
+      res.status(500).json({ message: "Failed to send reset code." });
     }
   });
 
@@ -284,22 +331,19 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Email and code are required" });
       }
 
-      const record = otpStore.get(email.toLowerCase().trim());
+      const record = await getOtp(email.toLowerCase().trim());
       if (!record) {
         return res.status(400).json({ message: "No reset code found. Please request a new one." });
       }
-      if (Date.now() > record.expiresAt) {
-        otpStore.delete(email.toLowerCase().trim());
+      if (new Date() > record.expiresAt) {
+        await deleteOtp(email.toLowerCase().trim());
         return res.status(400).json({ message: "Code has expired. Please request a new one." });
       }
       if (record.otp !== otp.trim()) {
         return res.status(400).json({ message: "Invalid code. Please try again." });
       }
 
-      // Mark as verified so reset-password can proceed
-      record.verified = true;
-      otpStore.set(email.toLowerCase().trim(), record);
-
+      await markOtpVerified(email.toLowerCase().trim());
       res.status(200).json({ message: "Code verified successfully." });
     } catch (err: any) {
       console.error("Verify OTP error:", err);
@@ -317,12 +361,12 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Password must be at least 8 characters" });
       }
 
-      const record = otpStore.get(email.toLowerCase().trim());
+      const record = await getOtp(email.toLowerCase().trim());
       if (!record || !record.verified || record.otp !== otp.trim()) {
         return res.status(400).json({ message: "Invalid or expired code. Please start over." });
       }
-      if (Date.now() > record.expiresAt) {
-        otpStore.delete(email.toLowerCase().trim());
+      if (new Date() > record.expiresAt) {
+        await deleteOtp(email.toLowerCase().trim());
         return res.status(400).json({ message: "Code expired. Please request a new one." });
       }
 
@@ -332,7 +376,7 @@ export async function registerRoutes(
       }
 
       await getStorage().updateUser(user.id, { password: newPassword });
-      otpStore.delete(email.toLowerCase().trim());
+      await deleteOtp(email.toLowerCase().trim());
 
       res.status(200).json({ message: "Password reset successfully." });
     } catch (err: any) {

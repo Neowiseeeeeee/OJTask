@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Loader2, ArrowLeft, Eye, EyeOff, Check, X, Mail, KeyRound, ShieldCheck } from "lucide-react";
+import { Loader2, ArrowLeft, Eye, EyeOff, Check, X, Mail, KeyRound, ShieldCheck, AlertTriangle } from "lucide-react";
 import { useLocation } from "wouter";
 
 type Step = "email" | "otp" | "newPassword";
@@ -22,6 +22,14 @@ export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [emailConfigured, setEmailConfigured] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    fetch("/api/auth/email/status")
+      .then((r) => r.json())
+      .then((d) => setEmailConfigured(d.configured))
+      .catch(() => setEmailConfigured(null));
+  }, []);
 
   const passwordStrength = (() => {
     let score = 0;
@@ -175,6 +183,15 @@ export default function ForgotPasswordPage() {
 
             {step === "email" && (
               <form onSubmit={handleSendOtp} className="space-y-4">
+                {emailConfigured === false && (
+                  <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                    <div className="text-sm text-amber-800 dark:text-amber-200">
+                      <p className="font-semibold">Email not configured</p>
+                      <p className="mt-0.5 text-xs">The server can't send emails yet. Add <code className="bg-amber-100 dark:bg-amber-900 px-1 rounded">GMAIL_USER</code> and <code className="bg-amber-100 dark:bg-amber-900 px-1 rounded">GMAIL_APP_PASSWORD</code> to your environment secrets.</p>
+                    </div>
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label htmlFor="fp-email">Email Address</Label>
                   <Input
@@ -188,7 +205,7 @@ export default function ForgotPasswordPage() {
                     autoComplete="email"
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full" disabled={isLoading || emailConfigured === false}>
                   {isLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Sending code...</> : "Send Reset Code"}
                 </Button>
               </form>
