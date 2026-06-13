@@ -22,8 +22,8 @@ function MarqueeStrip({ reverse = false }: { reverse?: boolean }) {
       <div className={`flex gap-0 w-max ${reverse ? "animate-marquee-reverse" : "animate-marquee"}`} style={{ willChange: "transform" }}>
         {doubled.map((item, i) => (
           <span key={i} className="inline-flex items-center gap-4 px-6 text-lg font-semibold text-white/80 whitespace-nowrap">
-            <span className="w-2 h-2 rounded-full bg-white/40 inline-block shrink-0" />
             {item}
+            <span className="w-2 h-2 rounded-full bg-white/40 inline-block shrink-0" />
           </span>
         ))}
       </div>
