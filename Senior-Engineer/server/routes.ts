@@ -424,27 +424,15 @@ export async function registerRoutes(
       // Find or create user
       let user = await (getStorage() as any).getUserByEmail(profile.email.toLowerCase());
       if (!user) {
-        // Create new user from Google profile
-        const firstName = profile.given_name || "";
-        const lastName = profile.family_name || "";
-        const baseUsername = (profile.email.split("@")[0] || "user").replace(/[^a-z0-9]/gi, "").toLowerCase();
-        let username = baseUsername;
-        let suffix = 1;
-        while (await getStorage().getUserByUsername(username)) {
-          username = `${baseUsername}${suffix++}`;
-        }
-        user = await getStorage().createUser({
-          username,
-          password: `google_oauth_${Date.now()}`,
-          name: profile.name || `${firstName} ${lastName}`.trim() || username,
-          firstName,
-          lastName,
+        // New user — store profile in session and redirect to role selection
+        (req as any).session.pendingGoogleProfile = {
           email: profile.email.toLowerCase(),
-          role: "student",
-          organization: "",
-          profilePicture: profile.picture || null,
-          emailVerified: true,
-        });
+          name: profile.name || "",
+          firstName: profile.given_name || "",
+          lastName: profile.family_name || "",
+          picture: profile.picture || null,
+        };
+        return res.redirect("/role-select");
       }
 
       (req as any).session.userId = user.id;
@@ -452,6 +440,51 @@ export async function registerRoutes(
     } catch (err: any) {
       console.error("Google OAuth callback error:", err);
       res.redirect("/auth?error=google_failed");
+    }
+  });
+
+  app.get("/api/auth/pending-profile", (req, res) => {
+    const pending = (req as any).session?.pendingGoogleProfile;
+    if (!pending) return res.status(404).json({ message: "No pending profile" });
+    res.json(pending);
+  });
+
+  app.post("/api/auth/complete-google-signup", async (req, res) => {
+    try {
+      const pending = (req as any).session?.pendingGoogleProfile;
+      if (!pending) return res.status(400).json({ message: "No pending Google profile" });
+
+      const { role } = req.body as { role?: string };
+      if (!role || !["student", "supervisor", "school"].includes(role)) {
+        return res.status(400).json({ message: "Invalid role" });
+      }
+
+      const baseUsername = (pending.email.split("@")[0] || "user").replace(/[^a-z0-9]/gi, "").toLowerCase();
+      let username = baseUsername;
+      let suffix = 1;
+      while (await getStorage().getUserByUsername(username)) {
+        username = `${baseUsername}${suffix++}`;
+      }
+
+      const user = await getStorage().createUser({
+        username,
+        password: `google_oauth_${Date.now()}`,
+        name: pending.name || `${pending.firstName} ${pending.lastName}`.trim() || username,
+        firstName: pending.firstName,
+        lastName: pending.lastName,
+        email: pending.email,
+        role,
+        organization: "",
+        profilePicture: pending.picture || null,
+        emailVerified: true,
+      });
+
+      delete (req as any).session.pendingGoogleProfile;
+      (req as any).session.userId = user.id;
+      res.json({ ok: true });
+    } catch (err: any) {
+      console.error("complete-google-signup error:", err);
+      res.status(500).json({ message: "Failed to complete signup" });
     }
   });
 
