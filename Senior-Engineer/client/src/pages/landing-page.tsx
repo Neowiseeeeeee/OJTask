@@ -80,24 +80,24 @@ const roles = [
     icon: GraduationCap, title: "Students",
     subtitle: "Everything you need to get through OJT without the stress.",
     accent: "bg-violet-600", gradFrom: "#7c3aed", gradTo: "#6d28d9",
-    lightBg: "#f5f3ff", darkBg: "rgba(109,40,217,0.12)",
-    lightRing: "rgba(167,139,250,0.4)", darkRing: "rgba(109,40,217,0.3)",
+    lightBg: "#f5f3ff", darkBg: "rgba(124,58,237,0.28)",
+    lightRing: "rgba(167,139,250,0.4)", darkRing: "rgba(167,139,250,0.35)",
     items: ["Log daily OJT hours and tasks", "Submit structured daily scrum reports", "Record attendance instantly", "Upload required internship documents"],
   },
   {
     icon: Building2, title: "Company Supervisors",
     subtitle: "Stay on top of every intern without the constant follow-ups.",
     accent: "bg-indigo-600", gradFrom: "#4f46e5", gradTo: "#3730a3",
-    lightBg: "#eef2ff", darkBg: "rgba(79,70,229,0.12)",
-    lightRing: "rgba(165,180,252,0.4)", darkRing: "rgba(79,70,229,0.3)",
+    lightBg: "#eef2ff", darkBg: "rgba(79,70,229,0.28)",
+    lightRing: "rgba(165,180,252,0.4)", darkRing: "rgba(165,180,252,0.35)",
     items: ["Approve time logs and scrums in one click", "Assign tasks and track progress visually", "Monitor attendance in real time", "Communicate via dedicated team channels"],
   },
   {
     icon: BookOpen, title: "School Coordinators",
     subtitle: "Full program visibility without chasing anyone for updates.",
     accent: "bg-emerald-600", gradFrom: "#059669", gradTo: "#047857",
-    lightBg: "#ecfdf5", darkBg: "rgba(5,150,105,0.12)",
-    lightRing: "rgba(110,231,183,0.4)", darkRing: "rgba(5,150,105,0.3)",
+    lightBg: "#ecfdf5", darkBg: "rgba(5,150,105,0.28)",
+    lightRing: "rgba(110,231,183,0.4)", darkRing: "rgba(110,231,183,0.35)",
     items: ["View all student progress at a glance", "Monitor interns across multiple companies", "Review and approve submitted documents", "Track attendance program-wide"],
   },
 ];
@@ -152,10 +152,10 @@ function StatCard({ raw, label }: { raw: string; label: string }) {
   const count = useCounter(isNumber ? numericVal : 0, inView && isNumber);
   return (
     <div ref={ref} className={`text-center transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
-      <div className="text-4xl md:text-5xl font-black text-violet-600 dark:text-violet-400 mb-2 tabular-nums">
+      <div className="text-4xl md:text-5xl font-black text-violet-600 dark:text-violet-300 mb-2 tabular-nums">
         {isNumber && inView ? count : raw}
       </div>
-      <div className="text-sm font-medium text-slate-500 dark:text-slate-400">{label}</div>
+      <div className="text-sm font-medium text-slate-500 dark:text-slate-300">{label}</div>
     </div>
   );
 }
@@ -197,8 +197,8 @@ export default function LandingPage() {
     return () => { document.title = "OJTask"; };
   }, []);
 
-  const rolesGradient   = isDark ? "linear-gradient(175deg, #0f0a1e 0%, #150d2e 100%)"              : "linear-gradient(175deg, #fafafa 0%, #f5f3ff 100%)";
-  const stepsGradient   = isDark ? "linear-gradient(175deg, #0f0a1e 0%, #1e1b4b 100%)"              : "linear-gradient(175deg, #f5f3ff 0%, #ede9fe 100%)";
+  const rolesGradient   = isDark ? "linear-gradient(175deg, #13102a 0%, #1a1040 100%)"              : "linear-gradient(175deg, #fafafa 0%, #f5f3ff 100%)";
+  const stepsGradient   = isDark ? "linear-gradient(175deg, #13102a 0%, #1e1b4b 100%)"              : "linear-gradient(175deg, #f5f3ff 0%, #ede9fe 100%)";
 
   return (
     <div className="bg-white dark:bg-[#0d0f1a] text-slate-900 dark:text-white overflow-x-hidden transition-colors duration-300">
@@ -256,17 +256,17 @@ export default function LandingPage() {
         <div className="absolute bottom-1/4 right-1/4 w-[350px] h-[350px] rounded-full bg-purple-500/15 dark:bg-purple-600/10 blur-[90px] pointer-events-none animate-blob animation-delay-4000" />
 
         {/* Floating decorative chips */}
-        <div className="absolute top-28 left-[8%] hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-white/60 dark:border-white/10 shadow-lg text-xs font-semibold text-slate-700 dark:text-white/70 animate-float">
-          <Clock className="w-3.5 h-3.5 text-violet-500" /> Time Tracking
+        <div className="absolute top-28 left-[8%] hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 dark:bg-white/20 backdrop-blur-sm border border-white/60 dark:border-white/30 shadow-lg text-xs font-semibold text-slate-700 dark:text-white animate-float">
+          <Clock className="w-3.5 h-3.5 text-violet-500 dark:text-violet-300" /> Time Tracking
         </div>
-        <div className="absolute top-44 right-[7%] hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-white/60 dark:border-white/10 shadow-lg text-xs font-semibold text-slate-700 dark:text-white/70 animate-float animation-delay-1000">
-          <Users className="w-3.5 h-3.5 text-indigo-500" /> Daily Scrum
+        <div className="absolute top-44 right-[7%] hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 dark:bg-white/20 backdrop-blur-sm border border-white/60 dark:border-white/30 shadow-lg text-xs font-semibold text-slate-700 dark:text-white animate-float animation-delay-1000">
+          <Users className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-300" /> Daily Scrum
         </div>
-        <div className="absolute bottom-36 left-[10%] hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-white/60 dark:border-white/10 shadow-lg text-xs font-semibold text-slate-700 dark:text-white/70 animate-float animation-delay-2000">
-          <FileText className="w-3.5 h-3.5 text-rose-500" /> Document Hub
+        <div className="absolute bottom-36 left-[10%] hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 dark:bg-white/20 backdrop-blur-sm border border-white/60 dark:border-white/30 shadow-lg text-xs font-semibold text-slate-700 dark:text-white animate-float animation-delay-2000">
+          <FileText className="w-3.5 h-3.5 text-rose-500 dark:text-rose-300" /> Document Hub
         </div>
-        <div className="absolute bottom-48 right-[9%] hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 dark:bg-white/8 backdrop-blur-sm border border-white/60 dark:border-white/10 shadow-lg text-xs font-semibold text-slate-700 dark:text-white/70 animate-float animation-delay-3000">
-          <ListTodo className="w-3.5 h-3.5 text-emerald-500" /> Task Board
+        <div className="absolute bottom-48 right-[9%] hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 dark:bg-white/20 backdrop-blur-sm border border-white/60 dark:border-white/30 shadow-lg text-xs font-semibold text-slate-700 dark:text-white animate-float animation-delay-3000">
+          <ListTodo className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-300" /> Task Board
         </div>
 
         <div className="relative max-w-4xl mx-auto animate-hero-enter">
@@ -277,7 +277,7 @@ export default function LandingPage() {
 
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tight leading-[1.04] mb-7 text-slate-900 dark:text-white">
             Your Internship,{" "}
-            <span className="animate-gradient-text bg-gradient-to-r from-violet-600 via-purple-500 to-indigo-600 dark:from-violet-400 dark:via-purple-300 dark:to-indigo-400 bg-clip-text text-transparent" style={{ backgroundSize: "200% 100%" }}>
+            <span className="animate-gradient-text bg-gradient-to-r from-violet-600 via-purple-500 to-indigo-600 dark:from-fuchsia-300 dark:via-violet-200 dark:to-indigo-300 bg-clip-text text-transparent" style={{ backgroundSize: "200% 100%" }}>
               Finally Organized
             </span>
           </h1>
@@ -305,7 +305,7 @@ export default function LandingPage() {
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-slate-400 dark:text-white/30 animate-bounce-slow">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-slate-400 dark:text-white/60 animate-bounce-slow">
           <span className="text-xs font-medium tracking-widest uppercase">Scroll</span>
           <ChevronDown className="w-4 h-4" />
         </div>
@@ -335,11 +335,11 @@ export default function LandingPage() {
       <Section className="px-6 py-20" style={{ background: rolesGradient }}>
         <div className="max-w-7xl mx-auto w-full">
           <div className="text-center mb-16">
-            <p className="text-violet-600 dark:text-violet-400 font-bold text-sm uppercase tracking-widest mb-4">Who Uses OJTask</p>
+            <p className="text-violet-600 dark:text-violet-300 font-bold text-sm uppercase tracking-widest mb-4">Who Uses OJTask</p>
             <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-5 text-slate-900 dark:text-white">
-              One Platform Built for{" "}<span className="text-violet-600 dark:text-violet-400">Everyone Involved</span>
+              One Platform Built for{" "}<span className="text-violet-600 dark:text-violet-300">Everyone Involved</span>
             </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-xl max-w-xl mx-auto leading-relaxed">
+            <p className="text-slate-500 dark:text-slate-300 text-xl max-w-xl mx-auto leading-relaxed">
               Students, supervisors, and coordinators each get a tailored view with exactly the tools they need.
             </p>
           </div>
@@ -358,7 +358,7 @@ export default function LandingPage() {
                     <role.icon className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-xl font-black mb-2 text-slate-900 dark:text-white">{role.title}</h3>
-                  <p className="text-slate-500 dark:text-slate-400 text-sm mb-6 leading-relaxed">{role.subtitle}</p>
+                  <p className="text-slate-500 dark:text-slate-300 text-sm mb-6 leading-relaxed">{role.subtitle}</p>
                   <ul className="space-y-3">
                     {role.items.map((item, j) => (
                       <li key={item} className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300"
@@ -379,11 +379,11 @@ export default function LandingPage() {
       <Section id="features" className="px-6 py-20 bg-white dark:bg-[#0d0f1a]">
         <div className="max-w-7xl mx-auto w-full">
           <div className="text-center mb-16">
-            <p className="text-violet-600 dark:text-violet-400 font-bold text-sm uppercase tracking-widest mb-4">Six Core Modules</p>
+            <p className="text-violet-600 dark:text-violet-300 font-bold text-sm uppercase tracking-widest mb-4">Six Core Modules</p>
             <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-5 text-slate-900 dark:text-white">
-              Everything Your OJT{" "}<span className="text-violet-600 dark:text-violet-400">Program Needs</span>
+              Everything Your OJT{" "}<span className="text-violet-600 dark:text-violet-300">Program Needs</span>
             </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-xl max-w-xl mx-auto leading-relaxed">
+            <p className="text-slate-500 dark:text-slate-300 text-xl max-w-xl mx-auto leading-relaxed">
               Six focused tools that cover the complete internship workflow from day one to sign-off.
             </p>
           </div>
@@ -394,16 +394,16 @@ export default function LandingPage() {
                 <div
                   className="group p-7 rounded-3xl hover:shadow-xl hover:-translate-y-2 transition-all duration-300 h-full"
                   style={{
-                    background: isDark ? "rgba(255,255,255,0.04)" : "#ffffff",
-                    border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e2e8f0",
-                    boxShadow: isDark ? "none" : "0 2px 12px rgba(0,0,0,0.06)",
+                    background: isDark ? "rgba(255,255,255,0.09)" : "#ffffff",
+                    border: isDark ? "1px solid rgba(255,255,255,0.18)" : "1px solid #e2e8f0",
+                    boxShadow: isDark ? "0 2px 16px rgba(0,0,0,0.3)" : "0 2px 12px rgba(0,0,0,0.06)",
                   }}
                 >
                   <div className={`w-12 h-12 ${isDark ? f.darkColor : f.lightColor} rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300`}>
                     <f.icon className="w-6 h-6" />
                   </div>
                   <h3 className="text-lg font-black mb-2 text-slate-900 dark:text-white">{f.title}</h3>
-                  <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{f.desc}</p>
+                  <p className="text-slate-500 dark:text-slate-300 text-sm leading-relaxed">{f.desc}</p>
                 </div>
               </AnimCard>
             ))}
@@ -415,11 +415,11 @@ export default function LandingPage() {
       <Section id="how-it-works" className="px-6 py-20" style={{ background: stepsGradient }}>
         <div className="max-w-7xl mx-auto w-full">
           <div className="text-center mb-16">
-            <p className="text-violet-600 dark:text-violet-400 font-bold text-sm uppercase tracking-widest mb-4">Getting Started</p>
+            <p className="text-violet-600 dark:text-violet-300 font-bold text-sm uppercase tracking-widest mb-4">Getting Started</p>
             <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-5 text-slate-900 dark:text-white">
-              Up and Running in{" "}<span className="text-violet-600 dark:text-violet-400">Five Minutes</span>
+              Up and Running in{" "}<span className="text-violet-600 dark:text-violet-300">Five Minutes</span>
             </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-xl max-w-xl mx-auto leading-relaxed">
+            <p className="text-slate-500 dark:text-slate-300 text-xl max-w-xl mx-auto leading-relaxed">
               No IT setup. No lengthy onboarding. Just create your space and start tracking.
             </p>
           </div>
@@ -430,21 +430,21 @@ export default function LandingPage() {
                 <div
                   className="relative group rounded-3xl p-7 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 h-full overflow-hidden"
                   style={{
-                    background: isDark ? "rgba(255,255,255,0.05)" : "#ffffff",
-                    border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e2e8f0",
-                    boxShadow: isDark ? "none" : "0 2px 12px rgba(0,0,0,0.06)",
+                    background: isDark ? "rgba(255,255,255,0.09)" : "#ffffff",
+                    border: isDark ? "1px solid rgba(255,255,255,0.18)" : "1px solid #e2e8f0",
+                    boxShadow: isDark ? "0 2px 16px rgba(0,0,0,0.3)" : "0 2px 12px rgba(0,0,0,0.06)",
                   }}
                 >
                   {/* Shimmering step number */}
-                  <div className="text-6xl font-black absolute top-4 right-5 leading-none select-none transition-all duration-300 group-hover:scale-110 group-hover:opacity-60" style={{ color: isDark ? "rgba(109,40,217,0.35)" : "#ddd6fe" }}>{step.step}</div>
+                  <div className="text-6xl font-black absolute top-4 right-5 leading-none select-none transition-all duration-300 group-hover:scale-110 group-hover:opacity-60" style={{ color: isDark ? "rgba(167,139,250,0.4)" : "#ddd6fe" }}>{step.step}</div>
                   <div className="w-12 h-12 bg-violet-600 rounded-2xl flex items-center justify-center mb-5 shadow-md shadow-violet-500/30 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
                     <step.icon className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-base font-black text-slate-900 dark:text-white mb-2">{step.title}</h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{step.desc}</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-300 leading-relaxed">{step.desc}</p>
                   {i < steps.length - 1 && (
                     <div className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
-                      <ArrowRight className="w-5 h-5 text-violet-300 dark:text-violet-700" />
+                      <ArrowRight className="w-5 h-5 text-violet-300 dark:text-violet-400" />
                     </div>
                   )}
                 </div>
@@ -462,9 +462,9 @@ export default function LandingPage() {
         <div className="max-w-3xl mx-auto text-center relative">
           <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-6 text-slate-900 dark:text-white">
             Your OJT Program Deserves{" "}
-            <span className="text-violet-600 dark:text-violet-400">Better Than Group Chats</span>
+            <span className="text-violet-600 dark:text-violet-300">Better Than Group Chats</span>
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 text-xl mb-10 max-w-xl mx-auto leading-relaxed">
+          <p className="text-slate-500 dark:text-slate-300 text-xl mb-10 max-w-xl mx-auto leading-relaxed">
             Give interns a dedicated space to log their work and give supervisors real-time visibility — zero follow-up required.
           </p>
           <Link href="/auth">
@@ -472,7 +472,7 @@ export default function LandingPage() {
               Get Started — it's free
             </Button>
           </Link>
-          <p className="mt-5 text-sm text-slate-500 dark:text-slate-400">No credit card needed · Free to start</p>
+          <p className="mt-5 text-sm text-slate-500 dark:text-slate-300">No credit card needed · Free to start</p>
         </div>
       </Section>
 
