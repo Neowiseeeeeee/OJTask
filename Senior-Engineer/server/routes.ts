@@ -488,6 +488,26 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/onboarding/status", requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).session.userId;
+      const user = await getStorage().getUser(userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+      const spaces = await getStorage().getUserSpaces(userId);
+      res.json({
+        profileComplete: !!(user.firstName && user.lastName && user.email && user.organization),
+        pictureUploaded: !!(user.profilePicture),
+        spaceJoined: spaces.length > 0,
+        accountAgeDays: user.createdAt
+          ? Math.floor((Date.now() - new Date(user.createdAt).getTime()) / 86_400_000)
+          : 0,
+      });
+    } catch (err) {
+      console.error("onboarding/status error:", err);
+      res.status(500).json({ message: "Internal error" });
+    }
+  });
+
   // Settings Routes
   app.post("/api/settings/notifications", requireAuth, async (req, res) => {
     try {

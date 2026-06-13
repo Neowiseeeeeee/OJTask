@@ -25,6 +25,7 @@ import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { UserCardWithPicture } from "@/components/user-card-with-picture";
 import { UserProfileModal } from "@/components/user-profile-modal";
+import { OnboardingChecklist } from "@/components/onboarding-checklist";
 
 function JoinCodeWidget({ code, isManager }: { code: string | null; isManager: boolean }) {
   const { toast } = useToast();
@@ -662,13 +663,21 @@ export default function Dashboard() {
 
   if (!activeSpace) {
     return (
-      <div className="flex flex-col items-center justify-center h-[60vh] text-center max-w-md mx-auto">
-        <div className="w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-6"><AlertCircle className="w-10 h-10" /></div>
-        <h2 className="text-2xl font-display font-bold mb-2">No Space Selected</h2>
-        <p className="text-muted-foreground">Select a space from the sidebar, or create / join one to get started.</p>
+      <div className="space-y-6">
+        <OnboardingChecklist />
+        <div className="flex flex-col items-center justify-center h-[60vh] text-center max-w-md mx-auto">
+          <div className="w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-6"><AlertCircle className="w-10 h-10" /></div>
+          <h2 className="text-2xl font-display font-bold mb-2">No Space Selected</h2>
+          <p className="text-muted-foreground">Select a space from the sidebar, or create / join one to get started.</p>
+        </div>
       </div>
     );
   }
 
-  return isManager ? <ManagerDashboard /> : <StudentDashboard />;
+  return (
+    <div className="space-y-0">
+      <div className="mb-6"><OnboardingChecklist /></div>
+      {isManager ? <ManagerDashboard /> : <StudentDashboard />}
+    </div>
+  );
 }
