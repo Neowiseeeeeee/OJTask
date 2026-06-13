@@ -1,5 +1,80 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Link } from "wouter";
+
+// ── Animated particle canvas ────────────────────────────────────────────────
+function ParticleCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let width = canvas.offsetWidth;
+    let height = canvas.offsetHeight;
+    canvas.width = width;
+    canvas.height = height;
+
+    const particles = Array.from({ length: 90 }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      r: Math.random() * 1.6 + 0.3,
+      dx: (Math.random() - 0.5) * 0.35,
+      dy: (Math.random() - 0.5) * 0.35,
+      alpha: Math.random() * 0.6 + 0.15,
+      pulse: Math.random() * Math.PI * 2,
+    }));
+
+    let raf: number;
+    const draw = () => {
+      ctx.clearRect(0, 0, width, height);
+      particles.forEach((p) => {
+        p.pulse += 0.018;
+        const a = p.alpha * (0.6 + 0.4 * Math.sin(p.pulse));
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(200,180,255,${a})`;
+        ctx.fill();
+        p.x += p.dx;
+        p.y += p.dy;
+        if (p.x < 0) p.x = width;
+        if (p.x > width) p.x = 0;
+        if (p.y < 0) p.y = height;
+        if (p.y > height) p.y = 0;
+      });
+
+      // Draw faint connecting lines between nearby particles
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 100) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(180,150,255,${0.12 * (1 - dist / 100)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+
+      raf = requestAnimationFrame(draw);
+    };
+    draw();
+
+    const onResize = () => {
+      width = canvas.offsetWidth;
+      height = canvas.offsetHeight;
+      canvas.width = width;
+      canvas.height = height;
+    };
+    window.addEventListener("resize", onResize);
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", onResize); };
+  }, []);
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />;
+}
 import {
   Clock, ListTodo, Users, CalendarDays, FileText, MessageSquare,
   CheckCircle, ArrowRight, GraduationCap, Building2, BookOpen,
@@ -248,12 +323,25 @@ export default function LandingPage() {
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section
         className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center overflow-hidden"
-        style={{ background: isDark ? "linear-gradient(160deg, #1e1b4b 0%, #2e1065 40%, #1e1b4b 100%)" : "linear-gradient(160deg, #f5f3ff 0%, #ede9fe 40%, #ddd6fe 100%)" }}
+        style={{ background: isDark
+          ? "linear-gradient(145deg, #160d35 0%, #3b1d72 35%, #1e0a4a 65%, #0f0820 100%)"
+          : "linear-gradient(145deg, #f0ebff 0%, #e4d8ff 35%, #f5f0ff 65%, #faf7ff 100%)" }}
       >
+        {/* Particle network */}
+        {isDark && <ParticleCanvas />}
+
         {/* Animated background blobs */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[700px] rounded-full bg-violet-500/20 dark:bg-violet-600/15 blur-[120px] pointer-events-none animate-blob" />
-        <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] rounded-full bg-indigo-500/15 dark:bg-indigo-600/10 blur-[100px] pointer-events-none animate-blob animation-delay-2000" />
-        <div className="absolute bottom-1/4 right-1/4 w-[350px] h-[350px] rounded-full bg-purple-500/15 dark:bg-purple-600/10 blur-[90px] pointer-events-none animate-blob animation-delay-4000" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full bg-violet-600/25 dark:bg-violet-500/20 blur-[130px] pointer-events-none animate-blob" />
+        <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] rounded-full bg-indigo-500/20 dark:bg-fuchsia-600/15 blur-[110px] pointer-events-none animate-blob animation-delay-2000" />
+        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-purple-500/20 dark:bg-indigo-500/15 blur-[100px] pointer-events-none animate-blob animation-delay-4000" />
+
+        {/* Subtle grid overlay */}
+        <div className="absolute inset-0 pointer-events-none" style={{
+          backgroundImage: isDark
+            ? "linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)"
+            : "linear-gradient(rgba(124,58,237,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(124,58,237,0.05) 1px, transparent 1px)",
+          backgroundSize: "60px 60px",
+        }} />
 
         {/* Floating decorative chips */}
         <div className="absolute top-28 left-[8%] hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 dark:bg-white/20 backdrop-blur-sm border border-white/60 dark:border-white/30 shadow-lg text-xs font-semibold text-slate-700 dark:text-white animate-float">
@@ -304,6 +392,12 @@ export default function LandingPage() {
           </p>
         </div>
 
+        {/* Scroll indicator */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 animate-bounce-slow opacity-60">
+          <span className="text-xs font-medium text-slate-500 dark:text-slate-400 tracking-widest uppercase">Scroll</span>
+          <ChevronDown className="w-4 h-4 text-violet-500 dark:text-violet-300" />
+        </div>
+
       </section>
 
       {/* ── MARQUEE ───────────────────────────────────────────────────────── */}
@@ -313,8 +407,8 @@ export default function LandingPage() {
       </section>
 
       {/* ── STATS ─────────────────────────────────────────────────────────── */}
-      <section className="min-h-[50vh] flex items-center py-20 px-6 bg-white dark:bg-[#0d0f1a]">
-        <div className="max-w-5xl mx-auto w-full grid grid-cols-2 md:grid-cols-4 gap-8">
+      <section className="min-h-[40vh] flex items-center py-20 px-6 bg-white dark:bg-[#0d0f1a]">
+        <div className="max-w-3xl mx-auto w-full grid grid-cols-1 sm:grid-cols-3 gap-10 place-items-center">
           {[
             { value: statsValues.students,  label: "Students Onboarded" },
             { value: statsValues.companies, label: "Companies Using It" },
