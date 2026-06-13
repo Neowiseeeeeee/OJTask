@@ -1823,6 +1823,112 @@ export async function registerRoutes(
     }
   });
 
+  // ── Database Management (admin-only) ──────────────────────────────────────
+
+  // Backup: export safe collections as JSON download
+  app.get("/api/admin/db/backup", requireAdmin, async (req, res) => {
+    try {
+      const db = getDB();
+      const safeCollections = [
+        "spaces", "spaceMembers", "groups", "tasks", "taskAssignees",
+        "timeLogs", "scrums", "attendance", "documents", "messages",
+        "evaluations", "leaveRequests", "announcements", "notifications", "systemSettings"
+      ];
+      const backup: Record<string, any[]> = {};
+      for (const name of safeCollections) {
+        try {
+          const docs = await db.collection(name).find({}).toArray();
+          backup[name] = docs;
+        } catch { backup[name] = []; }
+      }
+      // Export users WITHOUT passwords
+      const users = await db.collection("users").find({}).toArray();
+      backup["users"] = users.map(({ password, ...rest }: any) => rest);
+
+      const json = JSON.stringify({ version: 1, exportedAt: new Date().toISOString(), collections: backup }, null, 2);
+      res.setHeader("Content-Type", "application/json");
+      res.setHeader("Content-Disposition", `attachment; filename="ojtask-backup-${new Date().toISOString().slice(0,10)}.json"`);
+      res.send(json);
+    } catch (err: any) {
+      res.status(500).json({ message: "Backup failed: " + err.message });
+    }
+  });
+
+  // Optimize: return collection stats (doc counts, indexes)
+  app.get("/api/admin/db/stats", requireAdmin, async (req, res) => {
+    try {
+      const db = getDB();
+      const collections = await db.listCollections().toArray();
+      const stats = await Promise.all(
+        collections.map(async (col) => {
+          try {
+            const count = await db.collection(col.name).countDocuments();
+            const indexes = await db.collection(col.name).listIndexes().toArray();
+            return { name: col.name, count, indexes: indexes.length };
+          } catch { return { name: col.name, count: 0, indexes: 0 }; }
+        })
+      );
+      res.json({ collections: stats.sort((a, b) => b.count - a.count) });
+    } catch (err: any) {
+      res.status(500).json({ message: "Stats failed: " + err.message });
+    }
+  });
+
+  // Restore: accept JSON backup and upsert documents
+  app.post("/api/admin/db/restore", requireAdmin, async (req, res) => {
+    try {
+      const { collections } = req.body;
+      if (!collections || typeof collections !== "object") {
+        return res.status(400).json({ message: "Invalid backup file — missing collections key." });
+      }
+      // Collections that are safe to restore (never restore sessions or OTP tokens from backup)
+      const allowedCollections = [
+        "users", "spaces", "spaceMembers", "groups", "tasks", "taskAssignees",
+        "timeLogs", "scrums", "attendance", "documents", "messages",
+        "evaluations", "leaveRequests", "announcements", "notifications", "systemSettings"
+      ];
+      const db = getDB();
+      let restoredCount = 0;
+      for (const name of allowedCollections) {
+        const docs: any[] = collections[name];
+        if (!Array.isArray(docs) || docs.length === 0) continue;
+        const col = db.collection(name);
+        const ops = docs.map((doc: any) => ({
+          updateOne: {
+            filter: { _id: doc._id },
+            update: { $set: doc },
+            upsert: true,
+          }
+        }));
+        await col.bulkWrite(ops, { ordered: false });
+        restoredCount++;
+      }
+      res.json({ message: "Restore complete.", restored: restoredCount });
+    } catch (err: any) {
+      res.status(500).json({ message: "Restore failed: " + err.message });
+    }
+  });
+
+  // Delete old logs: remove expired OTPs + passwordResetOtps older than 24h
+  app.delete("/api/admin/db/logs", requireAdmin, async (req, res) => {
+    try {
+      const db = getDB();
+      const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const otpResult = await db.collection("passwordResetOtps").deleteMany({
+        $or: [{ expiresAt: { $lt: new Date() } }, { createdAt: { $lt: cutoff } }]
+      });
+      const sessResult = await db.collection("sessions").deleteMany({
+        expires: { $lt: new Date() }
+      });
+      res.json({
+        message: "Old logs cleared successfully",
+        deleted: { expiredOtps: otpResult.deletedCount, expiredSessions: sessResult.deletedCount }
+      });
+    } catch (err: any) {
+      res.status(500).json({ message: "Delete failed: " + err.message });
+    }
+  });
+
   // Environment Health Check (admin-only)
   app.get("/api/admin/env-health", requireAdmin, (req, res) => {
     const vars = [
