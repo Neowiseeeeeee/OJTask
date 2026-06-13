@@ -337,6 +337,11 @@ export class MongoStorage implements IStorage {
     return tasks.map(t => this.toTask(t));
   }
 
+  async getPersonalTasks(userId: number): Promise<Task[]> {
+    const tasks = await this.db.collection('tasks').find({ spaceId: null, $or: [{ authorId: userId }, { assignedToId: userId }] }).toArray();
+    return tasks.map(t => this.toTask(t));
+  }
+
   async createTask(insertTask: InsertTask): Promise<Task> {
     const id = await this.getNextId('task');
     const task = {
@@ -416,6 +421,11 @@ export class MongoStorage implements IStorage {
 
   async getAllDocuments(): Promise<Document[]> {
     const docs = await this.db.collection('documents').find({}).toArray();
+    return docs.map(d => this.toDocument(d));
+  }
+
+  async getPersonalDocuments(userId: number): Promise<Document[]> {
+    const docs = await this.db.collection('documents').find({ spaceId: null, uploaderId: userId }).toArray();
     return docs.map(d => this.toDocument(d));
   }
 

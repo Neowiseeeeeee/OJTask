@@ -53,8 +53,8 @@ function StudentTasks() {
   const [expandedTask, setExpandedTask] = useState<number | null>(null);
 
   const handleCreate = async () => {
-    if (!title.trim() || !activeSpaceId) return;
-    await createTask.mutateAsync({ spaceId: activeSpaceId, title, description, type: "personal", status: "todo", authorId: user!.id, assignedToId: user!.id });
+    if (!title.trim()) return;
+    await createTask.mutateAsync({ spaceId: activeSpaceId as any, title, description, type: "personal", status: "todo", authorId: user!.id, assignedToId: user!.id });
     setIsOpen(false);
     setTitle("");
     setDescription("");
@@ -78,7 +78,7 @@ function StudentTasks() {
             <div className="grid gap-4 py-4">
               <div className="space-y-2"><Label>Title</Label><Input value={title} onChange={e => setTitle(e.target.value)} placeholder="Task title..." data-testid="input-task-title" /></div>
               <div className="space-y-2"><Label>Description</Label><Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Details..." data-testid="input-task-description" /></div>
-              <Button onClick={handleCreate} disabled={createTask.isPending || !activeSpaceId} className="mt-2" data-testid="button-save-task">
+              <Button onClick={handleCreate} disabled={createTask.isPending} className="mt-2" data-testid="button-save-task">
                 {createTask.isPending ? "Creating..." : "Save Task"}
               </Button>
             </div>
@@ -86,13 +86,7 @@ function StudentTasks() {
         </Dialog>
       </div>
 
-      {!activeSpaceId ? (
-        <div className="flex flex-col items-center justify-center h-52 rounded-xl border-2 border-dashed border-border/50 bg-muted/20 text-center">
-          <FolderOpen className="w-10 h-10 text-muted-foreground/40 mb-3" />
-          <p className="font-medium text-muted-foreground">Select a space to see your tasks</p>
-        </div>
-      ) : (
-        <>
+      <>
           {/* Completion progress from scrum */}
           <Card className="mb-6 border-border/50 shadow-sm bg-gradient-to-br from-primary/5 to-primary/0">
             <CardContent className="p-4">
@@ -164,8 +158,7 @@ function StudentTasks() {
               </div>
             ))}
           </div>
-        </>
-      )}
+      </>
     </div>
   );
 }

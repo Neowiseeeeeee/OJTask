@@ -1073,6 +1073,122 @@ export async function registerRoutes(
     }
   });
 
+  // Personal (no-space) Tasks
+  app.get('/api/personal/tasks', requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).session.userId;
+      const tasks = await getStorage().getPersonalTasks(userId);
+      res.json(tasks);
+    } catch (err) {
+      res.status(500).json({ message: "Internal error" });
+    }
+  });
+
+  app.post('/api/personal/tasks', requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).session.userId;
+      const schema = z.object({
+        title: z.string().min(1),
+        description: z.string().optional().default(''),
+        status: z.enum(['todo', 'doing', 'done']).default('todo'),
+        type: z.string().default('personal'),
+      });
+      const input = schema.parse(req.body);
+      const task = await getStorage().createTask({
+        ...input,
+        spaceId: null as any,
+        authorId: userId,
+        assignedToId: userId,
+        groupId: null,
+      });
+      res.status(201).json(task);
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      res.status(500).json({ message: "Internal error" });
+    }
+  });
+
+  app.patch('/api/personal/tasks/:id', requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).session.userId;
+      const id = Number(req.params.id);
+      const tasks = await getStorage().getPersonalTasks(userId);
+      const task = tasks.find(t => t.id === id);
+      if (!task) return res.status(404).json({ message: "Not found" });
+      if (task.authorId !== userId) return res.status(403).json({ message: "Not authorized" });
+      const updated = await getStorage().updateTask(id, req.body);
+      res.json(updated);
+    } catch (err) {
+      res.status(500).json({ message: "Internal error" });
+    }
+  });
+
+  app.delete('/api/personal/tasks/:id', requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).session.userId;
+      const id = Number(req.params.id);
+      const tasks = await getStorage().getPersonalTasks(userId);
+      const task = tasks.find(t => t.id === id);
+      if (!task) return res.status(404).json({ message: "Not found" });
+      if (task.authorId !== userId) return res.status(403).json({ message: "Not authorized" });
+      await getStorage().deleteTask(id);
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ message: "Internal error" });
+    }
+  });
+
+  // Personal (no-space) Documents
+  app.get('/api/personal/documents', requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).session.userId;
+      const docs = await getStorage().getPersonalDocuments(userId);
+      res.json(docs);
+    } catch (err) {
+      res.status(500).json({ message: "Internal error" });
+    }
+  });
+
+  app.post('/api/personal/documents', requireAuth, upload.single('file'), async (req, res) => {
+    try {
+      const userId = (req as any).session.userId;
+      const file = (req as any).file;
+      if (!file) return res.status(400).json({ message: "No file uploaded" });
+      const docType = req.body.documentType ?? req.body.type ?? "other";
+      const doc = await getStorage().createDocument({
+        spaceId: null as any,
+        uploaderId: userId,
+        name: req.body.name ?? file.originalname,
+        type: "personal",
+        documentType: docType,
+        status: "submitted",
+        filePath: `/uploads/${file.filename}`,
+        originalFileName: file.originalname,
+        fileSize: file.size,
+        mimeType: file.mimetype,
+        notes: req.body.notes ?? null,
+      });
+      res.status(201).json(doc);
+    } catch (err) {
+      res.status(500).json({ message: "Internal error" });
+    }
+  });
+
+  app.delete('/api/personal/documents/:id', requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).session.userId;
+      const id = Number(req.params.id);
+      const docs = await getStorage().getPersonalDocuments(userId);
+      const doc = docs.find(d => d.id === id);
+      if (!doc) return res.status(404).json({ message: "Not found" });
+      if (doc.uploaderId !== userId) return res.status(403).json({ message: "Not authorized" });
+      await getStorage().deleteDocument(id);
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ message: "Internal error" });
+    }
+  });
+
   // Time Logs
   app.get(api.timeLogs.list.path, requireAuth, requireSpaceMembership, async (req, res) => {
     try {

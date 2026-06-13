@@ -45,6 +45,7 @@ export interface IStorage {
 
   // Tasks
   getTasks(spaceId: number): Promise<Task[]>;
+  getPersonalTasks(userId: number): Promise<Task[]>;
   createTask(task: InsertTask): Promise<Task>;
   updateTask(id: number, updates: Partial<InsertTask>): Promise<Task | undefined>;
   deleteTask(id: number): Promise<void>;
@@ -60,6 +61,7 @@ export interface IStorage {
   // Documents
   getDocuments(spaceId: number): Promise<Document[]>;
   getAllDocuments(): Promise<Document[]>;
+  getPersonalDocuments(userId: number): Promise<Document[]>;
   createDocument(doc: any): Promise<Document>;
   approveDocument(id: number): Promise<Document | undefined>;
   rejectDocument(id: number): Promise<Document | undefined>;
@@ -309,6 +311,9 @@ export class MemStorage implements IStorage {
   async getTasks(spaceId: number): Promise<Task[]> {
     return Array.from(this.tasks.values()).filter(t => t.spaceId === spaceId);
   }
+  async getPersonalTasks(userId: number): Promise<Task[]> {
+    return Array.from(this.tasks.values()).filter(t => t.spaceId === (null as any) && (t.authorId === userId || t.assignedToId === userId));
+  }
   async createTask(insertTask: InsertTask): Promise<Task> {
     const id = this.currentIds.task++;
     const task: Task = {
@@ -378,6 +383,9 @@ export class MemStorage implements IStorage {
   }
   async getAllDocuments(): Promise<Document[]> {
     return Array.from(this.documents.values());
+  }
+  async getPersonalDocuments(userId: number): Promise<Document[]> {
+    return Array.from(this.documents.values()).filter(d => d.spaceId === (null as any) && d.uploaderId === userId);
   }
   async createDocument(insertDoc: any): Promise<Document> {
     const id = this.currentIds.document++;

@@ -26,6 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import { UserCardWithPicture } from "@/components/user-card-with-picture";
 import { UserProfileModal } from "@/components/user-profile-modal";
 import { OnboardingChecklist } from "@/components/onboarding-checklist";
+import { IndependentDashboard } from "./independent-dashboard";
 
 function JoinCodeWidget({ code, isManager }: { code: string | null; isManager: boolean }) {
   const { toast } = useToast();
@@ -662,6 +663,14 @@ export default function Dashboard() {
   const isManager = user?.role === "supervisor" || user?.role === "school";
 
   if (!activeSpace) {
+    if (user?.role === "student") {
+      return (
+        <div className="space-y-6">
+          <OnboardingChecklist />
+          <IndependentDashboard />
+        </div>
+      );
+    }
     return (
       <div className="space-y-6">
         <OnboardingChecklist />

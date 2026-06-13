@@ -22,12 +22,13 @@ export function useTasks(spaceId: number | null) {
   return useQuery<Task[]>({
     queryKey: [api.tasks.list.path, spaceId],
     queryFn: async () => {
-      const url = buildUrl(api.tasks.list.path, { spaceId: spaceId! });
+      const url = spaceId
+        ? buildUrl(api.tasks.list.path, { spaceId })
+        : '/api/personal/tasks';
       const res = await fetch(url, { credentials: "include" });
       if (!res.ok) throw new Error("Failed to fetch tasks");
       return res.json();
     },
-    enabled: !!spaceId,
     refetchInterval: 5000,
   });
 }
@@ -36,9 +37,11 @@ export function useCreateTask(spaceId: number | null) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: z.infer<typeof api.tasks.create.input>) => {
-      const url = buildUrl(api.tasks.create.path, { spaceId: spaceId! });
+      const url = spaceId
+        ? buildUrl(api.tasks.create.path, { spaceId })
+        : '/api/personal/tasks';
       const res = await fetch(url, {
-        method: api.tasks.create.method,
+        method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
         credentials: "include",
@@ -54,9 +57,11 @@ export function useUpdateTask(spaceId: number | null) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, updates }: { id: number; updates: Partial<z.infer<typeof api.tasks.update.input>> }) => {
-      const url = buildUrl(api.tasks.update.path, { spaceId: spaceId!, id });
+      const url = spaceId
+        ? buildUrl(api.tasks.update.path, { spaceId, id })
+        : `/api/personal/tasks/${id}`;
       const res = await fetch(url, {
-        method: api.tasks.update.method,
+        method: spaceId ? api.tasks.update.method : 'PATCH',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updates),
         credentials: "include",
@@ -72,9 +77,11 @@ export function useDeleteTask(spaceId: number | null) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: number) => {
-      const url = buildUrl(api.tasks.delete.path, { spaceId: spaceId!, id });
+      const url = spaceId
+        ? buildUrl(api.tasks.delete.path, { spaceId, id })
+        : `/api/personal/tasks/${id}`;
       const res = await fetch(url, {
-        method: api.tasks.delete.method,
+        method: 'DELETE',
         credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to delete task");
@@ -193,12 +200,13 @@ export function useDocuments(spaceId: number | null) {
   return useQuery<Document[]>({
     queryKey: [api.documents.list.path, spaceId],
     queryFn: async () => {
-      const url = buildUrl(api.documents.list.path, { spaceId: spaceId! });
+      const url = spaceId
+        ? buildUrl(api.documents.list.path, { spaceId })
+        : '/api/personal/documents';
       const res = await fetch(url, { credentials: "include" });
       if (!res.ok) throw new Error("Failed to fetch documents");
       return res.json();
     },
-    enabled: !!spaceId,
     refetchInterval: 10000,
   });
 }
@@ -207,13 +215,15 @@ export function useCreateDocument(spaceId?: number | null) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: any) => {
-      const sid = spaceId ?? data.spaceId;
+      const sid = spaceId ?? data.spaceId ?? null;
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("type", data.type ?? "other");
       formData.append("documentType", data.documentType ?? data.type ?? "other");
       if (data.file) formData.append("file", data.file);
-      const res = await fetch(`/api/spaces/${sid}/documents`, {
+      if (data.notes) formData.append("notes", data.notes);
+      const url = sid ? `/api/spaces/${sid}/documents` : '/api/personal/documents';
+      const res = await fetch(url, {
         method: "POST",
         body: formData,
         credentials: "include",
@@ -225,7 +235,7 @@ export function useCreateDocument(spaceId?: number | null) {
       return res.json();
     },
     onSuccess: (_, variables) => {
-      const sid = spaceId ?? variables.spaceId;
+      const sid = spaceId ?? variables.spaceId ?? null;
       queryClient.invalidateQueries({ queryKey: [api.documents.list.path, sid] });
     },
   });
@@ -235,7 +245,10 @@ export function useDeleteDocument(spaceId: number | null) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: number) => {
-      const res = await fetch(`/api/spaces/${spaceId}/documents/${id}`, { method: "DELETE", credentials: "include" });
+      const url = spaceId
+        ? `/api/spaces/${spaceId}/documents/${id}`
+        : `/api/personal/documents/${id}`;
+      const res = await fetch(url, { method: "DELETE", credentials: "include" });
       if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.message ?? "Failed to delete document"); }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [api.documents.list.path, spaceId] }),

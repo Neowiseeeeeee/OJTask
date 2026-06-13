@@ -606,9 +606,204 @@ function ManagerDocuments() {
   );
 }
 
+// ─── INDEPENDENT (NO SPACE) VIEW ─────────────────────────────────────────────
+function IndependentDocuments() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const { data: documents = [] } = useDocuments(null);
+  const createDocument = useCreateDocument(null);
+  const deleteDocument = useDeleteDocument(null);
+
+  const [uploadOpen, setUploadOpen] = useState(false);
+  const [docType, setDocType] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [notes, setNotes] = useState("");
+  const [selectedDoc, setSelectedDoc] = useState<any>(null);
+  const [downloading, setDownloading] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+
+  const myDocs = documents.filter(d => d.uploaderId === user?.id);
+
+  const personalDocTypes = [
+    "Resume / CV",
+    "Cover Letter",
+    "Certificate",
+    "Project Submission",
+    "Task Report",
+    "Reference Letter",
+    "Other Document",
+  ];
+
+  const handleUpload = async () => {
+    if (!file || !docType) {
+      toast({ title: "Missing Information", description: "Please select a document type and a file.", variant: "destructive" });
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "File Too Large", description: "Max file size is 5MB.", variant: "destructive" });
+      return;
+    }
+    try {
+      await createDocument.mutateAsync({ name: file.name, type: "personal", documentType: docType, file, notes });
+      toast({ title: "Document Saved", description: "Your document has been stored." });
+      setUploadOpen(false);
+      setDocType(""); setFile(null); setNotes("");
+    } catch {
+      toast({ title: "Upload Failed", description: "Please try again.", variant: "destructive" });
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    setDeletingId(id);
+    try {
+      await deleteDocument.mutateAsync(id);
+      toast({ title: "Deleted", description: "Document removed." });
+    } catch {
+      toast({ title: "Error", description: "Could not delete document.", variant: "destructive" });
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  return (
+    <div className="animate-in fade-in duration-500">
+      <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+            <FileText className="w-5 h-5" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-display font-bold">My Documents</h1>
+            <p className="text-muted-foreground">Personal document storage — your private file cabinet</p>
+          </div>
+        </div>
+        <Button onClick={() => setUploadOpen(true)} className="gap-2 shadow-sm hover:-translate-y-0.5 transition-all">
+          <Plus className="w-4 h-4" /> Upload Document
+        </Button>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+        {[
+          { label: "Total Files", value: myDocs.length, icon: FileText, color: "text-blue-600", bg: "bg-blue-50 dark:bg-blue-950/40" },
+          { label: "Submitted", value: myDocs.filter(d => d.status === "submitted").length, icon: Clock, color: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-950/40" },
+          { label: "Types", value: new Set(myDocs.map(d => d.documentType)).size, icon: Target, color: "text-violet-600", bg: "bg-violet-50 dark:bg-violet-950/40" },
+        ].map(({ label, value, icon: Icon, color, bg }) => (
+          <Card key={label} className="border-border/50 shadow-sm">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center shrink-0`}>
+                <Icon className={`w-5 h-5 ${color}`} />
+              </div>
+              <div>
+                <p className="text-xl font-display font-black">{value}</p>
+                <p className="text-xs text-muted-foreground">{label}</p>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Document list */}
+      {myDocs.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-52 rounded-xl border-2 border-dashed border-border/50 bg-muted/20 text-center">
+          <FileText className="w-10 h-10 text-muted-foreground/40 mb-3" />
+          <p className="font-medium text-muted-foreground">No documents yet</p>
+          <p className="text-sm text-muted-foreground/60 mt-1">Upload your first document to get started</p>
+          <Button variant="outline" size="sm" onClick={() => setUploadOpen(true)} className="mt-4 gap-1.5">
+            <Plus className="w-3.5 h-3.5" /> Upload Document
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {myDocs.map(doc => (
+            <Card key={doc.id} className="border-border/50 shadow-sm hover:shadow-md transition-all group">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary shrink-0">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-semibold text-sm truncate">{doc.originalFileName ?? doc.name}</p>
+                      <Badge variant="outline" className="text-[10px] shrink-0">{doc.documentType}</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {doc.uploadDate ? (() => { try { return format(new Date(doc.uploadDate + "T00:00:00"), "MMM d, yyyy"); } catch { return doc.uploadDate; } })() : "—"}
+                      {doc.fileSize ? ` · ${(doc.fileSize / 1024 / 1024).toFixed(2)} MB` : ""}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {doc.filePath && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-1.5 text-xs"
+                        onClick={async () => { setDownloading(true); await downloadDocument(doc, toast); setDownloading(false); }}
+                        disabled={downloading}
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        {downloading ? "..." : "Download"}
+                      </Button>
+                    )}
+                    <button
+                      onClick={() => handleDelete(doc.id)}
+                      disabled={deletingId === doc.id}
+                      className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* Upload Dialog */}
+      <Dialog open={uploadOpen} onOpenChange={v => !v && setUploadOpen(false)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Upload Personal Document</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label>Document Type</Label>
+              <Select value={docType} onValueChange={setDocType}>
+                <SelectTrigger><SelectValue placeholder="Select document type" /></SelectTrigger>
+                <SelectContent>
+                  {personalDocTypes.map((d, i) => (
+                    <SelectItem key={i} value={d}>{d}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>File <span className="text-muted-foreground text-xs">(max 5 MB)</span></Label>
+              <Input type="file" accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
+                onChange={e => setFile(e.target.files?.[0] ?? null)} />
+              <p className="text-xs text-muted-foreground">PDF, DOC, DOCX, TXT, JPG, PNG</p>
+            </div>
+            <div className="space-y-2">
+              <Label>Notes <span className="text-muted-foreground text-xs">(optional)</span></Label>
+              <Textarea placeholder="Add notes about this document..." value={notes} onChange={e => setNotes(e.target.value)} rows={3} className="resize-none" />
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={handleUpload} disabled={createDocument.isPending} className="flex-1">
+                {createDocument.isPending ? "Uploading..." : "Upload"}
+              </Button>
+              <Button variant="outline" onClick={() => setUploadOpen(false)}>Cancel</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
 // ─── ENTRY POINT ─────────────────────────────────────────────────────────────
 export default function DocumentsPageEnhanced() {
   const { user } = useAuth();
+  const { activeSpaceId } = useSpace();
   const isManager = user?.role === "supervisor" || user?.role === "school";
+  if (!isManager && !activeSpaceId) return <IndependentDocuments />;
   return isManager ? <ManagerDocuments /> : <StudentDocuments />;
 }

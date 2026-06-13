@@ -111,15 +111,19 @@ export function AppLayout({ children }: { children: ReactNode }) {
     { title: "Settings", href: "/settings", icon: Settings, badge: 0 },
   ];
 
+  const filteredNavItems = user?.role === "student" && !activeSpaceId
+    ? regularNavItems.filter(item => item.href !== '/evaluations' && item.href !== '/attendance' && item.href !== '/messages')
+    : regularNavItems;
+
   const navItems = user?.role === "admin"
     ? systemAdminNavItems
     : ["supervisor", "school"].includes(user?.role || "")
       ? [
-          ...regularNavItems,
+          ...filteredNavItems,
           { title: "Members", href: "/members", icon: Users, badge: 0 },
           { title: "Space Admin", href: "/space-admin", icon: Settings, badge: 0 },
         ]
-      : regularNavItems;
+      : filteredNavItems;
 
   return (
     <SidebarProvider>
