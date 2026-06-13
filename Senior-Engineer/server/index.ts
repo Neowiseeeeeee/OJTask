@@ -13,6 +13,9 @@ import path from "path";
 const app = express();
 const httpServer = createServer(app);
 
+// Trust Render's reverse proxy so secure cookies work over HTTPS
+app.set('trust proxy', 1);
+
 // Serve uploaded files statically so they can be previewed/downloaded
 const uploadsDir = path.resolve(process.cwd(), "uploads");
 app.use("/uploads", express.static(uploadsDir));
