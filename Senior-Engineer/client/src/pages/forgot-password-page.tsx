@@ -23,6 +23,7 @@ export default function ForgotPasswordPage() {
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [emailConfigured, setEmailConfigured] = useState<boolean | null>(null);
+  const [resendCooldown, setResendCooldown] = useState(0);
 
   useEffect(() => {
     fetch("/api/auth/email/status")
@@ -30,6 +31,12 @@ export default function ForgotPasswordPage() {
       .then((d) => setEmailConfigured(d.configured))
       .catch(() => setEmailConfigured(null));
   }, []);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const t = setTimeout(() => setResendCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendCooldown]);
 
   const passwordStrength = (() => {
     let score = 0;
@@ -43,20 +50,40 @@ export default function ForgotPasswordPage() {
     return { level: "Strong", color: "bg-green-500", width: "100%" };
   })();
 
+  const sendOtp = async (targetEmail: string) => {
+    const res = await fetch("/api/auth/forgot-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: targetEmail }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Failed to send code");
+    setResendCooldown(60);
+  };
+
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
     try {
-      const res = await fetch("/api/auth/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to send code");
+      await sendOtp(email);
       setSuccessMsg("A 6-digit code has been sent to your email.");
       setStep("otp");
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    setError(null);
+    setSuccessMsg(null);
+    setIsLoading(true);
+    try {
+      await sendOtp(email);
+      setOtp("");
+      setSuccessMsg("A new code has been sent to your email.");
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -229,13 +256,24 @@ export default function ForgotPasswordPage() {
                 <Button type="submit" className="w-full" disabled={isLoading || otp.length !== 6}>
                   {isLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Verifying...</> : "Verify Code"}
                 </Button>
-                <button
-                  type="button"
-                  className="w-full text-sm text-muted-foreground hover:text-primary transition-colors"
-                  onClick={() => { setStep("email"); setError(null); setSuccessMsg(null); setOtp(""); }}
-                >
-                  Didn't receive it? Go back and try again
-                </button>
+
+                <div className="flex items-center justify-between pt-1">
+                  <button
+                    type="button"
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    onClick={() => { setStep("email"); setError(null); setSuccessMsg(null); setOtp(""); }}
+                  >
+                    ← Change email
+                  </button>
+                  <button
+                    type="button"
+                    disabled={resendCooldown > 0 || isLoading}
+                    onClick={handleResend}
+                    className="text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 enabled:text-primary enabled:hover:text-primary/80"
+                  >
+                    {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend code"}
+                  </button>
+                </div>
               </form>
             )}
 
