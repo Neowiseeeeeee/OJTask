@@ -294,7 +294,8 @@ export default function LandingPage() {
                 className="group p-7 rounded-3xl hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
                 style={{
                   background: isDark ? "rgba(255,255,255,0.04)" : "#ffffff",
-                  border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #f1f5f9",
+                  border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e2e8f0",
+                  boxShadow: isDark ? "none" : "0 2px 12px rgba(0,0,0,0.06)",
                 }}
                 data-testid={`card-feature-${f.title.toLowerCase().replace(/\s+/g, '-')}`}
               >
@@ -329,12 +330,12 @@ export default function LandingPage() {
                 className="relative group rounded-3xl p-7 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
                 style={{
                   background: isDark ? "rgba(255,255,255,0.05)" : "#ffffff",
-                  border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid transparent",
-                  boxShadow: isDark ? "none" : "0 1px 3px rgba(0,0,0,0.06)",
+                  border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e2e8f0",
+                  boxShadow: isDark ? "none" : "0 2px 12px rgba(0,0,0,0.06)",
                 }}
                 data-testid={`card-step-${step.step}`}
               >
-                <div className="text-6xl font-black text-violet-100 dark:text-violet-900/60 absolute top-5 right-6 leading-none select-none">{step.step}</div>
+                <div className="text-6xl font-black absolute top-5 right-6 leading-none select-none" style={{ color: isDark ? "rgba(109,40,217,0.35)" : "#ddd6fe" }}>{step.step}</div>
                 <div className="w-12 h-12 bg-violet-600 rounded-2xl flex items-center justify-center mb-5 shadow-md shadow-violet-500/30 group-hover:scale-110 transition-transform">
                   <step.icon className="w-6 h-6 text-white" />
                 </div>

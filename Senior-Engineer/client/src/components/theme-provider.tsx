@@ -20,7 +20,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       const stored = localStorage.getItem("ojtask-theme") as Theme | null;
       if (stored && ["light", "dark", "system"].includes(stored)) return stored;
     }
-    return "system";
+    return "dark";
   });
 
   useEffect(() => {
