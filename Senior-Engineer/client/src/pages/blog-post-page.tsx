@@ -78,7 +78,18 @@ export default function BlogPostPage() {
   useEffect(() => {
     if (post) {
       document.title = `${post.title} — OJTask Blog`;
-      return () => { document.title = "OJTask"; };
+      let metaDesc = document.querySelector('meta[name="description"]');
+      if (!metaDesc) {
+        metaDesc = document.createElement("meta");
+        (metaDesc as HTMLMetaElement).name = "description";
+        document.head.appendChild(metaDesc);
+      }
+      const prev = (metaDesc as HTMLMetaElement).content;
+      (metaDesc as HTMLMetaElement).content = post.description;
+      return () => {
+        document.title = "OJTask";
+        (metaDesc as HTMLMetaElement).content = prev;
+      };
     }
   }, [post]);
 
