@@ -61,6 +61,12 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  // Keep-alive ping endpoint — point UptimeRobot (free) at /api/ping every 14 min
+  // to prevent Render's free tier from spinning down.
+  app.get('/api/ping', (_req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  });
+
   // Initialize MongoDB storage
   console.log('Initializing MongoDB storage...');
   
