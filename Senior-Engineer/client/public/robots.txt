@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Block authenticated/private app routes from indexing
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /tasks
+Disallow: /attendance
+Disallow: /documents
+Disallow: /scrum
+Disallow: /settings
+Disallow: /api/
+
+Sitemap: https://ojtask.onrender.com/sitemap.xml
