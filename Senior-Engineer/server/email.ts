@@ -48,8 +48,14 @@ export async function sendOtpEmail(toEmail: string, otp: string, name: string): 
   });
 
   if (error) {
-    console.error("❌ Resend error sending OTP:", error);
-    throw new Error(`Failed to send OTP email: ${error.message}`);
+    console.error("❌ Resend OTP send failed — name:", (error as any).name);
+    console.error("❌ Resend OTP send failed — message:", (error as any).message);
+    console.error("❌ Resend OTP send failed — statusCode:", (error as any).statusCode);
+    console.error("❌ Resend OTP send failed — full:", JSON.stringify(error));
+    const resendErr: any = new Error(`Resend rejected: ${(error as any).message}`);
+    resendErr.resendName = (error as any).name;
+    resendErr.resendStatus = (error as any).statusCode;
+    throw resendErr;
   }
 
   console.log(`✅ OTP email sent to ${toEmail}`);

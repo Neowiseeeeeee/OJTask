@@ -304,15 +304,17 @@ export async function registerRoutes(
         await sendOtpEmail(email, otp, user.name || user.username);
         res.status(200).json({ message: "Reset code sent to your email." });
       } catch (mailErr: any) {
-        console.error("❌ sendOtpEmail failed for", email);
-        console.error("❌ Error name:", mailErr?.name);
-        console.error("❌ Error message:", mailErr?.message);
-        console.error("❌ Error code:", mailErr?.code);
-        console.error("❌ Response:", mailErr?.response);
-        console.error("❌ Full error:", mailErr);
+        console.error("❌ sendOtpEmail failed for", email, "—", mailErr?.message);
         // Clean up the OTP so the user can retry cleanly
         await deleteOtp(email.toLowerCase().trim()).catch(() => {});
-        return res.status(500).json({ message: "Failed to send reset code. Please try again later." });
+        return res.status(500).json({
+          message: "Failed to send reset code. Please try again later.",
+          _debug: {
+            error: mailErr?.message,
+            resendName: mailErr?.resendName,
+            resendStatus: mailErr?.resendStatus,
+          },
+        });
       }
     } catch (err: any) {
       console.error("Forgot password error:", err);
