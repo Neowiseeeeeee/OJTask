@@ -300,14 +300,15 @@ export async function registerRoutes(
       const otp = generateOtp();
       await setOtp(email.toLowerCase().trim(), otp);
 
-      // Respond immediately — email sends in background so the user isn't waiting on SMTP
-      res.status(200).json({ message: "Reset code sent to your email." });
-
-      sendOtpEmail(email, otp, user.name || user.username).catch((mailErr) => {
+      try {
+        await sendOtpEmail(email, otp, user.name || user.username);
+        res.status(200).json({ message: "Reset code sent to your email." });
+      } catch (mailErr: any) {
         console.error("sendOtpEmail failed:", mailErr);
-        // Clean up OTP so the user can retry
-        deleteOtp(email.toLowerCase().trim()).catch(() => {});
-      });
+        // Clean up the OTP so the user can retry cleanly
+        await deleteOtp(email.toLowerCase().trim()).catch(() => {});
+        return res.status(500).json({ message: "Failed to send reset code. Please try again later." });
+      }
     } catch (err: any) {
       console.error("Forgot password error:", err);
       res.status(500).json({ message: "Failed to send reset code." });
