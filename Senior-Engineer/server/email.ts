@@ -1,77 +1,41 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-// Pool-mode transporter — reuses the SMTP connection for speed.
-// maxIdleTime is set to 2 minutes so we proactively close idle connections
-// before Gmail's server-side 10-minute idle timeout kicks in.
-// This avoids the "stale connection" error that caused silent failures before.
-let _transporter: nodemailer.Transporter | null = null;
+let _resend: Resend | null = null;
 
-function getTransporter(): nodemailer.Transporter {
-  if (_transporter) return _transporter;
-
-  const user = process.env.GMAIL_USER;
-  const pass = process.env.GMAIL_APP_PASSWORD;
-
-  if (!user || !pass) {
-    throw new Error("GMAIL_USER and GMAIL_APP_PASSWORD environment variables are required.");
+function getResend(): Resend {
+  if (_resend) return _resend;
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY environment variable is required.");
   }
-
-  _transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
-    auth: { user, pass },
-    pool: true,
-    maxConnections: 2,
-    maxMessages: Infinity,
-    // Close idle connections after 2 minutes (well before Gmail's 10-min timeout)
-    idleTimeout: 120000,
-    connectionTimeout: 15000,
-    socketTimeout: 15000,
-  });
-
-  // Destroy pool on any connection-level error so next call rebuilds it cleanly
-  _transporter.on("error", (err) => {
-    console.error("❌ SMTP pool error, resetting transporter:", err.message);
-    _transporter = null;
-  });
-
-  return _transporter;
-}
-
-async function sendWithRetry(mailOptions: nodemailer.SendMailOptions): Promise<void> {
-  try {
-    await getTransporter().sendMail(mailOptions);
-  } catch (firstErr: any) {
-    console.warn("⚠️  First SMTP send failed, resetting pool and retrying once:", firstErr?.message);
-    // Reset the pool so the retry gets a fresh connection
-    if (_transporter) {
-      try { _transporter.close(); } catch {}
-      _transporter = null;
-    }
-    // Retry with a fresh connection (no second retry — if this fails, let it throw)
-    await getTransporter().sendMail(mailOptions);
-  }
+  _resend = new Resend(apiKey);
+  return _resend;
 }
 
 export async function verifyEmailConfig(): Promise<boolean> {
   try {
-    await getTransporter().verify();
-    console.log("✅ Email (Gmail SMTP) verified and ready");
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      console.warn("⚠️  RESEND_API_KEY is not set.");
+      return false;
+    }
+    console.log("✅ Email (Resend) configured and ready");
     return true;
   } catch (err) {
-    console.warn("⚠️  Email (Gmail SMTP) verification failed:", err);
-    _transporter = null;
+    console.warn("⚠️  Email (Resend) configuration check failed:", err);
     return false;
   }
 }
 
 export async function sendOtpEmail(toEmail: string, otp: string, name: string): Promise<void> {
-  const fromAddress = process.env.GMAIL_USER;
+  const fromAddress = process.env.GMAIL_USER
+    ? `OJTask <${process.env.GMAIL_USER}>`
+    : "OJTask <onboarding@resend.dev>";
+
   console.log(`📧 Sending OTP email to ${toEmail}...`);
 
-  await sendWithRetry({
-    from: `"OJTask" <${fromAddress}>`,
+  const { error } = await getResend().emails.send({
+    from: fromAddress,
     to: toEmail,
     subject: "OJTask password reset code",
     text: `Hi ${name},\n\nYour OJTask password reset code is: ${otp}\n\nThis code expires in 10 minutes.\n\nIf you didn't request this, you can safely ignore this email.\n\n— OJTask`,
@@ -90,14 +54,21 @@ export async function sendOtpEmail(toEmail: string, otp: string, name: string): 
     `,
   });
 
+  if (error) {
+    console.error("❌ Resend error sending OTP:", error);
+    throw new Error(`Failed to send OTP email: ${error.message}`);
+  }
+
   console.log(`✅ OTP email sent to ${toEmail}`);
 }
 
 export async function sendContactEmail(name: string, fromEmail: string, subject: string, message: string): Promise<void> {
-  const fromAddress = process.env.GMAIL_USER;
+  const fromAddress = process.env.GMAIL_USER
+    ? `OJTask Contact Form <${process.env.GMAIL_USER}>`
+    : "OJTask Contact Form <onboarding@resend.dev>";
 
-  await sendWithRetry({
-    from: `"OJTask Contact Form" <${fromAddress}>`,
+  const { error } = await getResend().emails.send({
+    from: fromAddress,
     to: "ojtask.connect@gmail.com",
     replyTo: fromEmail,
     subject: `[OJTask Contact] ${subject}`,
@@ -118,13 +89,20 @@ export async function sendContactEmail(name: string, fromEmail: string, subject:
       </div>
     `,
   });
+
+  if (error) {
+    console.error("❌ Resend error sending contact email:", error);
+    throw new Error(`Failed to send contact email: ${error.message}`);
+  }
 }
 
 export async function sendWelcomeEmail(toEmail: string, name: string): Promise<void> {
-  const fromAddress = process.env.GMAIL_USER;
+  const fromAddress = process.env.GMAIL_USER
+    ? `OJTask <${process.env.GMAIL_USER}>`
+    : "OJTask <onboarding@resend.dev>";
 
-  await sendWithRetry({
-    from: `"OJTask" <${fromAddress}>`,
+  const { error } = await getResend().emails.send({
+    from: fromAddress,
     to: toEmail,
     subject: "Welcome to OJTask!",
     html: `
@@ -139,4 +117,9 @@ export async function sendWelcomeEmail(toEmail: string, name: string): Promise<v
       </div>
     `,
   });
+
+  if (error) {
+    console.error("❌ Resend error sending welcome email:", error);
+    throw new Error(`Failed to send welcome email: ${error.message}`);
+  }
 }

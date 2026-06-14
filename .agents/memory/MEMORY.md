@@ -1,0 +1,1 @@
+- [Email provider swap to Resend](email-resend.md) — Gmail SMTP blocked by Render.com; switched to Resend HTTP API (RESEND_API_KEY).
