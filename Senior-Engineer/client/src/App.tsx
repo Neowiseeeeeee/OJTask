@@ -40,6 +40,8 @@ import ContactPage from "@/pages/contact-page";
 import PrivacyPolicy from "@/pages/privacy-policy";
 import TermsOfUse from "@/pages/terms-of-use";
 import RoleSelectPage from "@/pages/role-select-page";
+import BlogPage from "@/pages/blog-page";
+import BlogPostPage from "@/pages/blog-post-page";
 
 function ProtectedRoute({ component: Component, adminOnly, systemAdminOnly }: { component: React.ComponentType; adminOnly?: boolean; systemAdminOnly?: boolean }) {
   const { user, isLoading } = useAuth();
@@ -96,6 +98,8 @@ function Router() {
       <Route path="/contact" component={ContactPage} />
       <Route path="/privacy-policy" component={PrivacyPolicy} />
       <Route path="/terms-of-use" component={TermsOfUse} />
+      <Route path="/blog" component={BlogPage} />
+      <Route path="/blog/:slug" component={BlogPostPage} />
 
       {/* Protected routes */}
       <Route path="/dashboard">

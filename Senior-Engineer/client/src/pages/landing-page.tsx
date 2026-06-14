@@ -142,46 +142,46 @@ function MarqueeStrip({ reverse = false }: { reverse?: boolean }) {
 
 // ── Data ───────────────────────────────────────────────────────────────────
 const features = [
-  { icon: Clock,         title: "OJT Hours Tracker",  desc: "Log OJT hours daily and auto-generate your DTR. Get instant supervisor sign-off — zero spreadsheets or manual hour sheets.",              lightColor: "bg-violet-100 text-violet-600", darkColor: "bg-violet-900/40 text-violet-300" },
-  { icon: Users,         title: "Daily Scrum Reports", desc: "Submit structured daily scrum reports in under two minutes. Supervisors review and approve with one click — no long status meetings.",               lightColor: "bg-indigo-100 text-indigo-600", darkColor: "bg-indigo-900/40 text-indigo-300" },
-  { icon: ListTodo,      title: "Task Board",          desc: "Kanban-style task management built around how OJT interns actually work — assign, track, and complete practicum tasks in real time.",                       lightColor: "bg-emerald-100 text-emerald-600", darkColor: "bg-emerald-900/40 text-emerald-300" },
-  { icon: CalendarDays,  title: "Attendance Logs",     desc: "One-tap attendance logging gives supervisors and school coordinators real-time visibility into intern presence — no follow-up needed.",                        lightColor: "bg-amber-100 text-amber-600", darkColor: "bg-amber-900/40 text-amber-300" },
-  { icon: FileText,      title: "Document Hub",        desc: "Upload and manage MOAs, endorsement letters, terminal reports, and weekly journals — all OJT requirements in one secure place.",                        lightColor: "bg-rose-100 text-rose-600", darkColor: "bg-rose-900/40 text-rose-300" },
-  { icon: MessageSquare, title: "Team Chat",           desc: "Dedicated channels keep OJT communication organized between interns, supervisors, and school coordinators — without flooding personal inboxes.",                    lightColor: "bg-cyan-100 text-cyan-600", darkColor: "bg-cyan-900/40 text-cyan-300" },
+  { icon: Clock,         title: "OJT Hours Tracker",   desc: "Remember when you'd lose your DTR and panic? Not anymore. Log your OJT hours daily, get your supervisor's sign-off instantly, and export a clean time record with one click.",              lightColor: "bg-violet-100 text-violet-600", darkColor: "bg-violet-900/40 text-violet-300" },
+  { icon: Users,         title: "Daily Scrum Reports",  desc: "Your supervisor shouldn't have to text you asking what you did today. Fill out your daily scrum report in two minutes — what you worked on, what's next, what's blocking you.",               lightColor: "bg-indigo-100 text-indigo-600", darkColor: "bg-indigo-900/40 text-indigo-300" },
+  { icon: ListTodo,      title: "Task Board",           desc: "Practicum tasks shouldn't live in your supervisor's head. OJTask's Kanban board makes every assignment visible — what's pending, in progress, and done. Everyone's on the same page.",                       lightColor: "bg-emerald-100 text-emerald-600", darkColor: "bg-emerald-900/40 text-emerald-300" },
+  { icon: CalendarDays,  title: "Attendance Logs",      desc: "One tap. That's all it takes to record your attendance. Your school coordinator sees it in real time, across every intern and every company — without a single follow-up message.",                        lightColor: "bg-amber-100 text-amber-600", darkColor: "bg-amber-900/40 text-amber-300" },
+  { icon: FileText,      title: "Document Hub",         desc: "Your MOA, endorsement letter, weekly journals, and terminal report all in one place. Upload once, share instantly, get approved — without printing a single page.",                        lightColor: "bg-rose-100 text-rose-600", darkColor: "bg-rose-900/40 text-rose-300" },
+  { icon: MessageSquare, title: "Team Chat",            desc: "OJT updates don't belong in your personal group chat. Dedicated channels keep work conversations organized between interns, supervisors, and coordinators — right where they should be.",                    lightColor: "bg-cyan-100 text-cyan-600", darkColor: "bg-cyan-900/40 text-cyan-300" },
 ];
 
 const roles = [
   {
     icon: GraduationCap, title: "OJT Students",
-    subtitle: "Everything you need to complete your practicum without the stress.",
+    subtitle: "You're juggling classes, deadlines, and an internship all at once. OJTask handles the paperwork so you can focus on actually learning.",
     accent: "bg-violet-600", gradFrom: "#7c3aed", gradTo: "#6d28d9",
     lightBg: "#f5f3ff", darkBg: "rgba(124,58,237,0.28)",
     lightRing: "rgba(167,139,250,0.4)", darkRing: "rgba(167,139,250,0.35)",
-    items: ["Track and export OJT hours and your DTR automatically", "Submit daily scrum reports and weekly journals in minutes", "Log attendance with one tap from any device", "Upload MOAs, endorsement letters, and all required OJT documents"],
+    items: ["Track and auto-export your OJT hours and DTR — no manual counting", "Submit daily scrum reports and weekly journals in under two minutes", "Log attendance with one tap, visible to your coordinator instantly", "Keep all your MOAs, endorsement letters, and OJT documents in one place"],
   },
   {
     icon: Building2, title: "Company Supervisors",
-    subtitle: "Stay on top of every intern without the constant follow-ups.",
+    subtitle: "You have a full-time job. Chasing interns for their hours and scrums shouldn't be part of it.",
     accent: "bg-indigo-600", gradFrom: "#4f46e5", gradTo: "#3730a3",
     lightBg: "#eef2ff", darkBg: "rgba(79,70,229,0.28)",
     lightRing: "rgba(165,180,252,0.4)", darkRing: "rgba(165,180,252,0.35)",
-    items: ["Approve OJT hours, DTR, and daily scrums in one click", "Assign practicum tasks and track intern progress visually", "Monitor intern attendance in real time", "Communicate via dedicated OJT team channels"],
+    items: ["Approve OJT hours, DTR submissions, and daily scrum reports in one click", "Assign practicum tasks and watch progress update in real time", "See who's present without asking — attendance updates automatically", "Message your interns in a dedicated channel, not a personal group chat"],
   },
   {
     icon: BookOpen, title: "School Coordinators",
-    subtitle: "Manage 20–100 interns across multiple companies — without chasing anyone.",
+    subtitle: "You're responsible for dozens of interns across multiple companies. OJTask gives you one dashboard for all of them — no chasing required.",
     accent: "bg-emerald-600", gradFrom: "#059669", gradTo: "#047857",
     lightBg: "#ecfdf5", darkBg: "rgba(5,150,105,0.28)",
     lightRing: "rgba(110,231,183,0.4)", darkRing: "rgba(110,231,183,0.35)",
-    items: ["Monitor OJT hours and attendance across all interns program-wide", "Review and approve MOAs, terminal reports, and evaluations", "Track practicum completion rates across multiple host companies", "Get full program visibility without chasing students for updates"],
+    items: ["See every intern's OJT hours and attendance at a glance, across all companies", "Review and approve MOAs, terminal reports, and evaluation forms digitally", "Track practicum completion rates without sending a single follow-up message", "Close out your entire OJT program with complete, verified records — no spreadsheet needed"],
   },
 ];
 
 const steps = [
-  { step: "01", title: "Create Your Space",   desc: "Supervisors set up a workspace and share a unique join code. Ready in under two minutes.", icon: Layers },
-  { step: "02", title: "Students Join",        desc: "Interns join with the code and get instant access to all six modules. No training needed.", icon: GraduationCap },
-  { step: "03", title: "Track Daily",          desc: "Log hours, submit scrum reports, update task boards. Supervisors approve with one click.", icon: BarChart3 },
-  { step: "04", title: "Close Out",            desc: "Coordinators access complete records, verify documents, and finalize evaluations.", icon: ShieldCheck },
+  { step: "01", title: "Create Your Space",   desc: "A supervisor or coordinator creates a workspace and shares a unique join code. Your entire OJT management system is live in under two minutes.", icon: Layers },
+  { step: "02", title: "Students Join",        desc: "Interns enter the code, pick their role, and land straight in their dashboard. No setup, no tutorial, no waiting. Just start.", icon: GraduationCap },
+  { step: "03", title: "Track Every Day",      desc: "Students log OJT hours, submit daily scrum reports, and update their task board. Supervisors review and approve everything with a single click — no follow-ups needed.", icon: BarChart3 },
+  { step: "04", title: "Close Out Clean",      desc: "Coordinators pull up the full program view — OJT hours, attendance, MOAs, evaluations — and close out the practicum with complete, verified records. No spreadsheet required.", icon: ShieldCheck },
 ];
 
 // ── Animated Section wrapper ───────────────────────────────────────────────
@@ -372,7 +372,7 @@ export default function LandingPage() {
           </h1>
 
           <p className="text-base sm:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed px-2">
-            OJTask is the free OJT hours tracker built for Philippine college students, supervisors, and school coordinators — daily scrum reports, DTR generation, MOA documents, and practicum records managed in one shared workspace.
+            Every Filipino intern knows the chaos — missing signatures, lost DTR sheets, supervisors who don't know what you did last week. OJTask fixes all of that. One free workspace where your OJT hours, daily scrum reports, MOA documents, and practicum records finally live in the right place.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -433,7 +433,7 @@ export default function LandingPage() {
           {/* Section label */}
           <div className="text-center mb-12">
             <p className="text-violet-500 dark:text-violet-300 font-bold text-sm uppercase tracking-widest mb-2">By the Numbers</p>
-            <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white">OJTask is already making an impact</h2>
+            <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white">Real Filipino interns. Real OJT programs. Real results.</h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -464,10 +464,10 @@ export default function LandingPage() {
           <div className="text-center mb-16">
             <p className="text-violet-600 dark:text-violet-300 font-bold text-sm uppercase tracking-widest mb-4">Who Uses OJTask</p>
             <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-5 text-slate-900 dark:text-white">
-              One Platform Built for{" "}<span className="text-violet-600 dark:text-violet-300">Everyone Involved</span>
+              Built for Everyone Who Has to{" "}<span className="text-violet-600 dark:text-violet-300">Make OJT Work</span>
             </h2>
             <p className="text-slate-500 dark:text-slate-300 text-xl max-w-xl mx-auto leading-relaxed">
-              Students, supervisors, and coordinators each get a tailored view with exactly the tools they need.
+              Whether you're doing the internship, supervising it, or coordinating it for an entire batch — OJTask speaks your language.
             </p>
           </div>
 
@@ -508,10 +508,10 @@ export default function LandingPage() {
           <div className="text-center mb-16">
             <p className="text-violet-600 dark:text-violet-300 font-bold text-sm uppercase tracking-widest mb-4">Six Core Modules</p>
             <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-5 text-slate-900 dark:text-white">
-              Everything Your OJT{" "}<span className="text-violet-600 dark:text-violet-300">Program Needs</span>
+              Six Tools. One Workspace.{" "}<span className="text-violet-600 dark:text-violet-300">Zero Chaos.</span>
             </h2>
             <p className="text-slate-500 dark:text-slate-300 text-xl max-w-xl mx-auto leading-relaxed">
-              Six focused tools that cover the complete internship workflow from day one to sign-off.
+              From logging your first OJT hour to submitting your terminal report — every step of your practicum, handled.
             </p>
           </div>
 
@@ -544,10 +544,10 @@ export default function LandingPage() {
           <div className="text-center mb-16">
             <p className="text-violet-600 dark:text-violet-300 font-bold text-sm uppercase tracking-widest mb-4">Getting Started</p>
             <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-5 text-slate-900 dark:text-white">
-              Up and Running in{" "}<span className="text-violet-600 dark:text-violet-300">Five Minutes</span>
+              Ready in Five Minutes.{" "}<span className="text-violet-600 dark:text-violet-300">Useful for the Rest of Your OJT.</span>
             </h2>
             <p className="text-slate-500 dark:text-slate-300 text-xl max-w-xl mx-auto leading-relaxed">
-              No IT setup. No lengthy onboarding. Just create your space and start tracking.
+              No IT setup. No training manual. No onboarding call. Just create your space and your entire OJT system is live.
             </p>
           </div>
 
@@ -637,18 +637,18 @@ export default function LandingPage() {
         </div>
         <div className="max-w-3xl mx-auto text-center relative">
           <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-6 text-slate-900 dark:text-white">
-            Your OJT Program Deserves{" "}
-            <span className="text-violet-600 dark:text-violet-300">Better Than Group Chats</span>
+            Your OJT Starts Soon.{" "}
+            <span className="text-violet-600 dark:text-violet-300">Your System Should Be Ready Today.</span>
           </h2>
           <p className="text-slate-500 dark:text-slate-300 text-xl mb-10 max-w-xl mx-auto leading-relaxed">
-            Give interns a dedicated space to log their work and give supervisors real-time visibility — zero follow-up required.
+            Stop managing your internship through group chats and lost spreadsheets. OJTask is free, takes five minutes to set up, and gives students, supervisors, and school coordinators exactly the visibility they need — from the first OJT hour to the final DTR.
           </p>
           <Link href="/auth">
             <Button size="lg" className="font-black text-base px-10 h-14 rounded-full bg-violet-600 hover:bg-violet-700 text-white shadow-xl shadow-violet-500/30 hover:shadow-violet-500/50 hover:-translate-y-1 transition-all duration-200">
               Get Started — it's free
             </Button>
           </Link>
-          <p className="mt-5 text-sm text-slate-500 dark:text-slate-300">No credit card needed · Free to start</p>
+          <p className="mt-5 text-sm text-slate-500 dark:text-slate-300">No credit card needed · Free to start · Built for OJT in the Philippines 🇵🇭</p>
         </div>
       </Section>
 
@@ -660,13 +660,13 @@ export default function LandingPage() {
               <Link href="/" className="flex items-center gap-0.5 mb-5">
                 <img src="/ojtask-logo.png" className="h-10 w-auto object-contain brightness-0 invert" alt="OJTask logo" />
               </Link>
-              <p className="text-white/60 text-sm leading-relaxed">The OJT management platform for Philippine schools and companies.</p>
+              <p className="text-white/60 text-sm leading-relaxed">Built for Filipino interns because they deserve better than spreadsheets and group chats.</p>
             </div>
 
             {[
               { title: "Product", links: [{ label: "Time Tracking", href: "/auth" }, { label: "Daily Scrum", href: "/auth" }, { label: "Task Board", href: "/auth" }, { label: "Documents", href: "/auth" }] },
               { title: "For",     links: [{ label: "Students", href: "/auth" }, { label: "Supervisors", href: "/auth" }, { label: "Coordinators", href: "/auth" }, { label: "Schools", href: "/auth" }] },
-              { title: "Account", links: [{ label: "Sign In", href: "/auth" }, { label: "Get Started", href: "/auth" }, { label: "Forgot Password", href: "/forgot-password" }] },
+              { title: "Account", links: [{ label: "Sign In", href: "/auth" }, { label: "Get Started", href: "/auth" }, { label: "Forgot Password", href: "/forgot-password" }, { label: "Blog", href: "/blog" }] },
               { title: "Legal",   links: [{ label: "Privacy Policy", href: "/privacy-policy" }, { label: "Terms of Use", href: "/terms-of-use" }, { label: "Contact Us", href: "/contact" }] },
             ].map((col) => (
               <div key={col.title}>
