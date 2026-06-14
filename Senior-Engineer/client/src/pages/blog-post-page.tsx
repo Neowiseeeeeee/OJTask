@@ -1,6 +1,6 @@
 import { Link, useParams } from "wouter";
-import { useEffect } from "react";
-import { ArrowLeft, Clock, ArrowRight, BookOpen } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowLeft, Clock, ArrowRight, BookOpen, Link2, Check } from "lucide-react";
 import { getBlogPost, blogPosts } from "@/data/blog-posts";
 import { useTheme } from "@/components/theme-provider";
 import NotFound from "@/pages/not-found";
@@ -74,6 +74,16 @@ export default function BlogPostPage() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const post = getBlogPost(slug);
+  const [copied, setCopied] = useState(false);
+
+  const pageUrl = `https://ojtask.onrender.com/blog/${slug}`;
+
+  function copyLink() {
+    navigator.clipboard.writeText(pageUrl).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
 
   useEffect(() => {
     if (!post) return;
@@ -157,9 +167,54 @@ export default function BlogPostPage() {
         </h1>
 
         {/* Description */}
-        <p className="text-lg text-slate-500 dark:text-slate-300 leading-relaxed mb-10 pb-10 border-b border-slate-200 dark:border-white/10">
+        <p className="text-lg text-slate-500 dark:text-slate-300 leading-relaxed mb-8">
           {post.description}
         </p>
+
+        {/* Share bar */}
+        <div className="flex items-center gap-2 mb-10 pb-10 border-b border-slate-200 dark:border-white/10">
+          <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 mr-1">Share:</span>
+          <button
+            onClick={copyLink}
+            className="inline-flex items-center gap-1.5 px-3 h-8 rounded-full text-xs font-semibold transition-all border"
+            style={{
+              background: copied ? (isDark ? "rgba(124,58,237,0.25)" : "#ede9fe") : (isDark ? "rgba(255,255,255,0.06)" : "#f1f5f9"),
+              borderColor: copied ? (isDark ? "rgba(167,139,250,0.5)" : "#c4b5fd") : (isDark ? "rgba(255,255,255,0.12)" : "#e2e8f0"),
+              color: copied ? (isDark ? "#a78bfa" : "#7c3aed") : (isDark ? "#94a3b8" : "#64748b"),
+            }}
+          >
+            {copied ? <Check className="w-3 h-3" /> : <Link2 className="w-3 h-3" />}
+            {copied ? "Copied!" : "Copy link"}
+          </button>
+          <a
+            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 h-8 rounded-full text-xs font-semibold border transition-all hover:opacity-80"
+            style={{
+              background: isDark ? "rgba(24,119,242,0.15)" : "#eff6ff",
+              borderColor: isDark ? "rgba(96,165,250,0.3)" : "#bfdbfe",
+              color: isDark ? "#60a5fa" : "#1d4ed8",
+            }}
+          >
+            <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.313 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+            Facebook
+          </a>
+          <a
+            href={`https://www.facebook.com/dialog/send?link=${encodeURIComponent(pageUrl)}&app_id=291494419107518&redirect_uri=${encodeURIComponent(pageUrl)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 h-8 rounded-full text-xs font-semibold border transition-all hover:opacity-80"
+            style={{
+              background: isDark ? "rgba(0,132,255,0.15)" : "#eff6ff",
+              borderColor: isDark ? "rgba(96,165,250,0.3)" : "#bfdbfe",
+              color: isDark ? "#60a5fa" : "#0084ff",
+            }}
+          >
+            <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 4.974 0 11.111c0 3.498 1.744 6.614 4.469 8.654V24l4.088-2.242c1.092.3 2.246.464 3.443.464 6.627 0 12-4.975 12-11.111C24 4.974 18.627 0 12 0zm1.191 14.963l-3.055-3.26-5.963 3.26L10.732 8l3.131 3.259L19.752 8l-6.561 6.963z"/></svg>
+            Messenger
+          </a>
+        </div>
 
         {/* Content */}
         <div className="space-y-1">
