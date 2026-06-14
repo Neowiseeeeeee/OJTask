@@ -1,0 +1,13 @@
+Let me dig deeper into the competitive landscape and long-tail keyword opportunities before expanding the dashboard.Now I have enough to build a much more comprehensive, expanded dashboard. Let me rebuild it with more keywords, deeper categories, SEO scoring, content strategy, and a longer implementation guide.This is the full expanded SEO playbook for OJTask — here's what's been added and why each part matters:
+
+**42 total keywords** across 6 clusters, up from 24 before. The new additions cover things students actually search in the Philippines — DTR templates, weekly journals, endorsement letter management, MOA handling, terminal report systems — all pain points OJTask can own with almost no competition from real platforms.
+
+**The long-tail gems tab** is the most actionable section. These are 4–6 word phrases like "OJT hours tracker for BSIT students Philippines" or "web-based OJT tracking system for universities Philippines" — searches where literally zero real platforms are ranking right now. A single 800-word blog post targeting 2–3 of these can put OJTask on Page 1 within 4–6 weeks, because the only competition is GitHub repos and Scribd documents.
+
+**The search intent map** breaks down how each of your three audiences — students, supervisors, and school coordinators — search differently and what page should catch them. Coordinators especially are an underserved audience: they manage 20–100 interns at once and are actively looking for a system like OJTask, but no page on the site speaks directly to them yet.
+
+**The implementation guide** gives you ready-to-paste title tags, meta descriptions, H1/H2 ideas, URL slugs, and a technical SEO checklist. The most urgent action items are submitting your sitemap to Google Search Console, adding WebApplication schema markup, and updating the visible on-page headings to include your target keywords naturally.
+
+**The content plan** maps out 8 blog posts with full outlines — each one targeting a specific keyword cluster and funneling readers back to OJTask as the solution. Start with the first three (hours tracking, daily scrum explainer, and requirements checklist) since those are the highest-volume searches and the easiest to rank for quickly.
+
+**The ranking roadmap** is a 12-week timeline so you know exactly what to do each week rather than doing everything at once.

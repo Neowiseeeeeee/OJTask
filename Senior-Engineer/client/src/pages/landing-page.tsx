@@ -142,22 +142,22 @@ function MarqueeStrip({ reverse = false }: { reverse?: boolean }) {
 
 // ── Data ───────────────────────────────────────────────────────────────────
 const features = [
-  { icon: Clock,         title: "Time Tracking",  desc: "Log OJT hours daily and get instant supervisor sign-off. Zero spreadsheets.",              lightColor: "bg-violet-100 text-violet-600", darkColor: "bg-violet-900/40 text-violet-300" },
-  { icon: Users,         title: "Daily Scrum",     desc: "Two-minute structured check-ins that replace long status meetings for good.",               lightColor: "bg-indigo-100 text-indigo-600", darkColor: "bg-indigo-900/40 text-indigo-300" },
-  { icon: ListTodo,      title: "Task Board",      desc: "Kanban-style task management built around how interns actually work.",                       lightColor: "bg-emerald-100 text-emerald-600", darkColor: "bg-emerald-900/40 text-emerald-300" },
-  { icon: CalendarDays,  title: "Attendance",      desc: "Real-time visibility for supervisors and coordinators with one tap.",                        lightColor: "bg-amber-100 text-amber-600", darkColor: "bg-amber-900/40 text-amber-300" },
-  { icon: FileText,      title: "Document Hub",    desc: "Upload MOAs, endorsement letters, and reports in one secure place.",                        lightColor: "bg-rose-100 text-rose-600", darkColor: "bg-rose-900/40 text-rose-300" },
-  { icon: MessageSquare, title: "Team Chat",       desc: "Dedicated channels for work updates without flooding personal inboxes.",                    lightColor: "bg-cyan-100 text-cyan-600", darkColor: "bg-cyan-900/40 text-cyan-300" },
+  { icon: Clock,         title: "OJT Hours Tracker",  desc: "Log OJT hours daily and auto-generate your DTR. Get instant supervisor sign-off — zero spreadsheets or manual hour sheets.",              lightColor: "bg-violet-100 text-violet-600", darkColor: "bg-violet-900/40 text-violet-300" },
+  { icon: Users,         title: "Daily Scrum Reports", desc: "Submit structured daily scrum reports in under two minutes. Supervisors review and approve with one click — no long status meetings.",               lightColor: "bg-indigo-100 text-indigo-600", darkColor: "bg-indigo-900/40 text-indigo-300" },
+  { icon: ListTodo,      title: "Task Board",          desc: "Kanban-style task management built around how OJT interns actually work — assign, track, and complete practicum tasks in real time.",                       lightColor: "bg-emerald-100 text-emerald-600", darkColor: "bg-emerald-900/40 text-emerald-300" },
+  { icon: CalendarDays,  title: "Attendance Logs",     desc: "One-tap attendance logging gives supervisors and school coordinators real-time visibility into intern presence — no follow-up needed.",                        lightColor: "bg-amber-100 text-amber-600", darkColor: "bg-amber-900/40 text-amber-300" },
+  { icon: FileText,      title: "Document Hub",        desc: "Upload and manage MOAs, endorsement letters, terminal reports, and weekly journals — all OJT requirements in one secure place.",                        lightColor: "bg-rose-100 text-rose-600", darkColor: "bg-rose-900/40 text-rose-300" },
+  { icon: MessageSquare, title: "Team Chat",           desc: "Dedicated channels keep OJT communication organized between interns, supervisors, and school coordinators — without flooding personal inboxes.",                    lightColor: "bg-cyan-100 text-cyan-600", darkColor: "bg-cyan-900/40 text-cyan-300" },
 ];
 
 const roles = [
   {
-    icon: GraduationCap, title: "Students",
-    subtitle: "Everything you need to get through OJT without the stress.",
+    icon: GraduationCap, title: "OJT Students",
+    subtitle: "Everything you need to complete your practicum without the stress.",
     accent: "bg-violet-600", gradFrom: "#7c3aed", gradTo: "#6d28d9",
     lightBg: "#f5f3ff", darkBg: "rgba(124,58,237,0.28)",
     lightRing: "rgba(167,139,250,0.4)", darkRing: "rgba(167,139,250,0.35)",
-    items: ["Log daily OJT hours and tasks", "Submit structured daily scrum reports", "Record attendance instantly", "Upload required internship documents"],
+    items: ["Track and export OJT hours and your DTR automatically", "Submit daily scrum reports and weekly journals in minutes", "Log attendance with one tap from any device", "Upload MOAs, endorsement letters, and all required OJT documents"],
   },
   {
     icon: Building2, title: "Company Supervisors",
@@ -165,15 +165,15 @@ const roles = [
     accent: "bg-indigo-600", gradFrom: "#4f46e5", gradTo: "#3730a3",
     lightBg: "#eef2ff", darkBg: "rgba(79,70,229,0.28)",
     lightRing: "rgba(165,180,252,0.4)", darkRing: "rgba(165,180,252,0.35)",
-    items: ["Approve time logs and scrums in one click", "Assign tasks and track progress visually", "Monitor attendance in real time", "Communicate via dedicated team channels"],
+    items: ["Approve OJT hours, DTR, and daily scrums in one click", "Assign practicum tasks and track intern progress visually", "Monitor intern attendance in real time", "Communicate via dedicated OJT team channels"],
   },
   {
     icon: BookOpen, title: "School Coordinators",
-    subtitle: "Full program visibility without chasing anyone for updates.",
+    subtitle: "Manage 20–100 interns across multiple companies — without chasing anyone.",
     accent: "bg-emerald-600", gradFrom: "#059669", gradTo: "#047857",
     lightBg: "#ecfdf5", darkBg: "rgba(5,150,105,0.28)",
     lightRing: "rgba(110,231,183,0.4)", darkRing: "rgba(110,231,183,0.35)",
-    items: ["View all student progress at a glance", "Monitor interns across multiple companies", "Review and approve submitted documents", "Track attendance program-wide"],
+    items: ["Monitor OJT hours and attendance across all interns program-wide", "Review and approve MOAs, terminal reports, and evaluations", "Track practicum completion rates across multiple host companies", "Get full program visibility without chasing students for updates"],
   },
 ];
 
@@ -372,7 +372,7 @@ export default function LandingPage() {
           </h1>
 
           <p className="text-base sm:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed px-2">
-            OJTask brings students, supervisors, and school coordinators into one shared workspace — daily reports, time logs, and documents handled without the back-and-forth.
+            OJTask is the free OJT hours tracker built for Philippine college students, supervisors, and school coordinators — daily scrum reports, DTR generation, MOA documents, and practicum records managed in one shared workspace.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -574,6 +574,55 @@ export default function LandingPage() {
                       <ArrowRight className="w-5 h-5 text-violet-300 dark:text-violet-400" />
                     </div>
                   )}
+                </div>
+              </AnimCard>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      {/* ── FAQ ───────────────────────────────────────────────────────────── */}
+      <Section id="faq" className="px-6 py-20 z-10 relative">
+        <div className="max-w-3xl mx-auto w-full">
+          <div className="text-center mb-14">
+            <p className="text-violet-600 dark:text-violet-300 font-bold text-sm uppercase tracking-widest mb-4">Common Questions</p>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+              Everything About <span className="text-violet-600 dark:text-violet-300">OJT Management</span>
+            </h2>
+          </div>
+          <div className="space-y-5">
+            {[
+              {
+                q: "How do I track OJT hours as a Philippine college student?",
+                a: "OJTask lets you log your OJT hours every day from any device. Each entry is time-stamped and submitted to your supervisor for approval. At the end of your internship, you can export a complete DTR (Daily Time Record) with one click — no spreadsheets or manual counting required.",
+              },
+              {
+                q: "What is a daily scrum in OJT and why does it matter?",
+                a: "A daily scrum is a short structured update where interns report what they did, what they plan to do, and any blockers they're facing. In OJTask, this takes under two minutes to fill out and gives supervisors real-time visibility into each intern's progress — replacing the need for lengthy status meetings or manual reports.",
+              },
+              {
+                q: "Can school coordinators monitor interns across multiple companies?",
+                a: "Yes. School coordinators in OJTask get a program-wide dashboard that shows OJT hours, attendance, document submissions, and practicum progress for all their students — even if those students are deployed to different host companies. No more chasing 50 students individually for updates.",
+              },
+              {
+                q: "What OJT documents can I manage in OJTask?",
+                a: "OJTask's Document Hub supports all standard Philippine OJT requirements: MOA (Memorandum of Agreement), endorsement letters, acceptance letters, weekly journals, terminal reports, and evaluation forms. Everything is stored securely and can be reviewed or approved by coordinators directly in the platform.",
+              },
+              {
+                q: "Is OJTask free for students and schools?",
+                a: "Yes — OJTask is completely free to start. Students can join a space with a code shared by their supervisor. There is no credit card required and no time limit on the free tier.",
+              },
+            ].map((item, i) => (
+              <AnimCard key={i} delay={i * 80}>
+                <div
+                  className="rounded-2xl p-7"
+                  style={{
+                    background: isDark ? "rgba(255,255,255,0.07)" : "#ffffff",
+                    border: isDark ? "1px solid rgba(255,255,255,0.14)" : "1px solid #e2e8f0",
+                  }}
+                >
+                  <h3 className="text-base font-black text-slate-900 dark:text-white mb-3">{item.q}</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-300 leading-relaxed">{item.a}</p>
                 </div>
               </AnimCard>
             ))}
