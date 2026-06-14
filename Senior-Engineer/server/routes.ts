@@ -272,8 +272,8 @@ export async function registerRoutes(
 
   // ── Email status (is Gmail configured?) ─────────────────────────────────
   app.get("/api/auth/email/status", (_req, res) => {
-    const configured = !!process.env.RESEND_API_KEY;
-    res.json({ configured, from: configured ? "Resend" : null });
+    const configured = !!process.env.BREVO_API_KEY;
+    res.json({ configured, from: configured ? "Brevo" : null });
   });
 
   // ── Forgot Password (OTP via Gmail) ──────────────────────────────────────
@@ -290,7 +290,7 @@ export async function registerRoutes(
         return res.status(200).json({ message: "If that email exists, a code was sent." });
       }
 
-      if (!process.env.RESEND_API_KEY) {
+      if (!process.env.BREVO_API_KEY) {
         return res.status(503).json({
           message: "Email sending is not configured on this server. Please contact the administrator.",
           code: "EMAIL_NOT_CONFIGURED",
@@ -2157,9 +2157,9 @@ export async function registerRoutes(
         impact: "Google OAuth callback will fail even if client ID is set.",
       },
       {
-        key: "RESEND_API_KEY",
+        key: "BREVO_API_KEY",
         required: false,
-        description: "Resend API key used to send OTP, welcome, and notification emails via HTTPS.",
+        description: "Brevo API key used to send OTP, welcome, and notification emails via HTTPS.",
         impact: "Forgot-password OTP emails cannot be sent; a warning banner will appear.",
       },
       {
@@ -2223,7 +2223,7 @@ export async function registerRoutes(
       res.status(200).json({ message: "Message sent successfully." });
     } catch (err: any) {
       console.error("Contact form error:", err?.message);
-      if (err?.message?.includes("RESEND_API_KEY")) {
+      if (err?.message?.includes("BREVO_API_KEY")) {
         return res.status(503).json({ message: "Email delivery is not configured on this server. Please email us directly at ojtask.connect@gmail.com." });
       }
       res.status(500).json({ message: "Failed to send message. Please try again or email us directly at ojtask.connect@gmail.com." });
