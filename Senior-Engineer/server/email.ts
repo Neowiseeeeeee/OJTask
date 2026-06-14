@@ -1,38 +1,54 @@
-import { Resend } from "resend";
+const BREVO_API = "https://api.brevo.com/v3/smtp/email";
+const FROM_NAME = "OJTask";
+const FROM_EMAIL = "ojtask.connect@gmail.com";
 
-let _resend: Resend | null = null;
-
-function getResend(): Resend {
-  if (_resend) return _resend;
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    throw new Error("RESEND_API_KEY environment variable is required.");
-  }
-  _resend = new Resend(apiKey);
-  return _resend;
+function getBrevoKey(): string {
+  const key = process.env.BREVO_API_KEY;
+  if (!key) throw new Error("BREVO_API_KEY environment variable is required.");
+  return key;
 }
 
-const FROM_ADDRESS = "OJTask <onboarding@resend.dev>";
+async function brevoSend(payload: object): Promise<void> {
+  const res = await fetch(BREVO_API, {
+    method: "POST",
+    headers: {
+      "api-key": getBrevoKey(),
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    const msg = (body as any)?.message || res.statusText;
+    console.error("❌ Brevo send failed —", res.status, msg, JSON.stringify(body));
+    const err: any = new Error(`Brevo rejected: ${msg}`);
+    err.brevoStatus = res.status;
+    err.brevoBody = body;
+    throw err;
+  }
+}
 
 export async function verifyEmailConfig(): Promise<boolean> {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    console.warn("⚠️  RESEND_API_KEY is not set — email delivery disabled.");
+  const key = process.env.BREVO_API_KEY;
+  if (!key) {
+    console.warn("⚠️  BREVO_API_KEY is not set — email delivery disabled.");
     return false;
   }
-  console.log("✅ Email (Resend) configured and ready");
+  console.log("✅ Email (Brevo) configured and ready");
   return true;
 }
 
 export async function sendOtpEmail(toEmail: string, otp: string, name: string): Promise<void> {
   console.log(`📧 Sending OTP email to ${toEmail}...`);
 
-  const { error } = await getResend().emails.send({
-    from: FROM_ADDRESS,
-    to: toEmail,
+  await brevoSend({
+    sender: { name: FROM_NAME, email: FROM_EMAIL },
+    to: [{ email: toEmail }],
     subject: "OJTask password reset code",
-    text: `Hi ${name},\n\nYour OJTask password reset code is: ${otp}\n\nThis code expires in 10 minutes.\n\nIf you didn't request this, you can safely ignore this email.\n\n— OJTask`,
-    html: `
+    textContent: `Hi ${name},\n\nYour OJTask password reset code is: ${otp}\n\nThis code expires in 10 minutes.\n\nIf you didn't request this, you can safely ignore this email.\n\n— OJTask`,
+    htmlContent: `
       <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px;color:#1a1a1a;">
         <p style="margin:0 0 8px 0;font-size:15px;">Hi ${name},</p>
         <p style="margin:0 0 20px 0;font-size:15px;color:#444;">Use the code below to reset your OJTask password. It expires in <strong>10 minutes</strong>.</p>
@@ -47,27 +63,16 @@ export async function sendOtpEmail(toEmail: string, otp: string, name: string): 
     `,
   });
 
-  if (error) {
-    console.error("❌ Resend OTP send failed — name:", (error as any).name);
-    console.error("❌ Resend OTP send failed — message:", (error as any).message);
-    console.error("❌ Resend OTP send failed — statusCode:", (error as any).statusCode);
-    console.error("❌ Resend OTP send failed — full:", JSON.stringify(error));
-    const resendErr: any = new Error(`Resend rejected: ${(error as any).message}`);
-    resendErr.resendName = (error as any).name;
-    resendErr.resendStatus = (error as any).statusCode;
-    throw resendErr;
-  }
-
   console.log(`✅ OTP email sent to ${toEmail}`);
 }
 
 export async function sendContactEmail(name: string, fromEmail: string, subject: string, message: string): Promise<void> {
-  const { error } = await getResend().emails.send({
-    from: FROM_ADDRESS,
-    to: "ojtask.connect@gmail.com",
-    replyTo: fromEmail,
+  await brevoSend({
+    sender: { name: FROM_NAME, email: FROM_EMAIL },
+    to: [{ email: "ojtask.connect@gmail.com" }],
+    replyTo: { email: fromEmail, name },
     subject: `[OJTask Contact] ${subject}`,
-    html: `
+    htmlContent: `
       <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 32px; background: #f9f9f9; border-radius: 12px;">
         <div style="text-align: center; margin-bottom: 24px;">
           <div style="display: inline-block; background: linear-gradient(135deg, #7c3aed, #6d28d9); border-radius: 12px; padding: 12px 16px;">
@@ -84,19 +89,14 @@ export async function sendContactEmail(name: string, fromEmail: string, subject:
       </div>
     `,
   });
-
-  if (error) {
-    console.error("❌ Resend error sending contact email:", error);
-    throw new Error(`Failed to send contact email: ${error.message}`);
-  }
 }
 
 export async function sendWelcomeEmail(toEmail: string, name: string): Promise<void> {
-  const { error } = await getResend().emails.send({
-    from: FROM_ADDRESS,
-    to: toEmail,
+  await brevoSend({
+    sender: { name: FROM_NAME, email: FROM_EMAIL },
+    to: [{ email: toEmail }],
     subject: "Welcome to OJTask!",
-    html: `
+    htmlContent: `
       <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #f9f9f9; border-radius: 12px;">
         <div style="text-align: center; margin-bottom: 24px;">
           <div style="display: inline-block; background: linear-gradient(135deg, #7c3aed, #6d28d9); border-radius: 12px; padding: 12px 16px;">
@@ -108,9 +108,4 @@ export async function sendWelcomeEmail(toEmail: string, name: string): Promise<v
       </div>
     `,
   });
-
-  if (error) {
-    console.error("❌ Resend error sending welcome email:", error);
-    throw new Error(`Failed to send welcome email: ${error.message}`);
-  }
 }
