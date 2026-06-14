@@ -246,6 +246,162 @@ Requirements change. Always double-check the current requirements with your scho
 Good luck with your OJT. 🇵🇭
     `.trim(),
   },
+  {
+    slug: "how-to-monitor-ojt-interns-philippines",
+    title: "How to Monitor OJT Interns in the Philippines Without Constant Follow-Ups",
+    description: "Supervising interns on top of your regular job is a lot. Here's a practical guide to monitoring OJT progress, approving hours, and staying on top of scrum reports without spending your whole day chasing updates.",
+    date: "June 14, 2026",
+    readTime: "5 min read",
+    category: "For Supervisors",
+    content: `
+## The Real Problem with Supervising Interns
+
+Most company supervisors in the Philippines didn't sign up to be OJT managers. You have your own targets, your own deliverables, and then on top of that, you're expected to track hours, sign DTRs, review daily reports, and make sure your interns are actually learning something useful.
+
+The standard process makes it harder than it needs to be. Interns message you on Viber asking you to sign their DTR. You forget. They follow up. You sign something at the end of the month without really knowing what they did week by week.
+
+Here's a better way to handle it.
+
+## What Supervising an OJT Intern Actually Requires
+
+Before you can set up a system, it helps to know exactly what your responsibilities are:
+
+- Approving the intern's OJT hours (usually daily or weekly)
+- Reviewing their daily journal or scrum reports
+- Assigning tasks and tracking their completion
+- Filling out a mid-term and final evaluation form
+- Signing the DTR and Certificate of Completion
+- Potentially co-signing the MOA with your company and the school
+
+That list looks long, but most of it is lightweight if you have the right setup.
+
+## The Problem with Group Chats and Spreadsheets
+
+Most OJT supervision in the Philippines still happens through Viber or WhatsApp group chats. Updates get buried. Files get lost. You ask "can you send me your DTR again?" for the third time. It's inefficient for you and stressful for the intern.
+
+Spreadsheets are slightly better but have their own issues: the intern updates the file, you don't see it, they message you to check it, and now you're back to managing it through chat anyway.
+
+## How to Monitor Interns More Effectively
+
+Here's a practical system that works regardless of whether you use OJTask or something else:
+
+Set a daily check-in time. Even if it's just 5 minutes, having a fixed time (end of day) when you look at what each intern submitted means nothing piles up. You're not reviewing a month of logs in one sitting.
+
+Use structured reports, not open updates. When interns just message "I finished the task," you don't know what task, how long it took, or what comes next. A structured format (what they did, what's next, any blockers) takes two minutes to fill out and gives you everything you need at a glance.
+
+Approve hours weekly, not monthly. Monthly DTR sign-offs are the source of most disputes. If an intern logs wrong times for four weeks and you sign at the end, that's a problem. Weekly or daily approval means errors get caught early.
+
+Keep all documents in one place. Endorsement letters, MOAs, evaluation forms — if each intern emails these separately, you'll spend more time finding attachments than reviewing them. A shared document folder (or OJTask's Document Hub) means everything is always accessible.
+
+## Using OJTask as a Supervisor
+
+When you use OJTask, your workflow as a supervisor looks like this:
+
+1. You create a workspace and share a join code with your interns.
+2. Interns log their hours each day and you get notified.
+3. You approve or flag entries with one click.
+4. You see their daily scrum reports as they submit them, no chasing needed.
+5. You assign tasks from the Kanban board and see progress update in real time.
+6. At the end of the OJT, you export the complete DTR and fill out the evaluation form digitally.
+
+The whole thing takes about five minutes of your day. The rest runs itself.
+
+## What to Do When an Intern Is Falling Behind
+
+It happens. An intern stops logging hours, misses scrum reports, or goes quiet for a week. Here's how to handle it without making it a big deal:
+
+Check their log first before sending a message. Sometimes they logged but you missed the notification. Give it a day before following up.
+
+When you do follow up, be direct. "I noticed your hours from Monday to Wednesday aren't logged yet. Can you update those today?" is better than a vague check-in.
+
+Flag it in writing. If the pattern continues, note it in your mid-term evaluation. Schools need documentation if there are OJT completion issues, and a written record protects both you and the intern.
+
+## Final Word
+
+The best OJT supervisors aren't the ones who are constantly available. They're the ones who set up a clear system, check in consistently, and give interns just enough structure to stay on track without hand-holding them every day.
+
+If you're supervising more than two or three interns at a time, an organized platform makes a real difference. OJTask is free and takes about two minutes to set up.
+    `.trim(),
+  },
+  {
+    slug: "ojt-moa-requirements-schools-philippines",
+    title: "OJT MOA Requirements for Philippine Schools: A Coordinator's Guide",
+    description: "The Memorandum of Agreement is one of the most important OJT documents, and one of the most commonly mishandled. Here's exactly what the MOA needs to contain, who signs it, and how to manage it across an entire batch of interns.",
+    date: "June 14, 2026",
+    readTime: "6 min read",
+    category: "For Coordinators",
+    content: `
+## Why the MOA Matters More Than Most Schools Treat It
+
+The Memorandum of Agreement (MOA) between a Philippine school and a host company is not just paperwork. It is the legal foundation of the entire OJT arrangement. It defines what the company is responsible for, what the school expects, what the intern is covered for, and what happens if something goes wrong.
+
+Despite this, most OJT coordinators deal with MOAs reactively: the company sends a template, someone at the school signs it without reading it carefully, and a copy goes in a filing cabinet. When there's a dispute, nobody can find the document.
+
+This guide covers what the MOA should contain, who needs to sign it, and how to manage MOAs across an entire batch of interns.
+
+## What the OJT MOA Should Include
+
+Requirements vary by school and by CHED region, but a complete MOA for Philippine OJT typically covers:
+
+The parties involved. Full legal names and addresses of the school (represented by the department head or dean) and the host company (represented by the authorized HR or operations officer).
+
+The internship details. Program name, number of required hours, start and end dates, and the specific department or work area where the intern will be placed.
+
+Roles and responsibilities of the company. What training or exposure the company commits to provide, whether there is a stipend, working hours, and health and safety provisions.
+
+Roles and responsibilities of the school. Monitoring visits or check-ins, the coordinator's contact information, grading criteria, and how disputes will be handled.
+
+Liability and insurance. Who is responsible if the intern is injured on the premises. Some schools require the company to provide HMO or at minimum accident insurance coverage for the duration of the OJT.
+
+Confidentiality clause. If the intern will handle sensitive company data, a confidentiality provision protects the company and is increasingly standard.
+
+Signatures and notarization. Both parties must sign. Many schools also require notarization, especially for companies that are new partners.
+
+## Who Signs the MOA
+
+On the school side, this is typically the Department Chair or Dean, sometimes countersigned by the OJT Coordinator. Some schools also require the college registrar.
+
+On the company side, this should be signed by someone with authority to commit the company to the agreement. HR Manager, Operations Head, or a duly authorized representative. An intern's direct supervisor is usually not sufficient.
+
+The student does not sign the MOA. The MOA is between the institution and the company, not the student.
+
+## Common MOA Problems and How to Avoid Them
+
+The school uses one template for all companies. A template is a good starting point but it should be reviewed per company. A BPO company has different liability concerns than a hospital or a government agency. Have legal or admin review flag provisions that need adjusting.
+
+The MOA is processed too late. This is the most common issue. The intern starts their OJT before the MOA is signed because the process took too long. This creates a legal gap where neither the school nor the company has documented obligations. Start the MOA process at least three to four weeks before the intern's start date.
+
+Copies are not distributed properly. The school, the company, and the student (for their records) should each have a signed copy. Do not rely on the intern to be the only one carrying the document.
+
+Old MOAs are reused without review. If a company has been a partner for years, the MOA from three years ago may no longer reflect current CHED regulations or the company's actual structure. Renew and review annually.
+
+## Managing MOAs Across a Full Batch
+
+If you are coordinating 50 or more interns placed at 30 or more companies, managing MOAs manually is unsustainable. Here is a practical approach:
+
+Build a tracking sheet. At minimum: intern name, company name, MOA status (sent, signed, notarized, filed), date submitted, and any notes. Update it weekly.
+
+Assign follow-up deadlines. Set a cutoff: MOA must be signed two weeks before the OJT start date. If it is not signed by then, the intern cannot begin until it is. This creates accountability for both the company and the student.
+
+Digitize your copies. Signed MOAs should be scanned and stored in a cloud folder organized by batch and company. Physical copies are fine as backup but digital is your working copy.
+
+Use OJTask's Document Hub. If your OJT program uses OJTask, each intern's documents including the MOA can be uploaded to their profile. You and the company supervisor can both access it, reducing the number of times anyone asks "can you resend that file?"
+
+## What Happens If There Is No MOA
+
+If an incident occurs during the OJT and there is no signed MOA, the school and the company are both exposed. The intern has no documented protection, and there is no written record of who was responsible for what.
+
+Beyond liability, CHED inspections and accreditation reviews look at OJT documentation. Missing or incomplete MOAs can affect a program's accreditation standing.
+
+The MOA is not optional. It is not a formality. It is the document that makes the entire OJT arrangement legitimate.
+
+## Final Note for Coordinators
+
+Your job is to make OJT work for dozens of students at once, and the MOA is one of the most important things you protect them with. Build a system for it. Track every one. File every one. Review them before each new batch.
+
+If you want to manage your OJT documents, monitoring, and evaluations in one place, OJTask has a free coordinator dashboard built specifically for Philippine OJT programs.
+    `.trim(),
+  },
 ];
 
 export function getBlogPost(slug: string): BlogPost | undefined {
