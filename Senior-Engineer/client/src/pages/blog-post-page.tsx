@@ -76,21 +76,42 @@ export default function BlogPostPage() {
   const post = getBlogPost(slug);
 
   useEffect(() => {
-    if (post) {
-      document.title = `${post.title} — OJTask Blog`;
-      let metaDesc = document.querySelector('meta[name="description"]');
-      if (!metaDesc) {
-        metaDesc = document.createElement("meta");
-        (metaDesc as HTMLMetaElement).name = "description";
-        document.head.appendChild(metaDesc);
+    if (!post) return;
+
+    document.title = `${post.title} — OJTask Blog`;
+
+    const setMeta = (sel: string, attr: string, val: string) => {
+      let el = document.querySelector(sel) as HTMLMetaElement | null;
+      const created = !el;
+      if (created) {
+        el = document.createElement("meta");
+        const [a, v] = attr.split("=");
+        el.setAttribute(a, v ?? attr);
+        document.head.appendChild(el);
       }
-      const prev = (metaDesc as HTMLMetaElement).content;
-      (metaDesc as HTMLMetaElement).content = post.description;
-      return () => {
-        document.title = "OJTask";
-        (metaDesc as HTMLMetaElement).content = prev;
-      };
-    }
+      const prev = el!.content;
+      el!.content = val;
+      return () => { if (created) el!.remove(); else el!.content = prev; };
+    };
+
+    const pageUrl = `https://ojtask.onrender.com/blog/${post.slug}`;
+
+    const cleanups = [
+      setMeta('meta[name="description"]',        'name=description',        post.description),
+      setMeta('meta[property="og:title"]',        'property=og:title',       `${post.title} — OJTask Blog`),
+      setMeta('meta[property="og:description"]',  'property=og:description', post.description),
+      setMeta('meta[property="og:url"]',          'property=og:url',         pageUrl),
+      setMeta('meta[property="og:type"]',         'property=og:type',        'article'),
+      setMeta('meta[property="og:site_name"]',    'property=og:site_name',   'OJTask'),
+      setMeta('meta[name="twitter:card"]',        'name=twitter:card',       'summary'),
+      setMeta('meta[name="twitter:title"]',       'name=twitter:title',      `${post.title} — OJTask Blog`),
+      setMeta('meta[name="twitter:description"]', 'name=twitter:description',post.description),
+    ];
+
+    return () => {
+      document.title = "OJTask";
+      cleanups.forEach(fn => fn?.());
+    };
   }, [post]);
 
   if (!post) return <NotFound />;
