@@ -12,30 +12,23 @@ function getResend(): Resend {
   return _resend;
 }
 
+const FROM_ADDRESS = "OJTask <onboarding@resend.dev>";
+
 export async function verifyEmailConfig(): Promise<boolean> {
-  try {
-    const apiKey = process.env.RESEND_API_KEY;
-    if (!apiKey) {
-      console.warn("⚠️  RESEND_API_KEY is not set.");
-      return false;
-    }
-    console.log("✅ Email (Resend) configured and ready");
-    return true;
-  } catch (err) {
-    console.warn("⚠️  Email (Resend) configuration check failed:", err);
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.warn("⚠️  RESEND_API_KEY is not set — email delivery disabled.");
     return false;
   }
+  console.log("✅ Email (Resend) configured and ready");
+  return true;
 }
 
 export async function sendOtpEmail(toEmail: string, otp: string, name: string): Promise<void> {
-  const fromAddress = process.env.GMAIL_USER
-    ? `OJTask <${process.env.GMAIL_USER}>`
-    : "OJTask <onboarding@resend.dev>";
-
   console.log(`📧 Sending OTP email to ${toEmail}...`);
 
   const { error } = await getResend().emails.send({
-    from: fromAddress,
+    from: FROM_ADDRESS,
     to: toEmail,
     subject: "OJTask password reset code",
     text: `Hi ${name},\n\nYour OJTask password reset code is: ${otp}\n\nThis code expires in 10 minutes.\n\nIf you didn't request this, you can safely ignore this email.\n\n— OJTask`,
@@ -63,12 +56,8 @@ export async function sendOtpEmail(toEmail: string, otp: string, name: string): 
 }
 
 export async function sendContactEmail(name: string, fromEmail: string, subject: string, message: string): Promise<void> {
-  const fromAddress = process.env.GMAIL_USER
-    ? `OJTask Contact Form <${process.env.GMAIL_USER}>`
-    : "OJTask Contact Form <onboarding@resend.dev>";
-
   const { error } = await getResend().emails.send({
-    from: fromAddress,
+    from: FROM_ADDRESS,
     to: "ojtask.connect@gmail.com",
     replyTo: fromEmail,
     subject: `[OJTask Contact] ${subject}`,
@@ -97,12 +86,8 @@ export async function sendContactEmail(name: string, fromEmail: string, subject:
 }
 
 export async function sendWelcomeEmail(toEmail: string, name: string): Promise<void> {
-  const fromAddress = process.env.GMAIL_USER
-    ? `OJTask <${process.env.GMAIL_USER}>`
-    : "OJTask <onboarding@resend.dev>";
-
   const { error } = await getResend().emails.send({
-    from: fromAddress,
+    from: FROM_ADDRESS,
     to: toEmail,
     subject: "Welcome to OJTask!",
     html: `
