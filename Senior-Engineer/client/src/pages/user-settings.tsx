@@ -41,9 +41,16 @@ export default function UserSettingsPage() {
     return null;
   }
 
+  const isGoogleUser = (user as any)?.provider === "google";
+
   const handleChangePassword = async () => {
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      setMessage({ type: "error", text: "All password fields are required" });
+    if (!isGoogleUser && !currentPassword) {
+      setMessage({ type: "error", text: "Current password is required" });
+      return;
+    }
+
+    if (!newPassword || !confirmPassword) {
+      setMessage({ type: "error", text: "Please fill in all password fields" });
       return;
     }
 
@@ -64,7 +71,7 @@ export default function UserSettingsPage() {
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
-          currentPassword,
+          currentPassword: isGoogleUser ? undefined : currentPassword,
           newPassword,
         }),
       });
@@ -222,27 +229,34 @@ export default function UserSettingsPage() {
 
               {showChangePassword && (
                 <div className="space-y-3 bg-muted/50 p-4 rounded-lg">
-                  <div className="space-y-2">
-                    <Label htmlFor="current-password">Current Password</Label>
-                    <div className="relative">
-                      <Input
-                        id="current-password"
-                        type={showCurrentPassword ? "text" : "password"}
-                        value={currentPassword}
-                        onChange={(e) => setCurrentPassword(e.target.value)}
-                        className="bg-background pr-10"
-                        placeholder="Enter your current password"
-                        disabled={isLoading}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
+                  {isGoogleUser ? (
+                    <div className="flex items-start gap-2 text-xs text-muted-foreground bg-blue-500/10 border border-blue-500/20 rounded-md p-3">
+                      <AlertCircle className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
+                      <span>Your account uses Google Sign-In so you don't have a current password. You can set a new password below to also enable email/password login.</span>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Label htmlFor="current-password">Current Password</Label>
+                      <div className="relative">
+                        <Input
+                          id="current-password"
+                          type={showCurrentPassword ? "text" : "password"}
+                          value={currentPassword}
+                          onChange={(e) => setCurrentPassword(e.target.value)}
+                          className="bg-background pr-10"
+                          placeholder="Enter your current password"
+                          disabled={isLoading}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="space-y-2">
                     <Label htmlFor="new-password">New Password</Label>

@@ -242,8 +242,8 @@ export async function registerRoutes(
       const userId = (req as any).session.userId;
       const { currentPassword, newPassword } = req.body;
 
-      if (!currentPassword || !newPassword) {
-        return res.status(400).json({ message: "Current password and new password are required" });
+      if (!newPassword) {
+        return res.status(400).json({ message: "New password is required" });
       }
 
       if (newPassword.length < 8) {
@@ -255,15 +255,23 @@ export async function registerRoutes(
         return res.status(404).json({ message: "User not found" });
       }
 
-      const currentMatch = await bcrypt.compare(currentPassword, user.password);
-      if (!currentMatch) {
-        return res.status(401).json({ message: "Current password is incorrect" });
+      const isGoogleUser = (user as any).provider === "google";
+
+      if (!isGoogleUser) {
+        // Regular users must provide their current password
+        if (!currentPassword) {
+          return res.status(400).json({ message: "Current password is required" });
+        }
+        const currentMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!currentMatch) {
+          return res.status(401).json({ message: "Current password is incorrect" });
+        }
       }
 
       const hashedNew = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
-      await getStorage().updateUser(userId, { password: hashedNew });
+      await getStorage().updateUser(userId, { password: hashedNew, provider: null } as any);
 
-      res.json({ message: "Password changed successfully" });
+      res.json({ message: "Password set successfully" });
     } catch (err) {
       console.error("Password change error:", err);
       res.status(500).json({ message: "Internal error" });
@@ -522,6 +530,8 @@ export async function registerRoutes(
         profilePicture: pending.picture || null,
         emailVerified: true,
       });
+      // Mark as Google OAuth user so password-change flow knows no current password exists
+      await getStorage().updateUser(user.id, { provider: "google" } as any);
 
       delete (req as any).session.pendingGoogleProfile;
       (req as any).session.userId = user.id;
