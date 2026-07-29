@@ -111,7 +111,8 @@ export async function registerRoutes(
   app.post(api.auth.login.path, async (req, res) => {
     try {
       const input = api.auth.login.input.parse(req.body);
-      const user = await getStorage().getUserByUsername(input.username);
+      const user = await getStorage().getUserByUsername(input.username)
+        ?? await (getStorage() as any).getUserByEmail(input.username.toLowerCase().trim());
       if (!user) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
